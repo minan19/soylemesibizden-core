@@ -1,10 +1,9 @@
 import prisma from '@/lib/prisma';
-import { LayoutGrid, Radar, Lock, Shield, Zap, Bell, Globe, Moon, ShieldCheck, Mic, Crosshair, TrendingUp, ArrowRight } from 'lucide-react';
+import { LayoutGrid, Radar, Lock, Shield, Zap, Bell, Globe, Moon, ShieldCheck, Mic, Crosshair, TrendingUp, ArrowRight, Activity } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
 export default async function SovereignDashboard() {
-  // Gerçek veritabanından en son satılık ilanları çek
   const listings = await prisma.listing.findMany({
     take: 3,
     orderBy: { createdAt: 'desc' }
@@ -13,7 +12,6 @@ export default async function SovereignDashboard() {
   return (
     <div className="flex h-screen bg-[#F8FAFC] text-[#0F172A] font-sans overflow-hidden">
       
-      {/* SOL MENÜ (Sidebar) - Eurodinamik Minimalizm */}
       <aside className="w-64 bg-white border-r border-gray-100 flex flex-col flex-shrink-0 z-10 shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
         <div className="h-20 flex items-center px-8 border-b border-gray-50">
           <span className="text-sm font-bold tracking-[0.2em]">SÖYLEMESİBİZDEN</span>
@@ -37,10 +35,7 @@ export default async function SovereignDashboard() {
         </nav>
       </aside>
 
-      {/* ANA EKRAN (Main Content) */}
       <main className="flex-1 flex flex-col relative">
-        
-        {/* ÜST BAR (Top Navbar) - Çift logo silindi, cam efekti eklendi */}
         <header className="h-20 bg-white/80 backdrop-blur-md border-b border-gray-100 flex items-center justify-between px-8 sticky top-0 z-10">
           <div className="flex items-center gap-2 px-4 py-1.5 bg-[#F0FDF8] text-[#00C49F] rounded-full border border-[#00C49F]/20">
             <ShieldCheck size={14} />
@@ -60,14 +55,10 @@ export default async function SovereignDashboard() {
           </div>
         </header>
 
-        {/* İÇERİK IZGARASI (Grid Layout) */}
         <div className="flex-1 overflow-y-auto p-8">
           <div className="max-w-7xl mx-auto grid grid-cols-1 xl:grid-cols-3 gap-8">
-            
-            {/* SOL SÜTUN: Master Hub & Veriler */}
             <div className="xl:col-span-2 space-y-8">
               <div>
-                {/* Font inceltildi (font-black -> font-semibold), boyut optimize edildi */}
                 <h1 className="text-3xl font-semibold tracking-tight text-[#0F172A]">Master Hub</h1>
                 
                 <div className="mt-6 flex bg-white rounded-full p-1 border border-gray-200 w-fit shadow-sm">
@@ -77,7 +68,6 @@ export default async function SovereignDashboard() {
                 </div>
               </div>
 
-              {/* PRISMA VERİ TABANINDAN GELEN İLANLAR */}
               <div className="space-y-4">
                 {listings.length > 0 ? listings.map((listing) => (
                   <div key={listing.id} className="p-6 bg-white rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all duration-300 flex flex-col gap-4">
@@ -86,14 +76,12 @@ export default async function SovereignDashboard() {
                       <span className="flex items-center gap-1 text-[#00C49F] text-xs font-bold tracking-wide"><Activity size={14}/> IQ: 98.4</span>
                     </div>
                     <div>
-                      {/* Font inceltildi: font-extrabold -> font-semibold */}
                       <h2 className="text-xl font-semibold text-[#0F172A]">{listing.title}</h2>
                       <p className="text-sm text-gray-500 font-medium mt-1 flex items-center gap-1">
                         <Crosshair size={14}/> {listing.location || "Lokasyon Gizli"}
                       </p>
                     </div>
                     <div className="flex justify-between items-center mt-2 border-t border-gray-50 pt-4">
-                      {/* Fiyat fontu: font-black -> font-bold, rakamlar okunabilir */}
                       <span className="text-2xl font-bold tracking-tight text-[#0F172A]">₺ {listing.price.toLocaleString('tr-TR')}</span>
                       <button className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 text-[#00C49F] hover:bg-[#F0FDF8] hover:border-[#00C49F]/30 transition-colors">
                         <ArrowRight size={18} />
@@ -108,9 +96,7 @@ export default async function SovereignDashboard() {
               </div>
             </div>
 
-            {/* SAĞ SÜTUN: Zihinsel Tetikleyiciler (Sinirsel Komuta) */}
             <div className="space-y-6">
-              {/* KART 1 */}
               <div className="p-6 bg-white rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.03)] relative overflow-hidden">
                 <div className="flex justify-between items-start mb-6">
                   <span className="text-[10px] font-bold tracking-widest text-[#00C49F] uppercase flex items-center gap-2">
@@ -118,7 +104,6 @@ export default async function SovereignDashboard() {
                   </span>
                   <div className="w-8 h-8 rounded-full bg-[#F0FDF8] text-[#00C49F] flex items-center justify-center"><Mic size={14}/></div>
                 </div>
-                {/* Font inceltildi: font-extrabold -> font-semibold */}
                 <h3 className="text-2xl font-semibold leading-tight mb-8">Sinirsel Komuta<br/>Merkezi</h3>
                 
                 <div className="h-12 w-full bg-gray-50 rounded-xl mb-8 flex items-center justify-center relative overflow-hidden">
@@ -135,7 +120,6 @@ export default async function SovereignDashboard() {
                 </div>
               </div>
 
-              {/* KART 2 */}
               <div className="p-6 bg-white rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.03)]">
                 <div className="flex justify-between items-start mb-4">
                   <span className="text-[10px] font-bold tracking-widest text-[#00C49F] uppercase flex items-center gap-2">
@@ -147,7 +131,6 @@ export default async function SovereignDashboard() {
                 <div className="h-32 bg-gray-50 rounded-2xl border border-dashed border-gray-200"></div>
               </div>
 
-              {/* KART 3 */}
               <div className="p-6 bg-white rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.03)]">
                 <div className="flex justify-between items-start mb-4">
                   <span className="text-[10px] font-bold tracking-widest text-[#00C49F] uppercase flex items-center gap-2">
