@@ -1,39 +1,57 @@
-"use client";
-import React from 'react';
-import { Montserrat } from 'next/font/google';
-import { GatewayAuth } from '../components/GatewayAuth';
+import SovereignMap from '@/components/SovereignMap';
+import prisma from '@/lib/prisma';
 
-const montserrat = Montserrat({ subsets: ['latin'], weight: ['400', '900'] });
+export const dynamic = 'force-dynamic';
 
-export default function RootGateway() {
+export default async function HomePage() {
+  const listings = await prisma.listing.findMany({
+    take: 10,
+    orderBy: { createdAt: 'desc' }
+  });
+
+  const mapLocations = listings
+    .filter(l => l.location)
+    .map(l => {
+      const coords = l.location?.split(',').map(Number);
+      if (coords && coords.length === 2 && !isNaN(coords[0]) && !isNaN(coords[1])) {
+        return { title: l.title, lat: coords[0], lng: coords[1] };
+      }
+      return null;
+    })
+    .filter(Boolean) as Array<{ title: string; lat: number; lng: number }>;
+
   return (
-    <div className={montserrat.className} style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: 'var(--bg-primary)', position: 'relative', overflow: 'hidden' }}>
-      
-      {/* Kurumsal Arka Plan Izgarası */}
-      <div style={{ position: 'absolute', inset: 0, backgroundImage: 'repeating-linear-gradient(45deg, var(--border-color) 0, var(--border-color) 1px, transparent 1px, transparent 40px)', opacity: 0.3, pointerEvents: 'none' }} />
-      
-      {/* Sol Üst Logo ve Ekosistem Belirteci */}
-      <header style={{ position: 'absolute', top: '40px', left: '60px', zIndex: 10 }}>
-        <h1 style={{ fontSize: '1.2rem', fontWeight: '950', letterSpacing: '4px', color: 'var(--text-primary)' }}>
-          SÖYLEMESİ<span style={{ color: 'var(--accent-emerald)' }}>BİZDEN</span>
-        </h1>
-        <div style={{ fontSize: '0.6rem', fontWeight: '800', color: 'var(--text-secondary)', letterSpacing: '2px', marginTop: '5px' }}>
-          SOVEREIGN INTELLIGENCE NETWORK
-        </div>
-      </header>
+    <main className="min-h-screen bg-white text-gray-900 p-8 font-sans">
+      <div className="max-w-7xl mx-auto space-y-12">
+        <header className="flex justify-between items-center border-b border-gray-100 pb-6">
+          <h1 className="text-4xl font-bold tracking-tight">Söylemesi Bizden</h1>
+          <div className="text-sm font-medium px-4 py-2 bg-black text-white rounded-full">Sovereign Portal</div>
+        </header>
 
-      {/* Merkez Kimlik Doğrulama Alanı */}
-      <main style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', zIndex: 10 }}>
-        <GatewayAuth />
-      </main>
+        <section className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-6">
+            <h2 className="text-2xl font-semibold">Kritik Lokasyonlar</h2>
+            <SovereignMap locations={mapLocations} />
+          </div>
 
-      {/* Alt Bilgi ve Otorite Formülü */}
-      <footer style={{ position: 'absolute', bottom: '40px', width: '100%', textAlign: 'center', zIndex: 10 }}>
-        <p style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', fontWeight: '600' }}>
-          {"Erişim Protokolü: $$ \\Omega_{auth} = \\lim_{t \\to 0} \\frac{\\text{BioHash} \\cdot \\text{Node}_{key}}{\\Delta t} \\equiv \\text{Access}_{granted} $$ şifrelenmiştir."}
-        </p>
-      </footer>
-      
-    </div>
+          <div className="space-y-6">
+            <h2 className="text-2xl font-semibold">Güncel Varlıklar</h2>
+            <div className="space-y-4">
+              {listings.map(listing => (
+                <div key={listing.id} className="p-4 border border-gray-100 rounded-xl hover:shadow-md transition-shadow">
+                  <h3 className="font-medium text-lg">{listing.title}</h3>
+                  <p className="text-gray-500 font-mono mt-1">{listing.price.toLocaleString('tr-TR')} ₺</p>
+                </div>
+              ))}
+              {listings.length === 0 && (
+                <div className="p-6 bg-gray-50 rounded-xl text-gray-500 text-sm border border-dashed border-gray-200">
+                  Veritabanı aktif. İlan bekleniyor.
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
   );
 }

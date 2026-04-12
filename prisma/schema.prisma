@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  name          String?
+  role          String         @default("USER") // USER, ADMIN, CONCIERGE
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  listings      Listing[]
+  offers        Offer[]
+  dealRooms     DealRoom[]     @relation("BuyerDealRooms")
+  ownedDeals    DealRoom[]     @relation("SellerDealRooms")
+  advisoryCases AdvisoryCase[]
+  assets        Asset[]
+}
+
+model Listing {
+  id          String     @id @default(uuid())
+  title       String
+  description String
+  price       Float
+  location    String?
+  status      String     @default("ACTIVE") // ACTIVE, PENDING, SOLD
+  ownerId     String
+  owner       User       @relation(fields: [ownerId], references: [id])
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  offers      Offer[]
+  dealRooms   DealRoom[]
+}
+
+model Offer {
+  id        String   @id @default(uuid())
+  amount    Float
+  status    String   @default("PENDING") // PENDING, ACCEPTED, REJECTED
+  listingId String
+  listing   Listing  @relation(fields: [listingId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model DealRoom {
+  id        String   @id @default(uuid())
+  status    String   @default("OPEN") // OPEN, IN_PROGRESS, CLOSED
+  listingId String
+  listing   Listing  @relation(fields: [listingId], references: [id])
+  buyerId   String
+  buyer     User     @relation("BuyerDealRooms", fields: [buyerId], references: [id])
+  sellerId  String
+  seller    User     @relation("SellerDealRooms", fields: [sellerId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AdvisoryCase {
+  id          String   @id @default(uuid())
+  subject     String
+  description String
+  status      String   @default("OPEN") // OPEN, RESOLVED
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Asset {
+  id        String   @id @default(uuid())
+  type      String
+  value     Float
+  location  String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
