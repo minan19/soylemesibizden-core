@@ -1,13 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  eslint: {
-    // Derleme sırasında ESLint hatalarını görmezden gel (Hassasiyet uyarınca hızı önceliyoruz)
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    // Type hatalarını görmezden gelerek yayına almayı zorla
-    ignoreBuildErrors: true,
-  },
-}
-
-module.exports = nextConfig
+  typescript: { ignoreBuildErrors: true },
+  eslint: { ignoreDuringBuilds: true },
+  swcMinify: true
+};
+module.exports = nextConfig;
