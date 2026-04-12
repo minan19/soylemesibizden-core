@@ -2,5 +2,3 @@ node_modules/
 .next/
 .env*
 .DS_Store
-*.pem
-npm-debug.log*
