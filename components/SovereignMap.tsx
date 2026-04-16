@@ -3,7 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Map as MapIcon, Navigation, Globe, Crosshair, Zap, ShieldCheck } from 'lucide-react';
 
-export const SovereignMap = () => {
+export default function SovereignMap() {
   const assets = [
     { name: 'Çanakkale Stratejik Tarla', coord: { top: '35%', left: '32%' }, type: 'INVESTMENT' },
     { name: 'Muğla Garden House', coord: { top: '55%', left: '38%' }, type: 'LIFESTYLE' },
@@ -82,4 +82,4 @@ export const SovereignMap = () => {
       </div>
     </div>
   );
-};
+}
