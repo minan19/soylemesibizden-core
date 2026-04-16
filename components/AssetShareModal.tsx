@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Link as LinkIcon, Share2, MessageCircle, Linkedin, Twitter, QrCode } from 'lucide-react';
+import { X, Link as LinkIcon, Share2, MessageCircle, QrCode, ExternalLink } from 'lucide-react';
 
 interface ShareProps {
   isOpen: boolean;
@@ -14,8 +14,8 @@ export const AssetShareModal = ({ isOpen, onClose, assetTitle }: ShareProps) => 
 
   const shareActions = [
     { name: 'WhatsApp', icon: MessageCircle, color: '#25D366' },
-    { name: 'LinkedIn', icon: Linkedin, color: '#0077B5' },
-    { name: 'X', icon: Twitter, color: '#000' },
+    { name: 'LinkedIn', icon: ExternalLink, color: '#0077B5' },
+    { name: 'X', icon: Share2, color: '#000' },
     { name: 'QR Code', icon: QrCode, color: 'var(--accent-emerald)' },
     { name: 'Bağlantıyı Kopyala', icon: LinkIcon, color: '#666' }
   ];

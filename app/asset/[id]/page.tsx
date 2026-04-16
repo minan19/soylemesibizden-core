@@ -12,7 +12,7 @@ import { SmartContractModal } from '../../../components/SmartContractModal'; // 
 
 // Otorite Modülleri (Lazy Load)
 const SpatialAssetViewer = dynamic(() => import('../../../components/SpatialAssetViewer').then(m => m.SpatialAssetViewer), { ssr: false });
-const SovereignMap = dynamic(() => import('../../../components/SovereignMap').then(m => m.SovereignMap), { ssr: false });
+const SovereignMap = dynamic(() => import('../../../components/SovereignMap'), { ssr: false });
 const LegalArchitect = dynamic(() => import('../../../components/LegalArchitect').then(m => m.LegalArchitect), { ssr: false });
 
 const montserrat = Montserrat({ subsets: ['latin'], weight: ['400', '900'] });

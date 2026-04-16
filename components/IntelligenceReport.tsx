@@ -4,11 +4,25 @@ import { motion } from 'framer-motion';
 import { ShieldCheck, BarChart3, TrendingUp, MapPin, Calendar, Download, X } from 'lucide-react';
 import { calculateInvestmentScore, getYieldProjection } from '../lib/intelligence';
 
-export const IntelligenceReport = ({ isOpen, onClose, asset }: any) => {
+interface Asset {
+  title?: string;
+  price?: number;
+  location?: string;
+  type?: string;
+  [key: string]: unknown;
+}
+
+interface IntelligenceReportProps {
+  isOpen: boolean;
+  onClose: () => void;
+  asset: Asset;
+}
+
+export const IntelligenceReport = ({ isOpen, onClose, asset }: IntelligenceReportProps) => {
   if (!isOpen || !asset) return null;
 
   const score = calculateInvestmentScore(asset);
-  const projection = getYieldProjection(Number(asset.price));
+  const projectionData = getYieldProjection(Number(asset.price) || 0);
 
   return (
     <motion.div 
@@ -63,7 +77,11 @@ export const IntelligenceReport = ({ isOpen, onClose, asset }: any) => {
           <div style={{ backgroundColor: '#FAFAFA', padding: '40px', borderRadius: '8px', border: '1px solid #EEE' }}>
             <h3 style={{ fontSize: '0.8rem', fontWeight: '950', letterSpacing: '2px', color: '#0A0A0A', marginBottom: '25px' }}>24 AY GELECEK PROJEKSİYONU</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              {projection.map((p, i) => (
+              {[
+                { period: 'Yıllık Getiri', value: Number(projectionData.annual) },
+                { period: 'Aylık Getiri', value: Number(projectionData.monthly) },
+                { period: '5 Yıllık Projeksiyon', value: Number(projectionData.fiveYear) },
+              ].map((p, i) => (
                 <div key={i} style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #EEE', paddingBottom: '10px' }}>
                   <span style={{ fontWeight: '900', fontSize: '0.75rem', color: '#666' }}>{p.period}</span>
                   <span style={{ fontWeight: '950', fontSize: '0.85rem' }}>₺ {p.value.toLocaleString('tr-TR')}</span>

@@ -3,12 +3,28 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Map as MapIcon, Navigation, Globe, Crosshair, Zap, ShieldCheck } from 'lucide-react';
 
-export default function SovereignMap() {
-  const assets = [
-    { name: 'Çanakkale Stratejik Tarla', coord: { top: '35%', left: '32%' }, type: 'INVESTMENT' },
-    { name: 'Muğla Garden House', coord: { top: '55%', left: '38%' }, type: 'LIFESTYLE' },
-    { name: 'İstanbul Terra Hub', coord: { top: '28%', left: '42%' }, type: 'CORPORATE' }
-  ];
+interface Location {
+  title: string;
+  lat: number;
+  lng: number;
+}
+
+interface SovereignMapProps {
+  locations?: Location[];
+}
+
+export default function SovereignMap({ locations }: SovereignMapProps) {
+  const assets = locations && locations.length > 0
+    ? locations.map((l, i) => ({
+        name: l.title,
+        coord: { top: `${30 + i * 10}%`, left: `${30 + i * 8}%` },
+        type: 'LISTING'
+      }))
+    : [
+        { name: 'Çanakkale Stratejik Tarla', coord: { top: '35%', left: '32%' }, type: 'INVESTMENT' },
+        { name: 'Muğla Garden House', coord: { top: '55%', left: '38%' }, type: 'LIFESTYLE' },
+        { name: 'İstanbul Terra Hub', coord: { top: '28%', left: '42%' }, type: 'CORPORATE' }
+      ];
 
   return (
     <div style={{ padding: '25px', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: '32px', position: 'relative', overflow: 'hidden' }}>

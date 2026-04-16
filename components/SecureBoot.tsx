@@ -42,14 +42,14 @@ export const SecureBoot = ({ onAuthenticated }: any) => {
           <div style={{ fontSize: '0.6rem', letterSpacing: '2px' }}>
             {protocols.slice(0, step + 1).map((p, i) => (
               <div key={i} style={{ marginBottom: '10px', opacity: i === step ? 1 : 0.3 }}>
-                > {p}
+                {'>'} {p}
               </div>
             ))}
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', animation: 'fadeIn 1s' }}>
             <div style={{ fontSize: '0.6rem', letterSpacing: '2px', color: isError ? '#e74c3c' : '#D4AF37' }}>
-              > {isError ? "ACCESS DENIED" : "ENTER ACCESS KEY:"}
+              {'>'} {isError ? "ACCESS DENIED" : "ENTER ACCESS KEY:"}
             </div>
             <input 
               type="password" 

@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Share2, Hub, Network, ShieldCheck, Zap, Globe, Activity } from 'lucide-react';
+import { Share2, Network, ShieldCheck, Zap, Globe, Activity } from 'lucide-react';
 
 export const GlobalSynergyHub = () => {
   const nodes = [

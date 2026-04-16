@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import prisma from '@/lib/prisma';
 import { LayoutGrid, Radar, Lock, Shield, Zap, Bell, Globe, Moon, ShieldCheck, Mic, Crosshair, TrendingUp, ArrowRight, Activity } from 'lucide-react';
 
@@ -17,21 +18,33 @@ export default async function SovereignDashboard() {
           <span className="text-sm font-bold tracking-[0.2em]">SÖYLEMESİBİZDEN</span>
         </div>
         <nav className="flex-1 py-6 px-4 space-y-2">
-          <a href="#" className="flex items-center gap-3 px-4 py-3 bg-[#F0FDF8] text-[#00C49F] rounded-xl text-sm font-semibold tracking-wide transition-colors">
+          <Link href="/dashboard" className="flex items-center gap-3 px-4 py-3 bg-[#F0FDF8] text-[#00C49F] rounded-xl text-sm font-semibold tracking-wide transition-colors">
             <LayoutGrid size={18} /> MASTER TERMINAL
-          </a>
-          <a href="#" className="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-gray-900 hover:bg-gray-50 rounded-xl text-sm font-medium tracking-wide transition-colors">
+          </Link>
+          <Link href="/listings" className="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-gray-900 hover:bg-gray-50 rounded-xl text-sm font-medium tracking-wide transition-colors">
+            <TrendingUp size={18} /> İLANLAR
+          </Link>
+          <Link href="/market-radar" className="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-gray-900 hover:bg-gray-50 rounded-xl text-sm font-medium tracking-wide transition-colors">
             <Radar size={18} /> MARKET RADAR
-          </a>
-          <a href="#" className="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-gray-900 hover:bg-gray-50 rounded-xl text-sm font-medium tracking-wide transition-colors">
+          </Link>
+          <Link href="/dark-pool" className="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-gray-900 hover:bg-gray-50 rounded-xl text-sm font-medium tracking-wide transition-colors">
             <Lock size={18} /> DARK POOL
-          </a>
-          <a href="#" className="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-gray-900 hover:bg-gray-50 rounded-xl text-sm font-medium tracking-wide transition-colors">
+          </Link>
+          <Link href="/deals" className="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-gray-900 hover:bg-gray-50 rounded-xl text-sm font-medium tracking-wide transition-colors">
+            <Activity size={18} /> ANLAŞMALAR
+          </Link>
+          <Link href="/legal-vault" className="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-gray-900 hover:bg-gray-50 rounded-xl text-sm font-medium tracking-wide transition-colors">
             <Shield size={18} /> LEGAL VAULT
-          </a>
-          <a href="#" className="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-gray-900 hover:bg-gray-50 rounded-xl text-sm font-medium tracking-wide transition-colors">
+          </Link>
+          <Link href="/intelligence" className="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-gray-900 hover:bg-gray-50 rounded-xl text-sm font-medium tracking-wide transition-colors">
+            <Crosshair size={18} /> İSTİHBARAT
+          </Link>
+          <Link href="/api-portal" className="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-gray-900 hover:bg-gray-50 rounded-xl text-sm font-medium tracking-wide transition-colors">
             <Zap size={18} /> API PORTAL
-          </a>
+          </Link>
+          <Link href="/admin/dashboard" className="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-gray-900 hover:bg-gray-50 rounded-xl text-sm font-medium tracking-wide transition-colors">
+            <ShieldCheck size={18} /> ADMİN
+          </Link>
         </nav>
       </aside>
 
