@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tipografi Önizleme — Söylemesi Bizden</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Montserrat:wght@600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #F8FAFC; font-family: 'Inter', sans-serif; color: #0F172A; }
+
+    .wrapper { max-width: 1200px; margin: 0 auto; padding: 60px 40px; }
+
+    .section-label {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 10px; font-weight: 800;
+      letter-spacing: 4px; text-transform: uppercase;
+      color: #00C49F; margin-bottom: 40px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .section-label::after {
+      content: ''; flex: 1; height: 1px; background: #E2E8F0;
+    }
+
+    /* COMPARISON */
+    .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-bottom: 80px; }
+
+    .panel {
+      background: white; border-radius: 24px;
+      border: 1px solid #E2E8F0;
+      padding: 40px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+    }
+    .panel.new { border-color: #00C49F33; box-shadow: 0 8px 30px rgba(0,196,159,0.08); }
+
+    .panel-tag {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 9px; font-weight: 800; letter-spacing: 3px;
+      text-transform: uppercase; margin-bottom: 32px;
+      display: inline-block; padding: 6px 14px;
+      border-radius: 100px;
+    }
+    .panel-tag.old { background: #F1F5F9; color: #94A3B8; }
+    .panel-tag.new-tag { background: #F0FDF8; color: #00C49F; }
+
+    /* OLD STYLE */
+    .old h1 { font-family: 'Montserrat', sans-serif; font-size: 38px; font-weight: 900; letter-spacing: -1px; margin-bottom: 8px; }
+    .old h2 { font-family: 'Montserrat', sans-serif; font-size: 22px; font-weight: 700; margin-bottom: 16px; }
+    .old p  { font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 400; line-height: 1.7; color: #64748B; margin-bottom: 20px; }
+    .old .price { font-family: 'Montserrat', sans-serif; font-size: 28px; font-weight: 900; color: #0F172A; }
+    .old .meta  { font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #64748B; }
+
+    /* NEW STYLE */
+    .new h1 { font-family: 'Cormorant Garamond', serif; font-size: 52px; font-weight: 600; letter-spacing: -1.5px; line-height: 1.05; margin-bottom: 8px; }
+    .new h2 { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 400; font-style: italic; color: #64748B; margin-bottom: 16px; }
+    .new p  { font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 400; line-height: 1.75; color: #64748B; margin-bottom: 20px; }
+    .new .price { font-family: 'JetBrains Mono', monospace; font-size: 30px; font-weight: 600; color: #0F172A; letter-spacing: -0.5px; }
+    .new .meta  { font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; color: #00C49F; }
+
+    .divider { height: 1px; background: #E2E8F0; margin: 24px 0; }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 14px; border-radius: 100px;
+      font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+      text-transform: uppercase; margin-top: 16px;
+    }
+    .badge-green { background: #F0FDF8; color: #00C49F; border: 1px solid #00C49F33; }
+    .badge-gray  { background: #F8FAFC; color: #94A3B8; border: 1px solid #E2E8F0; }
+    .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+    /* FULL CARD PREVIEW */
+    .card-preview { margin-bottom: 80px; }
+    .card {
+      background: white; border-radius: 32px;
+      border: 1px solid #E2E8F0;
+      padding: 48px; max-width: 700px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.06);
+    }
+
+    .card .eyebrow {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 9px; font-weight: 800; letter-spacing: 4px;
+      text-transform: uppercase; color: #00C49F;
+      display: flex; align-items: center; gap: 8px; margin-bottom: 20px;
+    }
+    .card h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 56px; font-weight: 600;
+      letter-spacing: -2px; line-height: 1.0;
+      margin-bottom: 6px;
+    }
+    .card .subtitle {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px; font-weight: 300;
+      font-style: italic; color: #64748B;
+      margin-bottom: 28px;
+    }
+    .card p {
+      font-family: 'Inter', sans-serif;
+      font-size: 14px; line-height: 1.8; color: #64748B;
+      max-width: 520px; margin-bottom: 32px;
+    }
+    .card .price-row { display: flex; align-items: flex-end; gap: 16px; margin-bottom: 32px; }
+    .card .price-big {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 42px; font-weight: 600;
+      color: #0F172A; letter-spacing: -1px; line-height: 1;
+    }
+    .card .price-roi {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px; font-weight: 600;
+      color: #00C49F; margin-bottom: 4px;
+    }
+    .card .btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: #0F172A; color: white;
+      padding: 16px 28px; border-radius: 100px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 11px; font-weight: 800; letter-spacing: 2px;
+      text-transform: uppercase; cursor: pointer;
+      border: none;
+    }
+    .arrow { font-size: 16px; }
+
+    /* FONT GUIDE */
+    .font-guide { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .font-card {
+      background: white; border-radius: 20px;
+      border: 1px solid #E2E8F0; padding: 32px;
+    }
+    .font-name { font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; color: #94A3B8; margin-bottom: 16px; }
+    .font-sample-serif  { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 600; line-height: 1.1; }
+    .font-sample-sans   { font-family: 'Inter', sans-serif; font-size: 20px; font-weight: 400; line-height: 1.6; color: #64748B; margin-top: 8px; }
+    .font-sample-mono   { font-family: 'JetBrains Mono', monospace; font-size: 28px; font-weight: 600; color: #0F172A; }
+    .font-usage { font-family: 'Inter', sans-serif; font-size: 12px; color: #94A3B8; margin-top: 12px; }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- HEADER -->
+  <div style="margin-bottom:60px;">
+    <div class="section-label">Tipografi Önizleme — Söylemesi Bizden</div>
+  </div>
+
+  <!-- COMPARISON -->
+  <div class="section-label">Karşılaştırma</div>
+  <div class="compare">
+
+    <div class="panel old">
+      <span class="panel-tag old">Mevcut — Sadece Montserrat</span>
+      <h1>Çanakkale Stratejik Tarla</h1>
+      <h2>Ayvacık, Çanakkale</h2>
+      <p>14.500 m² denize sıfır parsel. Sovereign protokol güvencesi altında. Yüksek ROI projeksiyonu.</p>
+      <div class="divider"></div>
+      <div class="price">₺ 8.500.000</div>
+      <div class="meta" style="margin-top:8px;">%14.2 Yıllık ROI</div>
+      <div class="badge badge-gray"><span class="dot"></span> SOVEREIGN VERIFIED</div>
+    </div>
+
+    <div class="panel new">
+      <span class="panel-tag new-tag">Önerilen — 3 Katmanlı Sistem</span>
+      <h1>Çanakkale<br>Stratejik Tarla</h1>
+      <h2>Ayvacık, Çanakkale</h2>
+      <p>14.500 m² denize sıfır parsel. Sovereign protokol güvencesi altında. Yüksek ROI projeksiyonu.</p>
+      <div class="divider"></div>
+      <div class="price">₺ 8.500.000</div>
+      <div class="meta" style="margin-top:8px;">%14.2 Yıllık ROI</div>
+      <div class="badge badge-green"><span class="dot"></span> SOVEREIGN VERIFIED</div>
+    </div>
+
+  </div>
+
+  <!-- FULL CARD -->
+  <div class="section-label">Tam Kart Önizlemesi</div>
+  <div class="card-preview">
+    <div class="card">
+      <div class="eyebrow">
+        <span class="dot" style="background:#00C49F"></span>
+        Elite Listing — Aktif
+      </div>
+      <h1>Çanakkale<br>Stratejik Tarla</h1>
+      <div class="subtitle">Ayvacık, Çanakkale — 14.500 m²</div>
+      <p>
+        Denize sıfır, stratejik konumlu tarım ve yatırım parseli.
+        Sovereign İstihbarat Ağı tarafından doğrulanmış, holding portföyüne
+        entegre edilmeye hazır premium varlık.
+      </p>
+      <div class="price-row">
+        <div class="price-big">₺ 8.500.000</div>
+        <div>
+          <div class="price-roi">↑ %14.2 Yıllık ROI</div>
+          <div style="font-family:'Inter',sans-serif; font-size:12px; color:#94A3B8;">5 yıl projeksiyonu</div>
+        </div>
+      </div>
+      <button class="btn">Akıllı Kontrat ile Al <span class="arrow">→</span></button>
+    </div>
+  </div>
+
+  <!-- FONT GUIDE -->
+  <div class="section-label">Font Rehberi</div>
+  <div class="font-guide">
+    <div class="font-card">
+      <div class="font-name">Display — Başlıklar</div>
+      <div class="font-sample-serif">Cormorant<br>Garamond</div>
+      <div class="font-usage">Hero başlıklar, ilan adları,<br>büyük section title'lar</div>
+    </div>
+    <div class="font-card">
+      <div class="font-name">UI & Body — Arayüz</div>
+      <div class="font-sample-sans">Inter ile yazılan metin açık, okunabilir ve kurumsal hissettiriyor.</div>
+      <div class="font-usage">Paragraflar, formlar,<br>açıklamalar, navigasyon</div>
+    </div>
+    <div class="font-card">
+      <div class="font-name">Mono — Sayılar & Veri</div>
+      <div class="font-sample-mono">₺ 8.500.000<br>ID: AX-2941</div>
+      <div class="font-usage">Fiyatlar, koordinatlar,<br>ID'ler, kod blokları</div>
+    </div>
+  </div>
+
+  <div style="margin-top:60px; text-align:center; font-family:'Inter',sans-serif; font-size:12px; color:#94A3B8;">
+    Montserrat → yalnızca uppercase etiketler için korunur (MASTER TERMINAL, SOVEREIGN VERIFIED vb.)
+  </div>
+
+</div>
+</body>
+</html>
