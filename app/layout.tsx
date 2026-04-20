@@ -2,6 +2,7 @@ import './globals.css';
 import type { Metadata } from 'next';
 import { Montserrat } from 'next/font/google';
 import { SovereignProvider } from '../providers/SovereignProvider';
+import AuthSessionProvider from '../providers/SessionProvider';
 
 const montserrat = Montserrat({ 
   subsets: ['latin'], 
@@ -23,9 +24,11 @@ export default function RootLayout({
     <html lang="tr">
       <body className={montserrat.className}>
         {/* Tüm Ekosistem Veri Çekirdeği Tarafından Sarmalandı */}
-        <SovereignProvider>
-          {children}
-        </SovereignProvider>
+        <AuthSessionProvider>
+          <SovereignProvider>
+            {children}
+          </SovereignProvider>
+        </AuthSessionProvider>
       </body>
     </html>
   );
