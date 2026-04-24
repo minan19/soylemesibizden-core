@@ -5,10 +5,13 @@ import { LayoutGrid, Radar, Lock, Shield, Zap, Bell, Globe, Moon, ShieldCheck, M
 export const dynamic = 'force-dynamic';
 
 export default async function SovereignDashboard() {
-  const listings = await prisma.listing.findMany({
-    take: 3,
-    orderBy: { createdAt: 'desc' }
-  });
+  const [listings, totalListings, totalOffers, totalDeals, totalAssets] = await Promise.all([
+    prisma.listing.findMany({ take: 3, orderBy: { createdAt: 'desc' } }),
+    prisma.listing.count(),
+    prisma.offer.count(),
+    prisma.dealRoom.count(),
+    prisma.asset.count(),
+  ]);
 
   return (
     <div className="flex h-screen bg-[#F8FAFC] text-[#0F172A] font-sans overflow-hidden">
@@ -69,45 +72,61 @@ export default async function SovereignDashboard() {
         </header>
 
         <div className="flex-1 overflow-y-auto p-8">
-          <div className="max-w-7xl mx-auto grid grid-cols-1 xl:grid-cols-3 gap-8">
-            <div className="xl:col-span-2 space-y-8">
-              <div>
-                <h1 className="text-3xl font-semibold tracking-tight text-[#0F172A]">Master Hub</h1>
-                
-                <div className="mt-6 flex bg-white rounded-full p-1 border border-gray-200 w-fit shadow-sm">
-                  <button className="px-6 py-2 text-sm font-medium text-gray-500 hover:text-gray-900 rounded-full transition-colors">TÜMÜ</button>
-                  <button className="px-6 py-2 text-sm font-semibold text-gray-900 bg-gray-50 rounded-full shadow-sm">SATILIK</button>
-                  <button className="px-6 py-2 text-sm font-medium text-gray-500 hover:text-gray-900 rounded-full transition-colors">KİRALIK</button>
-                </div>
-              </div>
+          <div className="max-w-7xl mx-auto space-y-8">
 
-              <div className="space-y-4">
-                {listings.length > 0 ? listings.map((listing) => (
-                  <div key={listing.id} className="p-6 bg-white rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all duration-300 flex flex-col gap-4">
-                    <div className="flex justify-between items-start">
-                      <span className="px-3 py-1 bg-gray-50 border border-gray-200 rounded-full text-[10px] font-bold tracking-widest text-gray-600 uppercase">SATILIK</span>
-                      <span className="flex items-center gap-1 text-[#00C49F] text-xs font-bold tracking-wide"><Activity size={14}/> IQ: 98.4</span>
-                    </div>
-                    <div>
-                      <h2 className="text-xl font-semibold text-[#0F172A]">{listing.title}</h2>
-                      <p className="text-sm text-gray-500 font-medium mt-1 flex items-center gap-1">
-                        <Crosshair size={14}/> {listing.location || "Lokasyon Gizli"}
-                      </p>
-                    </div>
-                    <div className="flex justify-between items-center mt-2 border-t border-gray-50 pt-4">
-                      <span className="text-2xl font-bold tracking-tight text-[#0F172A]">₺ {listing.price.toLocaleString('tr-TR')}</span>
-                      <button className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 text-[#00C49F] hover:bg-[#F0FDF8] hover:border-[#00C49F]/30 transition-colors">
-                        <ArrowRight size={18} />
-                      </button>
-                    </div>
+            {/* İstatistik Kartları */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              {[
+                { label: 'TOPLAM İLAN', value: totalListings, icon: <LayoutGrid size={16} />, href: '/listings' },
+                { label: 'AKTİF TEKLİF', value: totalOffers, icon: <TrendingUp size={16} />, href: '/offers' },
+                { label: 'ANLAŞMA ODASI', value: totalDeals, icon: <Activity size={16} />, href: '/deals' },
+                { label: 'VARLIK', value: totalAssets, icon: <Shield size={16} />, href: '/assets' },
+              ].map(stat => (
+                <Link key={stat.label} href={stat.href}
+                  className="bg-white p-5 rounded-2xl border border-gray-100 hover:border-[#00C49F]/30 hover:shadow-md transition-all group">
+                  <div className="flex justify-between items-start mb-3">
+                    <div className="text-[#00C49F]">{stat.icon}</div>
+                    <ArrowRight size={14} className="text-gray-300 group-hover:text-[#00C49F] transition-colors" />
                   </div>
-                )) : (
-                  <div className="p-8 bg-white rounded-3xl border border-dashed border-gray-200 flex items-center justify-center text-gray-400 font-medium">
-                    Radarda ilan bulunamadı.
-                  </div>
-                )}
-              </div>
+                  <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
+                  <p className="text-[9px] font-bold tracking-widest text-gray-400 mt-1">{stat.label}</p>
+                </Link>
+              ))}
             </div>
+
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+              <div className="xl:col-span-2 space-y-8">
+                <div>
+                  <h1 className="text-3xl font-semibold tracking-tight text-[#0F172A]">Master Hub</h1>
+                  <Link href="/listings" className="mt-3 inline-flex items-center gap-1 text-xs text-[#00C49F] font-semibold hover:underline">
+                    Tüm ilanları gör <ArrowRight size={12} />
+                  </Link>
+                </div>
+                <div className="space-y-4">
+                  {listings.length > 0 ? listings.map((listing) => (
+                    <Link key={listing.id} href={`/listing/${listing.id}`} className="p-6 bg-white rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all duration-300 flex flex-col gap-4 block">
+                      <div className="flex justify-between items-start">
+                        <span className="px-3 py-1 bg-gray-50 border border-gray-200 rounded-full text-[10px] font-bold tracking-widest text-gray-600 uppercase">{listing.status}</span>
+                        <span className="flex items-center gap-1 text-[#00C49F] text-xs font-bold tracking-wide"><Activity size={14}/> AKTİF</span>
+                      </div>
+                      <div>
+                        <h2 className="text-xl font-semibold text-[#0F172A]">{listing.title}</h2>
+                        <p className="text-sm text-gray-500 font-medium mt-1 flex items-center gap-1">
+                          <Crosshair size={14}/> {listing.location || "Lokasyon Gizli"}
+                        </p>
+                      </div>
+                      <div className="flex justify-between items-center mt-2 border-t border-gray-50 pt-4">
+                        <span className="text-2xl font-bold tracking-tight text-[#0F172A]">₺ {listing.price.toLocaleString('tr-TR')}</span>
+                        <ArrowRight size={18} className="text-[#00C49F]" />
+                      </div>
+                    </Link>
+                  )) : (
+                    <div className="p-8 bg-white rounded-3xl border border-dashed border-gray-200 flex items-center justify-center text-gray-400 font-medium">
+                      Radarda ilan bulunamadı.
+                    </div>
+                  )}
+                </div>
+              </div>{/* xl:col-span-2 */}
 
             <div className="space-y-6">
               <div className="p-6 bg-white rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.03)] relative overflow-hidden">
@@ -158,8 +177,9 @@ export default async function SovereignDashboard() {
                 </div>
               </div>
 
-            </div>
-          </div>
+            </div>{/* xl:col-span-2 */}
+            </div>{/* xl:grid-cols-3 */}
+          </div>{/* space-y-8 */}
         </div>
       </main>
     </div>

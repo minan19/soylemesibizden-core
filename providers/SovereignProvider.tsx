@@ -1,34 +1,94 @@
 "use client";
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-// Platformun Ana Veri Seti (Veritabanı Simülasyonu)
-const CORE_DATABASE = [
-  { id: 'ASSET-01', title: 'Terra Beylikdüzü Hub', location: 'İstanbul, Beylikdüzü', salePrice: '₺ 4.200.000', rentPrice: '₺ 25.000', iqScore: 98.4, type: 'TİCARİ', clearance: 'LEVEL_1' },
-  { id: 'ASSET-02', title: 'Muğla Green Field', location: 'Muğla, Milas', salePrice: '₺ 12.800.000', rentPrice: null, iqScore: 94.2, type: 'ARAZİ', clearance: 'LEVEL_1' },
-  { id: 'ASSET-03', title: 'Çanakkale Stratejik Tarla', location: 'Çanakkale, Ayvacık', salePrice: '₺ 8.500.000', rentPrice: null, iqScore: 92.1, type: 'ARAZİ', clearance: 'LEVEL_1' },
-  { id: 'DP-001', title: 'Gizli Marina Projesi', location: 'Muğla, Göcek', salePrice: '₺ 120.000.000', rentPrice: null, iqScore: 99.9, type: 'LİMAN', clearance: 'LEVEL_5' }
-];
+interface SovereignAsset {
+  id: string;
+  title: string;
+  location: string | null;
+  salePrice: string;
+  rentPrice: string | null;
+  iqScore: number;
+  type: string;
+  clearance: string;
+  status: string;
+}
 
-const SovereignContext = createContext<any>(null);
+interface SovereignStats {
+  totalListings: number;
+  totalAssets: number;
+  totalOffers: number;
+  totalDeals: number;
+}
+
+interface SovereignContextType {
+  assets: SovereignAsset[];
+  stats: SovereignStats;
+  isSyncing: boolean;
+  refetch: () => void;
+}
+
+const SovereignContext = createContext<SovereignContextType>({
+  assets: [],
+  stats: { totalListings: 0, totalAssets: 0, totalOffers: 0, totalDeals: 0 },
+  isSyncing: true,
+  refetch: () => {},
+});
 
 export const SovereignProvider = ({ children }: { children: React.ReactNode }) => {
-  const [assets, setAssets] = useState<any[]>([]);
+  const [assets, setAssets] = useState<SovereignAsset[]>([]);
+  const [stats, setStats] = useState<SovereignStats>({ totalListings: 0, totalAssets: 0, totalOffers: 0, totalDeals: 0 });
   const [isSyncing, setIsSyncing] = useState(true);
 
-  // Veri Çekme (Fetch) Simülasyonu - Neural Sync
-  useEffect(() => {
-    const syncData = async () => {
-      setIsSyncing(true);
-      // Ağ Gecikmesi Simülasyonu (600ms)
-      await new Promise(resolve => setTimeout(resolve, 600));
-      setAssets(CORE_DATABASE);
+  const fetchData = async () => {
+    setIsSyncing(true);
+    try {
+      const [listingsRes, assetsRes, offersRes, dealsRes] = await Promise.all([
+        fetch('/api/listings'),
+        fetch('/api/assets'),
+        fetch('/api/offers'),
+        fetch('/api/deals'),
+      ]);
+
+      const [listings, assetsData, offers, deals] = await Promise.all([
+        listingsRes.ok ? listingsRes.json() : [],
+        assetsRes.ok ? assetsRes.json() : [],
+        offersRes.ok ? offersRes.json() : [],
+        dealsRes.ok ? dealsRes.json() : [],
+      ]);
+
+      const mappedAssets: SovereignAsset[] = listings.map((l: {
+        id: string; title: string; location?: string;
+        price: number; status: string;
+      }) => ({
+        id: l.id,
+        title: l.title,
+        location: l.location ?? null,
+        salePrice: `₺ ${l.price.toLocaleString('tr-TR')}`,
+        rentPrice: null,
+        iqScore: Math.floor(85 + Math.random() * 15),
+        type: 'LİSTİNG',
+        clearance: 'LEVEL_1',
+        status: l.status,
+      }));
+
+      setAssets(mappedAssets);
+      setStats({
+        totalListings: listings.length,
+        totalAssets: assetsData.length,
+        totalOffers: offers.length,
+        totalDeals: deals.length,
+      });
+    } catch {
+      setAssets([]);
+    } finally {
       setIsSyncing(false);
-    };
-    syncData();
-  }, []);
+    }
+  };
+
+  useEffect(() => { fetchData(); }, []);
 
   return (
-    <SovereignContext.Provider value={{ assets, isSyncing }}>
+    <SovereignContext.Provider value={{ assets, stats, isSyncing, refetch: fetchData }}>
       {children}
     </SovereignContext.Provider>
   );
