@@ -1,0 +1,10 @@
+ SÖYLEMESİ BİZDEN - MARKA REHBERİ
+---------------------------------
+RENK PALETİ:
+- Ana Renk: Gece Mavisi (#0D47A1) - Güven ve kurumsallık.
+- Vurgu Rengi: Altın Sarısı (#FFD700) - Premium ve fırsat ürünleri.
+- Başarı Rengi: Orman Yeşili (#1B5E20) - AI Onaylı ilanlar.
+
+FONT: Inter veya Roboto (Modern, okunabilir).
+
+SLOGAN: "Gerçeği biz söyleriz, kararı siz verirsiniz."

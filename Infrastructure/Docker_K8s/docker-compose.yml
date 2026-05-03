@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: sb_postgres
+    environment:
+      POSTGRES_DB: soylemesibizden_db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: secret_password
+    ports:
+      - "5432:5432"
+
+  search_engine:
+    image: getmeili/meilisearch:latest
+    container_name: sb_search
+    ports:
+      - "7700:7700"
+    environment:
+      - MEILI_MASTER_KEY=master_key_soylemesibizden
