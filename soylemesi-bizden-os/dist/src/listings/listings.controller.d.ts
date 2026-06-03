@@ -1,0 +1,118 @@
+import { ListingsService } from './listings.service';
+import { CreateListingDto } from './dto/create-listing.dto';
+export declare class ListingsController {
+    private readonly listingsService;
+    constructor(listingsService: ListingsService);
+    search(query: any): Promise<({
+        owner: {
+            name: string;
+        };
+    } & {
+        id: string;
+        title: string;
+        description: string | null;
+        transactionType: import(".prisma/client").$Enums.TransactionType;
+        category: import(".prisma/client").$Enums.PropertyCategory;
+        subCategory: string;
+        city: string;
+        district: string;
+        neighborhood: string | null;
+        ada: string | null;
+        parsel: string | null;
+        roomCount: string | null;
+        buildingAge: string | null;
+        floorLevel: string | null;
+        heating: string | null;
+        zoningStatus: string | null;
+        emsal: string | null;
+        area: import("@prisma/client/runtime/library").Decimal;
+        price: import("@prisma/client/runtime/library").Decimal;
+        creditEligible: boolean;
+        status: import(".prisma/client").$Enums.Status;
+        ownerId: string;
+        createdAt: Date;
+        updatedAt: Date;
+    })[]>;
+    getAll(): Promise<({
+        owner: {
+            name: string;
+        };
+    } & {
+        id: string;
+        title: string;
+        description: string | null;
+        transactionType: import(".prisma/client").$Enums.TransactionType;
+        category: import(".prisma/client").$Enums.PropertyCategory;
+        subCategory: string;
+        city: string;
+        district: string;
+        neighborhood: string | null;
+        ada: string | null;
+        parsel: string | null;
+        roomCount: string | null;
+        buildingAge: string | null;
+        floorLevel: string | null;
+        heating: string | null;
+        zoningStatus: string | null;
+        emsal: string | null;
+        area: import("@prisma/client/runtime/library").Decimal;
+        price: import("@prisma/client/runtime/library").Decimal;
+        creditEligible: boolean;
+        status: import(".prisma/client").$Enums.Status;
+        ownerId: string;
+        createdAt: Date;
+        updatedAt: Date;
+    })[]>;
+    create(createListingDto: CreateListingDto): Promise<{
+        id: string;
+        title: string;
+        description: string | null;
+        transactionType: import(".prisma/client").$Enums.TransactionType;
+        category: import(".prisma/client").$Enums.PropertyCategory;
+        subCategory: string;
+        city: string;
+        district: string;
+        neighborhood: string | null;
+        ada: string | null;
+        parsel: string | null;
+        roomCount: string | null;
+        buildingAge: string | null;
+        floorLevel: string | null;
+        heating: string | null;
+        zoningStatus: string | null;
+        emsal: string | null;
+        area: import("@prisma/client/runtime/library").Decimal;
+        price: import("@prisma/client/runtime/library").Decimal;
+        creditEligible: boolean;
+        status: import(".prisma/client").$Enums.Status;
+        ownerId: string;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+    remove(id: string): Promise<{
+        id: string;
+        title: string;
+        description: string | null;
+        transactionType: import(".prisma/client").$Enums.TransactionType;
+        category: import(".prisma/client").$Enums.PropertyCategory;
+        subCategory: string;
+        city: string;
+        district: string;
+        neighborhood: string | null;
+        ada: string | null;
+        parsel: string | null;
+        roomCount: string | null;
+        buildingAge: string | null;
+        floorLevel: string | null;
+        heating: string | null;
+        zoningStatus: string | null;
+        emsal: string | null;
+        area: import("@prisma/client/runtime/library").Decimal;
+        price: import("@prisma/client/runtime/library").Decimal;
+        creditEligible: boolean;
+        status: import(".prisma/client").$Enums.Status;
+        ownerId: string;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+}

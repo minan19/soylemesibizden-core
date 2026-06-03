@@ -1,7 +1,9 @@
 "use client";
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Link as LinkIcon, Share2, MessageCircle, Linkedin, Twitter, QrCode } from 'lucide-react';
+import { X, Link as LinkIcon, Share2, MessageCircle, ExternalLink, QrCode } from 'lucide-react';
+const Linkedin = ExternalLink; // Linkedin lucide-react v1.8'de yok
+const Twitter = Share2;       // Twitter/X lucide-react v1.8'de yok
 
 interface ShareProps {
   isOpen: boolean;

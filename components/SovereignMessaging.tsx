@@ -15,7 +15,7 @@ export const SovereignMessaging = () => {
           <MessageSquare size={20} color="var(--accent-emerald)" />
           <h4 style={{ fontSize: '0.8rem', fontWeight: '950', letterSpacing: '2px' }}>INTEL EXCHANGE</h4>
         </div>
-        <div style={{ fontSize: '0.6rem', fontWeight: '950', color: 'var(--accent-emerald)' }}>$$E2E_{SECURE}$$</div>
+        <div style={{ fontSize: '0.6rem', fontWeight: '950', color: 'var(--accent-emerald)' }}>{'$$E2E_{SECURE}$$'}</div>
       </header>
 
       <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '20px', paddingRight: '10px' }}>

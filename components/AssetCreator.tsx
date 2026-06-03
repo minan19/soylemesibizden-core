@@ -34,7 +34,7 @@ export const AssetCreator = () => {
 
       <div style={{ marginTop: '30px', padding: '20px', backgroundColor: 'rgba(26,188,156,0.05)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
         <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: '600', margin: 0 }}>
-          Güvenlik Protokolü: Yeni varlık sisteme girildiğinde $$IQ_{score}$$ otomatik olarak hesaplanacak ve Blockchain üzerine mühürlenecektir.
+          {'Güvenlik Protokolü: Yeni varlık sisteme girildiğinde $$IQ_{score}$$ otomatik olarak hesaplanacak ve Blockchain üzerine mühürlenecektir.'}
         </p>
       </div>
 

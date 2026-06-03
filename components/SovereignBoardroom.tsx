@@ -49,7 +49,7 @@ export const SovereignBoardroom = ({ asset }: any) => {
           <div style={{ padding: '40px', border: '1px solid var(--border-color)', borderRadius: '16px' }}>
              <h3 style={{ fontSize: '0.8rem', fontWeight: '950', letterSpacing: '2px', marginBottom: '25px' }}>MUTABAKAT METNİ</h3>
              <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', lineHeight: '1.8', fontWeight: '500' }}>
-               Bu işlem, SÖYLEMESİ BİZDEN Egemen Protokolü uyarınca mühürlenmiştir. Alıcı ve Satıcı taraflar, istihbarat verilerinin doğruluğunu ve $$ROI > %14.2$$ projeksiyonunu kabul ederek dijital imzaya geçiş yaparlar.
+               Bu işlem, SÖYLEMESİ BİZDEN Egemen Protokolü uyarınca mühürlenmiştir. Alıcı ve Satıcı taraflar, istihbarat verilerinin doğruluğunu ve $$ROI {'>'} %14.2$$ projeksiyonunu kabul ederek dijital imzaya geçiş yaparlar.
              </p>
           </div>
         </section>

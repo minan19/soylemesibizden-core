@@ -1,34 +1,69 @@
-"use client";
+'use client';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-// Platformun Ana Veri Seti (Veritabanı Simülasyonu)
-const CORE_DATABASE = [
-  { id: 'ASSET-01', title: 'Terra Beylikdüzü Hub', location: 'İstanbul, Beylikdüzü', salePrice: '₺ 4.200.000', rentPrice: '₺ 25.000', iqScore: 98.4, type: 'TİCARİ', clearance: 'LEVEL_1' },
-  { id: 'ASSET-02', title: 'Muğla Green Field', location: 'Muğla, Milas', salePrice: '₺ 12.800.000', rentPrice: null, iqScore: 94.2, type: 'ARAZİ', clearance: 'LEVEL_1' },
-  { id: 'ASSET-03', title: 'Çanakkale Stratejik Tarla', location: 'Çanakkale, Ayvacık', salePrice: '₺ 8.500.000', rentPrice: null, iqScore: 92.1, type: 'ARAZİ', clearance: 'LEVEL_1' },
-  { id: 'DP-001', title: 'Gizli Marina Projesi', location: 'Muğla, Göcek', salePrice: '₺ 120.000.000', rentPrice: null, iqScore: 99.9, type: 'LİMAN', clearance: 'LEVEL_5' }
-];
+interface Listing {
+  id: string;
+  title: string;
+  priceAmount: number;
+  area: number;
+  location: string | null;
+  status: string;
+  propertyType: string;
+}
 
-const SovereignContext = createContext<any>(null);
+interface Asset {
+  id: string;
+  type: string;
+  value: number;
+  location: string | null;
+}
+
+interface SovereignContextType {
+  listings: Listing[];
+  assets: Asset[];
+  isSyncing: boolean;
+  refetch: () => void;
+}
+
+const SovereignContext = createContext<SovereignContextType>({
+  listings: [],
+  assets: [],
+  isSyncing: true,
+  refetch: () => {},
+});
 
 export const SovereignProvider = ({ children }: { children: React.ReactNode }) => {
-  const [assets, setAssets] = useState<any[]>([]);
+  const [listings, setListings] = useState<Listing[]>([]);
+  const [assets, setAssets] = useState<Asset[]>([]);
   const [isSyncing, setIsSyncing] = useState(true);
 
-  // Veri Çekme (Fetch) Simülasyonu - Neural Sync
-  useEffect(() => {
-    const syncData = async () => {
-      setIsSyncing(true);
-      // Ağ Gecikmesi Simülasyonu (600ms)
-      await new Promise(resolve => setTimeout(resolve, 600));
-      setAssets(CORE_DATABASE);
+  const fetchAll = async () => {
+    setIsSyncing(true);
+    try {
+      const [listingsRes, assetsRes] = await Promise.allSettled([
+        fetch('/api/listings').then((r) => r.json()),
+        fetch('/api/assets').then((r) => r.json()),
+      ]);
+
+      if (listingsRes.status === 'fulfilled' && Array.isArray(listingsRes.value)) {
+        setListings(listingsRes.value);
+      }
+      if (assetsRes.status === 'fulfilled' && Array.isArray(assetsRes.value)) {
+        setAssets(assetsRes.value);
+      }
+    } catch (err) {
+      console.error('[SovereignProvider] fetch error:', err);
+    } finally {
       setIsSyncing(false);
-    };
-    syncData();
+    }
+  };
+
+  useEffect(() => {
+    fetchAll();
   }, []);
 
   return (
-    <SovereignContext.Provider value={{ assets, isSyncing }}>
+    <SovereignContext.Provider value={{ listings, assets, isSyncing, refetch: fetchAll }}>
       {children}
     </SovereignContext.Provider>
   );
