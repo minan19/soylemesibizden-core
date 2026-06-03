@@ -1,0 +1,44 @@
+import { withAuth } from 'next-auth/middleware';
+import { NextResponse } from 'next/server';
+
+export default withAuth(
+  function middleware(req) {
+    const token = req.nextauth.token;
+    const pathname = req.nextUrl.pathname;
+
+    // Admin rotaları — sadece ADMIN rolü
+    if (pathname.startsWith('/admin') && token?.role !== 'ADMIN') {
+      return NextResponse.redirect(new URL('/dashboard', req.url));
+    }
+
+    return NextResponse.next();
+  },
+  {
+    callbacks: {
+      authorized: ({ token }) => !!token,
+    },
+  }
+);
+
+export const config = {
+  matcher: [
+    '/dashboard/:path*',
+    '/listings/:path*',
+    '/offers/:path*',
+    '/deals/:path*',
+    '/assets/:path*',
+    '/concierge/:path*',
+    '/admin/:path*',
+    '/boardroom/:path*',
+    '/intelligence/:path*',
+    '/legal-vault/:path*',
+    '/vault/:path*',
+    '/dark-pool/:path*',
+    '/market-radar/:path*',
+    '/analytics/:path*',
+    '/security/:path*',
+    '/radar/:path*',
+    '/nexus/:path*',
+    '/carbon/:path*',
+  ],
+};

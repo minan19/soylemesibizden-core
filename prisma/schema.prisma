@@ -8,69 +8,95 @@ datasource db {
 }
 
 model User {
-  id            String         @id @default(uuid())
-  email         String         @unique
-  name          String?
-  role          String         @default("USER") // USER, ADMIN, CONCIERGE
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  listings      Listing[]
-  offers        Offer[]
-  dealRooms     DealRoom[]     @relation("BuyerDealRooms")
-  ownedDeals    DealRoom[]     @relation("SellerDealRooms")
-  advisoryCases AdvisoryCase[]
-  assets        Asset[]
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String?
+  password  String?
+  role      String   @default("USER")        // USER | ADMIN | CONCIERGE
+  plan      String   @default("FREE")        // FREE | STANDART | KURUMSAL | SOVEREIGN
+  stripeCustomerId   String?  @unique
+  stripeSubscriptionId String? @unique
+  stripePriceId      String?
+  stripeCurrentPeriodEnd DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  listings               Listing[]
+  offers                 Offer[]
+  dealRooms              DealRoom[]              @relation("BuyerDealRooms")
+  ownedDeals             DealRoom[]              @relation("SellerDealRooms")
+  advisoryCases          AdvisoryCase[]
+  assets                 Asset[]
+  documents              Document[]
+  darkPoolNda              DarkPoolNda?
+  apiKeys                  ApiKey[]
+  investmentOpportunities  InvestmentOpportunity[]
+  investmentParticipations InvestmentParticipant[]
+  franchisePartners        FranchisePartner[]
+  sovereignScore           SovereignScoreRecord?
 }
 
 model Listing {
-  id          String     @id @default(uuid())
-  title       String
-  description String
-  price       Float
-  location    String?
-  status      String     @default("ACTIVE") // ACTIVE, PENDING, SOLD
-  ownerId     String
-  owner       User       @relation(fields: [ownerId], references: [id])
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  offers      Offer[]
-  dealRooms   DealRoom[]
+  id           String   @id @default(uuid())
+  title        String
+  description  String?
+  propertyType String
+  priceAmount  Float
+  area         Float
+  location     String?
+  status       String   @default("ACTIVE")      // ACTIVE | PENDING | SOLD | WITHDRAWN
+  visibility   String   @default("PUBLIC")       // PUBLIC | MEMBERS | DARK_POOL
+  images       String[] @default([])             // Vercel Blob URL'leri
+  score        Json?                             // Sovereign Investment Score (hesaplanmış)
+  ownerId      String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  owner            User              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  offers           Offer[]
+  dealRooms        DealRoom[]
+  documents        Document[]
+  tapuVerification TapuVerification?
+  esgScore         EsgScore?
 }
 
 model Offer {
   id        String   @id @default(uuid())
   amount    Float
-  status    String   @default("PENDING") // PENDING, ACCEPTED, REJECTED
+  status    String   @default("PENDING") // PENDING | ACCEPTED | REJECTED
   listingId String
-  listing   Listing  @relation(fields: [listingId], references: [id])
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model DealRoom {
   id        String   @id @default(uuid())
-  status    String   @default("OPEN") // OPEN, IN_PROGRESS, CLOSED
+  status    String   @default("OPEN") // OPEN | IN_PROGRESS | CLOSED
   listingId String
-  listing   Listing  @relation(fields: [listingId], references: [id])
   buyerId   String
-  buyer     User     @relation("BuyerDealRooms", fields: [buyerId], references: [id])
   sellerId  String
-  seller    User     @relation("SellerDealRooms", fields: [sellerId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  buyer   User    @relation("BuyerDealRooms", fields: [buyerId], references: [id], onDelete: Cascade)
+  seller  User    @relation("SellerDealRooms", fields: [sellerId], references: [id], onDelete: Cascade)
 }
 
 model AdvisoryCase {
   id          String   @id @default(uuid())
   subject     String
   description String
-  status      String   @default("OPEN") // OPEN, RESOLVED
+  status      String   @default("OPEN") // OPEN | RESOLVED
   userId      String
-  user        User     @relation(fields: [userId], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Asset {
@@ -79,7 +105,188 @@ model Asset {
   value     Float
   location  String?
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Document {
+  id          String   @id @default(uuid())
+  userId      String
+  listingId   String?
+  name        String
+  type        String                // TAPU | SOZLESME | DEGERLEME | SIGORTA | DIGER
+  url         String                // Vercel Blob URL
+  size        Int       @default(0) // byte
+  mimeType    String    @default("application/pdf")
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listing Listing? @relation(fields: [listingId], references: [id], onDelete: SetNull)
+}
+
+// Dark Pool NDA kaydı
+model DarkPoolNda {
+  id          String   @id @default(uuid())
+  userId      String
+  acceptedAt  DateTime @default(now())
+  ipAddress   String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId])
+}
+
+// B2B Sovereign Data API — API key yönetimi
+model ApiKey {
+  id          String   @id @default(uuid())
+  userId      String
+  key         String   @unique
+  name        String                          // "Ziraat Bankası Entegrasyonu"
+  plan        String   @default("STARTER")   // STARTER | GROWTH | ENTERPRISE
+  callsToday  Int      @default(0)
+  callsTotal  Int      @default(0)
+  lastUsedAt  DateTime?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Yatırımcı Ağı — fırsat ilanları
+model InvestmentOpportunity {
+  id              String   @id @default(uuid())
+  title           String
+  description     String
+  propertyType    String
+  location        String
+  targetAmount    Float                         // Aranılan toplam yatırım
+  minInvestment   Float                         // Minimum katılım miktarı
+  expectedReturn  Float                         // Tahmini yıllık getiri %
+  durationMonths  Int                           // Proje süresi (ay)
+  status          String   @default("OPEN")    // OPEN | FUNDED | CLOSED
+  ownerId         String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  owner        User                    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  participants InvestmentParticipant[]
+}
+
+model InvestmentParticipant {
+  id             String   @id @default(uuid())
+  opportunityId  String
+  userId         String
+  amount         Float
+  status         String   @default("PENDING") // PENDING | CONFIRMED
+  createdAt      DateTime @default(now())
+
+  opportunity InvestmentOpportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  user        User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Franchise OS — white-label broker partnerleri
+model FranchisePartner {
+  id              String   @id @default(uuid())
+  ownerId         String
+  companyName     String
+  slug            String   @unique          // subdomain: slug.soylemesibizden.com
+  logoUrl         String?
+  primaryColor    String   @default("#00C49F")
+  accentColor     String   @default("#0F172A")
+  plan            String   @default("BASIC") // BASIC | PRO | ENTERPRISE
+  monthlyFee      Float    @default(50000)
+  agentCount      Int      @default(0)
+  listingCount    Int      @default(0)
+  status          String   @default("ACTIVE") // ACTIVE | SUSPENDED | TRIAL
+  customDomain    String?
+  contactEmail    String
+  contactPhone    String?
+  city            String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+}
+
+// Construction Intelligence — onaylı inşaat projeleri
+model ConstructionProject {
+  id              String   @id @default(uuid())
+  name            String
+  developer       String
+  projectType     String                    // RESIDENTIAL | COMMERCIAL | MIXED | INFRASTRUCTURE
+  location        String
+  city            String
+  district        String?
+  status          String   @default("PLANNED") // PLANNED | UNDER_CONSTRUCTION | COMPLETED
+  startDate       DateTime?
+  completionDate  DateTime?
+  totalUnits      Int?
+  totalArea       Float?                    // m²
+  investmentAmount Float?                   // TL
+  description     String?
+  source          String?                   // Veri kaynağı
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// Tapu Doğrulama — TKGM entegrasyon kaydı
+model TapuVerification {
+  id              String   @id @default(uuid())
+  listingId       String   @unique
+  parcelNo        String?                          // Tapu parsel numarası
+  blockNo         String?                          // Ada numarası
+  landRegNo       String?                          // Tapu sicil no
+  status          String   @default("PENDING")     // PENDING | VERIFIED | FAILED | MANUAL_REVIEW
+  verificationMethod String @default("MANUAL")     // MANUAL | TKGM_API | AI_ASSISTED
+  hasMortgage     Boolean?                         // İpotek var mı
+  hasLien         Boolean?                         // Haciz var mı
+  hasAnnotation   Boolean?                         // Şerh var mı
+  ownerMatches    Boolean?                         // Satıcı tapu sahibiyle eşleşiyor mu
+  rawData         Json?                            // TKGM API yanıtı (gelecekte)
+  notes           String?
+  verifiedAt      DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+}
+
+// Sovereign Score — kullanıcı bazlı gayrimenkul kredi skoru
+model SovereignScoreRecord {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  score           Int      @default(0)            // 0-1000
+  transactionCount Int     @default(0)             // Tamamlanan işlem sayısı
+  onTimePayments  Int      @default(0)             // Zamanında ödeme
+  defaultCount    Int      @default(0)             // Temerrüt sayısı
+  portfolioValue  Float    @default(0)             // Toplam portföy değeri
+  verifiedIdentity Boolean @default(false)
+  ndaSigned       Boolean  @default(false)
+  memberSince     DateTime @default(now())
+  lastCalculated  DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ESG + Karbon Skoru
+model EsgScore {
+  id              String   @id @default(uuid())
+  listingId       String   @unique
+  energyClass     String   @default("E")           // A B C D E F G
+  carbonFootprint Float?                           // kg CO2/yıl
+  renewableEnergy Boolean  @default(false)
+  greenCertified  Boolean  @default(false)         // LEED, BREEAM vb.
+  insulationScore Int?                             // 0-100
+  heatingType     String?                          // DOGALGAZ | ELEKTRIK | JEOTERMAL | GUNES
+  esgTotal        Int      @default(50)            // 0-100 ESG toplam skor
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
 }

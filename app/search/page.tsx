@@ -21,7 +21,7 @@ export default function SearchTerminal() {
     <div className={montserrat.className} style={{ minHeight: '100vh', backgroundColor: '#FFF', color: '#0A0A0A' }}>
       <GlobalIndex />
       
-      <nav style={{ padding: '25px 80px', borderBottom: '1px solid #EEE', display: 'flex', justifyContent: 'space-between', alignItems: 'center', sticky: 'top', backgroundColor: '#FFF', zIndex: 100 }}>
+      <nav style={{ padding: '25px 80px', borderBottom: '1px solid #EEE', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, backgroundColor: '#FFF', zIndex: 100 }}>
         <div style={{ fontSize: '1rem', fontWeight: '950', letterSpacing: '5px' }}>SÖYLEMESİ<span style={{ color: '#1ABC9C' }}>BİZDEN</span></div>
         <div style={{ display: 'flex', gap: '30px', alignItems: 'center' }}>
           <div style={{ position: 'relative' }}>

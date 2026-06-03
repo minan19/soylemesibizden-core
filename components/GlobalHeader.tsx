@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from 'react';
-import { LanguageSelector } from './LanguageSelector';
+import LanguageSelector from './LanguageSelector';
 import { ThemeToggle } from './ThemeToggle';
 import { useSovereignLang } from '../context/LanguageContext';
 import { Bell, ShieldCheck } from 'lucide-react';
@@ -23,7 +23,7 @@ export const GlobalHeader = () => {
           <Bell size={20} />
           <div style={{ position: 'absolute', top: '-5px', right: '-5px', width: '10px', height: '10px', backgroundColor: 'var(--accent-emerald)', borderRadius: '50%', border: '2px solid var(--bg-secondary)' }} />
         </div>
-        <LanguageSelector />
+        <LanguageSelector currentLang="tr" />
         <ThemeToggle />
       </div>
     </div>

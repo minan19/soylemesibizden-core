@@ -24,3 +24,31 @@ export const calculateHotelRevPar = (roomCount: number, avgDailyRate: number, oc
   const annualGOP = revPar * roomCount * 365 * 0.40; // %40 GOP Marjı
   return annualGOP.toFixed(0);
 };
+
+// IntelligenceReport bileşeni için gerekli fonksiyonlar
+export const calculateInvestmentScore = (asset: {
+  value?: number;
+  type?: string;
+  location?: string;
+}): number => {
+  let base = 70;
+  if (asset.type === 'TİCARİ') base += 10;
+  if (asset.type === 'ARAZİ') base += 5;
+  if (asset.location?.includes('İstanbul')) base += 8;
+  if (asset.location?.includes('Muğla')) base += 6;
+  return Math.min(base, 99);
+};
+
+// Overload: bileşenler eski imzayı (number) kullanıyor, yeni imza object alıyor
+export function getYieldProjection(price: number): { period: string; value: number }[];
+export function getYieldProjection(asset: { value?: number; type?: string }): { period: string; value: number }[];
+export function getYieldProjection(input: number | { value?: number; type?: string }): { period: string; value: number }[] {
+  const base = typeof input === 'number' ? input : (input.value ?? 5_000_000);
+  const rate = typeof input === 'object' && input.type === 'TİCARİ' ? 0.065 : 0.05;
+  return [
+    { period: '6 Ay',  value: Math.round(base * (1 + rate * 0.5)) },
+    { period: '12 Ay', value: Math.round(base * (1 + rate)) },
+    { period: '18 Ay', value: Math.round(base * (1 + rate * 1.5)) },
+    { period: '24 Ay', value: Math.round(base * (1 + rate * 2)) },
+  ];
+}

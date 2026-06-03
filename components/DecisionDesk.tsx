@@ -11,7 +11,7 @@ export const DecisionDesk = ({ isOpen, onClose }: any) => {
   return (
     <motion.div 
       initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-      style={{ position: 'fixed', inset: 0, zXndex: 9999, backgroundColor: 'rgba(255,255,255,0.98)', backdropFilter: 'blur(25px)', padding: '60px' }}
+      style={{ position: 'fixed', inset: 0, zIndex: 9999, backgroundColor: 'rgba(255,255,255,0.98)', backdropFilter: 'blur(25px)', padding: '60px' }}
     >
       <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
         <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '60px', borderBottom: '1px solid #EEE', paddingBottom: '30px' }}>
