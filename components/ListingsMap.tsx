@@ -15,26 +15,77 @@ interface Props {
   listings: MapListing[];
 }
 
-// Türkiye şehirleri için yaklaşık koordinatlar
+// Türkiye şehirleri ve mahalleleri için koordinatlar
 const CITY_COORDS: Record<string, [number, number]> = {
+  // İstanbul Avrupa
   'istanbul': [41.0082, 28.9784],
   'beşiktaş': [41.0422, 29.0099],
-  'kadıköy': [40.9827, 29.0274],
-  'sarıyer': [41.1694, 29.0511],
-  'beylikdüzü': [40.9835, 28.6522],
+  'bebek': [41.0530, 29.0170],
+  'ortaköy': [41.0392, 29.0254],
+  'akatlar': [41.0350, 29.0080],
+  'etiler': [41.0280, 29.0010],
+  'nişantaşı': [41.0480, 29.0050],
+  'taksim': [41.0373, 29.0125],
   'şişli': [41.0616, 28.9876],
-  'üsküdar': [41.0225, 29.0106],
+  'cihangir': [41.0450, 29.0170],
+  'kaköy': [41.0245, 29.0245],
+  'ulus': [41.0512, 29.0288],
+  'teşvikiye': [41.0380, 29.0180],
+  'yeniköy': [41.1580, 29.0550],
+
+  // İstanbul Anadolu
+  'kadıköy': [40.9827, 29.0274],
   'moda': [40.9810, 29.0330],
+  'acıbadem': [40.9750, 29.0290],
+  'bağdat': [40.9850, 29.0450],
+  'sarıyer': [41.1694, 29.0511],
+  'rumelihisarı': [41.1395, 29.0618],
+  'bakırköy': [40.9812, 28.8804],
+  'florya': [40.9750, 28.8201],
+  'bahçelievler': [41.0054, 28.8754],
+  'zeytinburnu': [41.0086, 28.9101],
+  'ataköy': [40.9915, 28.8290],
+  'maslak': [41.1186, 29.0098],
+
+  // Ankara
   'ankara': [39.9334, 32.8597],
   'çankaya': [39.9042, 32.8625],
+
+  // İzmir
   'izmir': [38.4237, 27.1428],
-  'bodrum': [37.0344, 27.4305],
+  'konak': [38.4237, 27.1428],
+  'alsancak': [38.4263, 27.1365],
+  'göztepe': [38.4512, 27.1698],
+  'çeşme': [38.3219, 26.3029],
+  'alacati': [38.3976, 26.1549],
+
+  // Muğla
   'muğla': [37.2153, 28.3636],
-  'urla': [38.3199, 26.7610],
-  'çanakkale': [40.1553, 26.4142],
+  'bodrum': [37.0344, 27.4305],
+  'yalikavak': [37.0748, 27.5113],
+  'türkbükü': [37.0611, 27.6268],
+  'marmaris': [37.2485, 28.2766],
+  'içmeler': [37.2680, 28.2925],
+  'fethiye': [36.6189, 29.1188],
+  'ölüdeniz': [36.6254, 29.1287],
+
+  // Antalya
   'antalya': [36.8969, 30.7133],
+  'kemer': [36.5928, 30.5639],
+  'alanya': [36.5440, 31.9954],
+
+  // Bursa
   'bursa': [40.1826, 29.0665],
+
+  // Konya
   'konya': [37.8746, 32.4932],
+
+  // Diğer
+  'nevşehir': [38.6939, 34.7257],
+  'göreme': [38.7432, 34.8269],
+  'fatih': [41.0087, 28.9611],
+  'topkapi': [41.0206, 28.9292],
+  'sultanahmet': [41.0056, 28.9764],
 };
 
 function getCoords(location: string | null): [number, number] {
