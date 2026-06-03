@@ -22,23 +22,9 @@ export default withAuth(
 
 export const config = {
   matcher: [
-    '/dashboard/:path*',
-    '/listings/:path*',
-    '/offers/:path*',
-    '/deals/:path*',
-    '/assets/:path*',
-    '/concierge/:path*',
+    // Yalnızca admin + bazı gizli alanlar korumalı
     '/admin/:path*',
-    '/boardroom/:path*',
-    '/intelligence/:path*',
-    '/legal-vault/:path*',
-    '/vault/:path*',
     '/dark-pool/:path*',
-    '/market-radar/:path*',
-    '/analytics/:path*',
-    '/security/:path*',
-    '/radar/:path*',
-    '/nexus/:path*',
-    '/carbon/:path*',
+    '/vault/:path*',
   ],
 };
