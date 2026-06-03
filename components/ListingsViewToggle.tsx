@@ -28,15 +28,16 @@ interface MapListing {
 
 interface Props {
   listings: MapListing[];
+  gridComponent?: React.ReactNode;
 }
 
-export default function ListingsViewToggle({ listings }: Props) {
+export default function ListingsViewToggle({ listings, gridComponent }: Props) {
   const [view, setView] = useState<'grid' | 'map'>('grid');
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-6 col-span-9">
       {/* TOGGLE BUTTONS */}
-      <div className="flex items-center bg-gray-100 rounded-full p-1 gap-1">
+      <div className="flex items-center bg-gray-100 rounded-full p-1 gap-1 w-fit">
         <button
           onClick={() => setView('grid')}
           className={`flex items-center gap-2 px-4 py-2 rounded-full text-[11px] font-black transition-all ${
@@ -59,12 +60,11 @@ export default function ListingsViewToggle({ listings }: Props) {
         </button>
       </div>
 
-      {/* MAP VIEW — render only when active */}
-      {view === 'map' && (
-        <div className="col-span-9 mt-2">
-          <ListingsMap listings={listings} />
-        </div>
-      )}
+      {/* GRID VIEW */}
+      {view === 'grid' && gridComponent}
+
+      {/* MAP VIEW */}
+      {view === 'map' && <ListingsMap listings={listings} />}
     </div>
   );
 }

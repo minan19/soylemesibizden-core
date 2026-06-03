@@ -133,9 +133,6 @@ export default async function ListingsPage({
                   Aramayı Temizle
                 </Link>
               )}
-              <Suspense>
-                <ListingsViewToggle listings={listings.map(l => ({ id: l.id, title: l.title, priceAmount: l.priceAmount, location: l.location, propertyType: l.propertyType, status: l.status }))} />
-              </Suspense>
             </div>
           </div>
 
@@ -152,88 +149,95 @@ export default async function ListingsPage({
               </Link>
             </div>
           ) : (
-            <div className="grid gap-5">
-              {listings.map((listing) => {
-                const IconComponent = PROPERTY_ICONS[listing.propertyType] ?? Building2;
-                return (
-                  <Link
-                    key={listing.id}
-                    href={`/listing/${listing.id}`}
-                    className="group block bg-white rounded-[32px] border border-gray-100 p-8 shadow-[0_4px_24px_rgba(0,0,0,0.02)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.06)] hover:border-[#00C49F]/20 transition-all duration-300"
-                  >
-                    <div className="flex items-start justify-between gap-6">
-                      <div className="flex items-start gap-5 flex-1">
-                        <div className="w-14 h-14 rounded-2xl bg-[#F0FDF8] flex items-center justify-center shrink-0 group-hover:bg-[#00C49F] transition-colors">
-                          <IconComponent
-                            size={24}
-                            className="text-[#00C49F] group-hover:text-white transition-colors"
-                          />
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
-                            <span className="text-[9px] font-black tracking-widest px-3 py-1 rounded-full bg-gray-100 text-gray-500 uppercase">
-                              {listing.propertyType}
-                            </span>
-                            <span
-                              className={`text-[9px] font-black tracking-widest px-3 py-1 rounded-full uppercase ${
-                                listing.status === 'ACTIVE'
-                                  ? 'bg-[#F0FDF8] text-[#00C49F]'
-                                  : listing.status === 'SOLD'
-                                  ? 'bg-red-50 text-red-400'
-                                  : 'bg-yellow-50 text-yellow-500'
-                              }`}
-                            >
-                              {listing.status}
-                            </span>
+            <Suspense>
+              <ListingsViewToggle
+                listings={listings.map(l => ({ id: l.id, title: l.title, priceAmount: l.priceAmount, location: l.location, propertyType: l.propertyType, status: l.status }))}
+                gridComponent={
+                  <div className="grid gap-5">
+                    {listings.map((listing) => {
+                      const IconComponent = PROPERTY_ICONS[listing.propertyType] ?? Building2;
+                      return (
+                        <Link
+                          key={listing.id}
+                          href={`/listing/${listing.id}`}
+                          className="group block bg-white rounded-[32px] border border-gray-100 p-8 shadow-[0_4px_24px_rgba(0,0,0,0.02)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.06)] hover:border-[#00C49F]/20 transition-all duration-300"
+                        >
+                          <div className="flex items-start justify-between gap-6">
+                            <div className="flex items-start gap-5 flex-1">
+                              <div className="w-14 h-14 rounded-2xl bg-[#F0FDF8] flex items-center justify-center shrink-0 group-hover:bg-[#00C49F] transition-colors">
+                                <IconComponent
+                                  size={24}
+                                  className="text-[#00C49F] group-hover:text-white transition-colors"
+                                />
+                              </div>
+                              <div className="flex-1">
+                                <div className="flex items-center gap-3 mb-2">
+                                  <span className="text-[9px] font-black tracking-widest px-3 py-1 rounded-full bg-gray-100 text-gray-500 uppercase">
+                                    {listing.propertyType}
+                                  </span>
+                                  <span
+                                    className={`text-[9px] font-black tracking-widest px-3 py-1 rounded-full uppercase ${
+                                      listing.status === 'ACTIVE'
+                                        ? 'bg-[#F0FDF8] text-[#00C49F]'
+                                        : listing.status === 'SOLD'
+                                        ? 'bg-red-50 text-red-400'
+                                        : 'bg-yellow-50 text-yellow-500'
+                                    }`}
+                                  >
+                                    {listing.status}
+                                  </span>
+                                </div>
+                                <h2 className="text-xl font-bold group-hover:text-[#00C49F] transition-colors mb-1">
+                                  {listing.title}
+                                </h2>
+                                {listing.description && (
+                                  <p className="text-sm text-gray-400 line-clamp-1 mb-3">
+                                    {listing.description}
+                                  </p>
+                                )}
+                                <div className="flex items-center gap-4">
+                                  {listing.location && (
+                                    <span className="flex items-center gap-1.5 text-[11px] font-semibold text-gray-400">
+                                      <MapPin size={12} /> {listing.location}
+                                    </span>
+                                  )}
+                                  <span className="flex items-center gap-1.5 text-[11px] font-semibold text-gray-400">
+                                    <Activity size={12} className="text-[#00C49F]" />
+                                    {listing.area.toLocaleString('tr-TR')} m²
+                                  </span>
+                                  {listing.owner?.name && (
+                                    <span className="text-[11px] font-semibold text-gray-400">
+                                      Sahibi: {listing.owner.name}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-4 shrink-0">
+                              <div className="text-right">
+                                <p className="text-2xl font-black tracking-tighter text-[#0F172A]">
+                                  {formatCurrency(listing.priceAmount)}
+                                </p>
+                                <p className="text-[10px] font-semibold text-gray-400 mt-0.5">
+                                  Değerleme Fiyatı
+                                </p>
+                              </div>
+                              <ListingCompareButton listingId={listing.id} />
+                              <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-[#00C49F] transition-all">
+                                <ArrowRight
+                                  size={16}
+                                  className="text-gray-300 group-hover:text-white transition-colors"
+                                />
+                              </div>
+                            </div>
                           </div>
-                          <h2 className="text-xl font-bold group-hover:text-[#00C49F] transition-colors mb-1">
-                            {listing.title}
-                          </h2>
-                          {listing.description && (
-                            <p className="text-sm text-gray-400 line-clamp-1 mb-3">
-                              {listing.description}
-                            </p>
-                          )}
-                          <div className="flex items-center gap-4">
-                            {listing.location && (
-                              <span className="flex items-center gap-1.5 text-[11px] font-semibold text-gray-400">
-                                <MapPin size={12} /> {listing.location}
-                              </span>
-                            )}
-                            <span className="flex items-center gap-1.5 text-[11px] font-semibold text-gray-400">
-                              <Activity size={12} className="text-[#00C49F]" />
-                              {listing.area.toLocaleString('tr-TR')} m²
-                            </span>
-                            {listing.owner?.name && (
-                              <span className="text-[11px] font-semibold text-gray-400">
-                                Sahibi: {listing.owner.name}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-4 shrink-0">
-                        <div className="text-right">
-                          <p className="text-2xl font-black tracking-tighter text-[#0F172A]">
-                            {formatCurrency(listing.priceAmount)}
-                          </p>
-                          <p className="text-[10px] font-semibold text-gray-400 mt-0.5">
-                            Değerleme Fiyatı
-                          </p>
-                        </div>
-                        <ListingCompareButton listingId={listing.id} />
-                        <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-[#00C49F] transition-all">
-                          <ArrowRight
-                            size={16}
-                            className="text-gray-300 group-hover:text-white transition-colors"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                }
+              />
+            </Suspense>
           )}
         </main>
       </div>
