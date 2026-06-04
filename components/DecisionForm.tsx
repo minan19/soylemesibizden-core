@@ -1,15 +1,16 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Listing } from '@prisma/client';
 import { Loader } from 'lucide-react';
 
 interface Props {
   listings: Listing[];
-  onSubmit: (data: any) => Promise<void>;
 }
 
-export default function DecisionForm({ listings, onSubmit }: Props) {
+export default function DecisionForm({ listings }: Props) {
+  const router = useRouter();
   const [selectedListing, setSelectedListing] = useState<string>('');
   const [loading, setLoading] = useState(false);
 
@@ -30,19 +31,31 @@ export default function DecisionForm({ listings, onSubmit }: Props) {
       const selectedProp = listings.find(l => l.id === selectedListing);
       if (!selectedProp) {
         alert('Lütfen bir mülk seçin');
+        setLoading(false);
         return;
       }
 
-      await onSubmit({
-        userProfile: formData,
-        propertyInput: {
-          price: selectedProp.priceAmount,
-          area: selectedProp.area,
-          location: selectedProp.location || 'İstanbul',
-          type: selectedProp.propertyType,
-          estimatedRental: (selectedProp.priceAmount * 0.04) / 12,
-        },
+      const response = await fetch('/api/decisions/calculate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userProfile: formData,
+          propertyInput: {
+            price: selectedProp.priceAmount,
+            area: selectedProp.area,
+            location: selectedProp.location || 'İstanbul',
+            type: selectedProp.propertyType,
+            estimatedRental: (selectedProp.priceAmount * 0.04) / 12,
+          },
+        }),
       });
+
+      if (response.ok) {
+        const result = await response.json();
+        router.push(`/decision/${result.data.decisionId}`);
+      } else {
+        alert('Karar oluşturulamadı');
+      }
     } finally {
       setLoading(false);
     }

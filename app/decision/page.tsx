@@ -21,23 +21,6 @@ export default async function DecisionPage() {
     orderBy: { createdAt: 'desc' },
   });
 
-  const handleDecisionSubmit = async (data: any) => {
-    'use server';
-    const response = await fetch(`${process.env.NEXTAUTH_URL}/api/decisions/calculate`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Cookie: `next-auth.session-token=${session?.user?.email}`,
-      },
-      body: JSON.stringify(data),
-    });
-
-    if (response.ok) {
-      const result = await response.json();
-      redirect(`/decision/${result.data.decisionId}`);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#F8FAFC] to-[#F0FDF8]">
       {/* Header */}
@@ -65,10 +48,7 @@ export default async function DecisionPage() {
           {/* Left: Form */}
           <div>
             <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">
-              <DecisionForm
-                listings={listings}
-                onSubmit={handleDecisionSubmit}
-              />
+              <DecisionForm listings={listings} />
             </div>
           </div>
 
