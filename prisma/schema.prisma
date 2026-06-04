@@ -7,6 +7,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Recommendation {
+  AL
+  BEKLE
+  PAS
+}
+
+enum DecisionType {
+  SATIN_AL
+  SAT
+  KIRALA
+  INVEST
+  BEKLE
+}
+
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
@@ -300,11 +314,11 @@ model DecisionRecord {
   listingId         String?
 
   // Karar Türü
-  decisionType      String   @default("SATIN_AL")  // SATIN_AL | SAT | KIRALA | BEKLE
+  decisionType      DecisionType   @default(SATIN_AL)
 
   // Skorlar
-  score             Int      // 0-100
-  recommendation    String   // AL | BEKLE | PAS
+  score             Int            // 0-100
+  recommendation    Recommendation
   confidence        Int      // 0-100
 
   // Bileşen Skorları (JSON)

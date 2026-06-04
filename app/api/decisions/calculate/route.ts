@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 import { decisionService } from '@/services/decision';
 import { DecisionCalculationRequestSchema } from '@/services/decision/validation';
+import { checkRateLimit } from '@/lib/ratelimit';
 import { z } from 'zod';
 
 export async function POST(request: NextRequest) {
@@ -12,6 +13,15 @@ export async function POST(request: NextRequest) {
     const userId = (session?.user as any)?.id;
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Rate limiting
+    const { success } = await checkRateLimit(userId);
+    if (!success) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded. Max 10 requests per minute.' },
+        { status: 429 }
+      );
     }
 
     try {
