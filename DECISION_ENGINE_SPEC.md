@@ -285,13 +285,22 @@ interface TrustChecks {
 ```
 DECISION_SCORE = (
   FINANCIAL_FIT * 0.25 +
-  PRICE_FAIRNESS * 0.15 +
-  LOCATION_QUALITY * 0.20 +
+  MARKET_VALUE * 0.20 +
+  LOCATION_QUALITY * 0.15 +
   RISK_MANAGEMENT * 0.15 +
-  RETURN_POTENTIAL * 0.15 +
+  TRUST * 0.15 +
   LIQUIDITY * 0.10
 )
 ```
+
+**Component Definitions (canonical source: services/decision/ScoreEngine.ts):**
+
+- **FINANCIAL_FIT (25%)**: Debt-to-income ratio, monthly payment capacity, LTV assessment
+- **MARKET_VALUE (20%)**: Price fairness vs regional average (±5-15% penalty/bonus)
+- **LOCATION_QUALITY (15%)**: Premium neighborhood scoring, infrastructure quality
+- **RISK_MANAGEMENT (15%)**: Hold duration, property type risk, user risk tolerance alignment
+- **TRUST (15%)**: Property type credibility, location stability, seller background
+- **LIQUIDITY (10%)**: Market depth, time-to-sell, niche vs mainstream
 
 ### Score Interpretation
 
