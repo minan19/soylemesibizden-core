@@ -4,3 +4,12 @@ node_modules/
 .DS_Store
 .vercel
 .env*.local
+
+# Build artifacts (should never be committed)
+dist/
+build/
+out/
+
+# NestJS build
+soylemesi-bizden-os/dist/
+soylemesi-bizden-os/node_modules/
