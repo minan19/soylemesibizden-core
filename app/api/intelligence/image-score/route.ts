@@ -26,30 +26,6 @@ Verilen fotoğrafı şu kriterlere göre değerlendir ve sadece JSON yanıt ver:
   "summary": "<kısa profesyonel değerlendirme 1 cümle>"
 }`;
 
-// URL'e erişilemeyen durum için deterministik skor
-function generateDemoScore() {
-  const base = 60 + Math.floor(Math.random() * 30);
-  return {
-    overall: base,
-    lighting: base - 5 + Math.floor(Math.random() * 15),
-    composition: base + Math.floor(Math.random() * 10),
-    clarity: base - 3 + Math.floor(Math.random() * 12),
-    staging: base - 10 + Math.floor(Math.random() * 20),
-    angle: base + Math.floor(Math.random() * 8),
-    issues: [
-      'Arka plan dağınık görünüyor',
-      'Işık kaynağı pencerenin önünde — gölge yaratıyor',
-    ],
-    improvements: [
-      'Profesyonel bir geniş açı lens ile yeniden çekim yapın',
-      'Doğal ışığı kullanmak için sabah saatlerini tercih edin',
-      'Mobilyaları ve dekorasyonu minimalist bir şekilde düzenleyin',
-    ],
-    summary: 'Ortalama kalitede bir gayrimenkul fotoğrafı — birkaç iyileştirme ile satış süresini önemli ölçüde kısaltabilirsiniz.',
-    demo: true,
-  };
-}
-
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
@@ -64,7 +40,10 @@ export async function POST(request: NextRequest) {
     }
 
     if (!process.env.ANTHROPIC_API_KEY) {
-      return NextResponse.json({ score: generateDemoScore() });
+      return NextResponse.json(
+        { error: 'API anahtarı gereklidir. ANTHROPIC_API_KEY tanımlanmadı.' },
+        { status: 503 }
+      );
     }
 
     // Claude Vision ile fotoğraf analizi
@@ -95,6 +74,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ score });
   } catch (error) {
     console.error('[Image Score]', error);
-    return NextResponse.json({ score: generateDemoScore() });
+    return NextResponse.json({ error: 'Fotoğraf analizi başarısız.' }, { status: 500 });
   }
 }
