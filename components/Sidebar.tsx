@@ -6,13 +6,21 @@ import { LayoutGrid, Globe, Lock, ShieldCheck, FileText, Zap } from 'lucide-reac
 
 export const Sidebar = () => {
   const pathname = usePathname();
-  const links = [
+  const allLinks = [
     { label: 'MASTER TERMINAL', icon: LayoutGrid, href: '/dashboard' },
     { label: 'MARKET RADAR', icon: Globe, href: '/radar' },
-    { label: 'DARK POOL', icon: Lock, href: '/dark-pool' },
+    { label: 'DARK POOL', icon: Lock, href: '/dark-pool', featureFlag: 'NEXT_PUBLIC_FF_DARK_POOL' },
     { label: 'LEGAL VAULT', icon: ShieldCheck, href: '/legal-vault' },
     { label: 'API PORTAL', icon: Zap, href: '/developer' }
   ];
+
+  // Filter out feature-flagged links when flag is disabled
+  const links = allLinks.filter(link => {
+    if (link.featureFlag) {
+      return process.env[link.featureFlag] === 'true';
+    }
+    return true;
+  });
 
   return (
     <aside style={{ width: '320px', borderRight: '1px solid var(--border-color)', padding: '50px 30px', display: 'flex', flexDirection: 'column', gap: '60px', backgroundColor: 'var(--bg-secondary)', height: '100vh', position: 'sticky', top: 0 }}>

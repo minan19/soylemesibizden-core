@@ -1,6 +1,6 @@
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
-import { redirect } from 'next/navigation';
+import { redirect, notFound } from 'next/navigation';
 import prisma from '@/lib/prisma';
 import Link from 'next/link';
 import { ArrowLeft, Lock, Eye, Shield, MapPin, Activity, Crown } from 'lucide-react';
@@ -10,6 +10,11 @@ import DarkPoolNdaGate from '@/components/DarkPoolNdaGate';
 export const dynamic = 'force-dynamic';
 
 export default async function DarkPoolPage() {
+  // Feature-flagged: Dark Pool kapsam dışı
+  if (process.env.NEXT_PUBLIC_FF_DARK_POOL !== 'true') {
+    notFound();
+  }
+
   const session = await getServerSession(authOptions);
   if (!session?.user) redirect('/login');
 
