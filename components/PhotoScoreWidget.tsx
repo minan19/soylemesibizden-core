@@ -16,6 +16,12 @@ interface PhotoScore {
   demo?: boolean;
 }
 
+interface ApiResponse {
+  score?: PhotoScore | null;
+  available?: boolean;
+  reason?: string;
+}
+
 interface Props {
   imageUrls: string[];
 }
@@ -55,6 +61,8 @@ export default function PhotoScoreWidget({ imageUrls }: Props) {
   const [loading, setLoading] = useState<string | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
+  const [available, setAvailable] = useState(true);
+  const [unavailableMessage, setUnavailableMessage] = useState('');
 
   const analyzeImage = useCallback(async (url: string) => {
     if (scores[url] || loading) return;
@@ -65,7 +73,14 @@ export default function PhotoScoreWidget({ imageUrls }: Props) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ imageUrl: url }),
       });
-      const data = await res.json() as { score?: PhotoScore };
+      const data = await res.json() as ApiResponse;
+
+      if (data.available === false) {
+        setAvailable(false);
+        setUnavailableMessage(data.reason || 'Görsel analiz şu an kullanılamıyor.');
+        return;
+      }
+
       if (data.score) {
         setScores((prev) => ({ ...prev, [url]: data.score! }));
         setSelected(url);
@@ -112,6 +127,13 @@ export default function PhotoScoreWidget({ imageUrls }: Props) {
 
       {expanded && (
         <div className="p-8 space-y-6">
+          {!available && (
+            <div className="bg-yellow-50 rounded-[20px] p-5 border border-yellow-100">
+              <p className="text-[11px] font-black tracking-widest uppercase text-yellow-600 mb-2">⚠️ Hizmet Kullanılamıyor</p>
+              <p className="text-[13px] text-yellow-700">{unavailableMessage}</p>
+            </div>
+          )}
+
           {/* Image Grid */}
           <div className="grid grid-cols-4 gap-3">
             {imageUrls.slice(0, 8).map((url, idx) => {
@@ -166,10 +188,10 @@ export default function PhotoScoreWidget({ imageUrls }: Props) {
           {Object.keys(scores).length < imageUrls.length && (
             <button
               onClick={() => imageUrls.forEach((url) => void analyzeImage(url))}
-              disabled={loading !== null}
+              disabled={loading !== null || !available}
               className="w-full py-3 bg-[#F8FAFC] border border-gray-100 text-[11px] font-black tracking-widest uppercase text-gray-500 rounded-2xl hover:bg-gray-50 transition-all disabled:opacity-50"
             >
-              {loading ? 'Analiz Ediliyor...' : 'Tüm Fotoğrafları Analiz Et'}
+              {!available ? 'Analiz Hizmeti Kapalı' : loading ? 'Analiz Ediliyor...' : 'Tüm Fotoğrafları Analiz Et'}
             </button>
           )}
 

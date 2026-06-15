@@ -40,10 +40,11 @@ export async function POST(request: NextRequest) {
     }
 
     if (!process.env.ANTHROPIC_API_KEY) {
-      return NextResponse.json(
-        { error: 'API anahtarı gereklidir. ANTHROPIC_API_KEY tanımlanmadı.' },
-        { status: 503 }
-      );
+      return NextResponse.json({
+        score: null,
+        available: false,
+        reason: 'Görsel analiz servisi şu an kullanılamıyor.',
+      });
     }
 
     // Claude Vision ile fotoğraf analizi
@@ -74,6 +75,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ score });
   } catch (error) {
     console.error('[Image Score]', error);
-    return NextResponse.json({ error: 'Fotoğraf analizi başarısız.' }, { status: 500 });
+    return NextResponse.json({
+      score: null,
+      available: false,
+      reason: 'Görsel analiz servisi kullanılırken bir hata oluştu.',
+    });
   }
 }
