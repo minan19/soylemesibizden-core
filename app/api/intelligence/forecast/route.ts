@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 import Anthropic from '@anthropic-ai/sdk';
-import { aiRatelimit, checkRateLimit } from '@/lib/ratelimit';
+import { checkRateLimit } from '@/lib/ratelimit';
 import { z } from 'zod';
 
 export const dynamic = 'force-dynamic';
@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
     }
 
     const userId = (session.user as { id?: string }).id ?? 'anon';
-    const rl = await checkRateLimit(aiRatelimit, `forecast:${userId}`);
+    const rl = await checkRateLimit( `forecast:${userId}`);
     if (rl && !rl.success) {
       return NextResponse.json({ error: 'Çok fazla istek.' }, { status: 429 });
     }

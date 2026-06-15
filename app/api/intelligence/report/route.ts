@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 import Anthropic from '@anthropic-ai/sdk';
-import { aiRatelimit, checkRateLimit } from '@/lib/ratelimit';
+import { checkRateLimit } from '@/lib/ratelimit';
 
 export const dynamic = 'force-dynamic';
 
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
 
     // Rate limiting — kullanıcı başına dakikada 10 AI isteği
     const userId = (session.user as { id?: string }).id ?? session.user.email ?? 'anonymous';
-    const rl = await checkRateLimit(aiRatelimit, userId);
+    const rl = await checkRateLimit( userId);
     if (rl && !rl.success) {
       return NextResponse.json(
         { error: 'Çok fazla istek. Lütfen bir dakika bekleyin.' },

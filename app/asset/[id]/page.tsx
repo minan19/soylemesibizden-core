@@ -58,13 +58,15 @@ export default function AssetDetailMatrix() {
                 <Zap size={14} /> %14.2 Yıllık ROI Projeksiyonu
               </div>
 
-              {/* MODAL TETİKLEYİCİ BUTON */}
-              <button 
-                onClick={() => setIsModalOpen(true)}
-                style={{ width: '100%', padding: '20px', backgroundColor: 'var(--accent-emerald)', color: '#FFF', borderRadius: '16px', border: 'none', fontWeight: '950', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', cursor: 'pointer', marginBottom: '15px' }}
-              >
-                AKILLI KONTRAT İLE AL <ArrowRight size={18} />
-              </button>
+              {/* FEATURE-FLAGGED: Smart Contract button (out of scope) */}
+              {process.env.NEXT_PUBLIC_FF_SMART_CONTRACT === 'true' && (
+                <button
+                  onClick={() => setIsModalOpen(true)}
+                  style={{ width: '100%', padding: '20px', backgroundColor: 'var(--accent-emerald)', color: '#FFF', borderRadius: '16px', border: 'none', fontWeight: '950', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', cursor: 'pointer', marginBottom: '15px' }}
+                >
+                  AKILLI KONTRAT İLE AL <ArrowRight size={18} />
+                </button>
+              )}
               
               <button style={{ width: '100%', padding: '15px', backgroundColor: 'transparent', color: 'var(--text-primary)', borderRadius: '16px', border: '1px solid var(--border-color)', fontWeight: '800', fontSize: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', cursor: 'pointer' }}>
                 <Download size={16} /> YATIRIMCI DOSYASINI İNDİR (NDA)
@@ -84,8 +86,10 @@ export default function AssetDetailMatrix() {
         </div>
       </main>
 
-      {/* SİHİRLİ MODAL BURADA ÇAĞRILIYOR */}
-      <SmartContractModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} assetId={assetId} />
+      {/* FEATURE-FLAGGED: Smart Contract Modal (out of scope) */}
+      {process.env.NEXT_PUBLIC_FF_SMART_CONTRACT === 'true' && (
+        <SmartContractModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} assetId={assetId} />
+      )}
     </div>
   );
 }

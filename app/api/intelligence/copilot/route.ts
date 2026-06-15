@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 import Anthropic from '@anthropic-ai/sdk';
-import { aiRatelimit, checkRateLimit } from '@/lib/ratelimit';
+import { checkRateLimit } from '@/lib/ratelimit';
 import { computeScore } from '@/lib/investmentScore';
 import { z } from 'zod';
 
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
 
     // Rate limiting
     const userId = (session.user as { id?: string }).id ?? 'anon';
-    const rl = await checkRateLimit(aiRatelimit, `copilot:${userId}`);
+    const rl = await checkRateLimit( `copilot:${userId}`);
     if (rl && !rl.success) {
       return NextResponse.json(
         { error: 'Çok fazla istek. Lütfen bir dakika bekleyin.' },
