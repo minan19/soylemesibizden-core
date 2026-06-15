@@ -88,19 +88,15 @@ const CITY_COORDS: Record<string, [number, number]> = {
   'sultanahmet': [41.0056, 28.9764],
 };
 
-function getCoords(location: string | null): [number, number] {
-  if (!location) return [39.9334 + (Math.random() - 0.5) * 2, 32.8597 + (Math.random() - 0.5) * 3];
+function getCoords(location: string | null): [number, number] | null {
+  if (!location) return null;
   const lower = location.toLowerCase();
   for (const [city, coords] of Object.entries(CITY_COORDS)) {
     if (lower.includes(city)) {
-      return [
-        coords[0] + (Math.random() - 0.5) * 0.02,
-        coords[1] + (Math.random() - 0.5) * 0.02,
-      ];
+      return coords;
     }
   }
-  // Türkiye ortası + random offset
-  return [39.9334 + (Math.random() - 0.5) * 4, 32.8597 + (Math.random() - 0.5) * 6];
+  return null;
 }
 
 function formatCurrency(val: number): string {
@@ -147,9 +143,12 @@ export default function ListingsMap({ listings }: Props) {
         maxZoom: 18,
       }).addTo(map);
 
-      // Her ilan için marker ekle
+      // Her ilan için marker ekle (konum yoksa pin gösterme)
+      const markers: import('leaflet').Marker[] = [];
       listings.forEach((listing) => {
         const coords = getCoords(listing.location);
+        if (!coords) return;
+
         const color = getPriceColor(listing.priceAmount);
 
         // Custom HTML marker
@@ -190,13 +189,13 @@ export default function ListingsMap({ listings }: Props) {
             </a>
           </div>
         `, { maxWidth: 220 });
+
+        markers.push(marker);
       });
 
-      // Tüm markerları kapsayacak şekilde zoom
-      if (listings.length > 1) {
-        const group = new L.FeatureGroup(
-          listings.map((l) => L.marker(getCoords(l.location)))
-        );
+      // Tüm markerları kapsayacak şekilde zoom (marker var ise)
+      if (markers.length > 1) {
+        const group = new L.FeatureGroup(markers);
         map.fitBounds(group.getBounds().pad(0.1));
       }
     }).catch(console.error);
