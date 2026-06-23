@@ -2,7 +2,7 @@ import prisma from '@/lib/prisma';
 import Link from 'next/link';
 import {
   LayoutGrid, TrendingUp, Activity, Shield, ArrowRight,
-  MapPin, BarChart3, Users, FileText, Handshake, Brain, GitCompare,
+  MapPin, Users, FileText, Handshake, Brain, GitCompare,
   CreditCard, Wallet, Lock, Network, Code, Building2, Radio,
 } from 'lucide-react';
 
@@ -16,28 +16,58 @@ function formatCurrency(val: number): string {
   return val.toLocaleString('tr-TR') + ' ₺';
 }
 
-export default async function DashboardPage() {
-  const [
-    totalListings,
-    totalAssets,
-    totalOffers,
-    activeListings,
-    recentListings,
-    totalPortfolioValue,
-  ] = await Promise.all([
-    prisma.listing.count(),
-    prisma.asset.count(),
-    prisma.offer.count(),
-    prisma.listing.count({ where: { status: 'ACTIVE' } }),
-    prisma.listing.findMany({
-      take: 5,
-      orderBy: { createdAt: 'desc' },
-      include: { owner: { select: { name: true, email: true } } },
-    }),
-    prisma.listing.aggregate({ _sum: { priceAmount: true } }),
-  ]);
+type RecentListing = {
+  id: string;
+  title: string;
+  location: string | null;
+  propertyType: string;
+  priceAmount: number;
+  status: string;
+};
 
-  const portfolioValue = totalPortfolioValue._sum.priceAmount ?? 0;
+export default async function DashboardPage() {
+  // Neon (serverless Postgres) uyku/cold-start durumunda ilk sorgu timeout
+  // verebilir. try/catch olmadan tüm sayfa çökerdi (BUG). Hata durumunda boş
+  // durumla render edip kullanıcıyı bilgilendiriyoruz.
+  let totalListings = 0;
+  let totalAssets = 0;
+  let totalOffers = 0;
+  let activeListings = 0;
+  let recentListings: RecentListing[] = [];
+  let portfolioValue = 0;
+  let dbError = false;
+
+  try {
+    const [
+      _totalListings,
+      _totalAssets,
+      _totalOffers,
+      _activeListings,
+      _recentListings,
+      _totalPortfolioValue,
+    ] = await Promise.all([
+      prisma.listing.count(),
+      prisma.asset.count(),
+      prisma.offer.count(),
+      prisma.listing.count({ where: { status: 'ACTIVE' } }),
+      prisma.listing.findMany({
+        take: 5,
+        orderBy: { createdAt: 'desc' },
+        include: { owner: { select: { name: true, email: true } } },
+      }),
+      prisma.listing.aggregate({ _sum: { priceAmount: true } }),
+    ]);
+
+    totalListings = _totalListings;
+    totalAssets = _totalAssets;
+    totalOffers = _totalOffers;
+    activeListings = _activeListings;
+    recentListings = _recentListings;
+    portfolioValue = _totalPortfolioValue._sum.priceAmount ?? 0;
+  } catch (err) {
+    console.error('[Dashboard] Veritabanına erişilemedi (Neon cold-start olabilir):', err);
+    dbError = true;
+  }
 
   const stats = [
     {
@@ -99,7 +129,6 @@ export default async function DashboardPage() {
             { n: 'VARLIKLAR', i: <Shield size={18} />, href: '/assets' },
             { n: 'AI DEĞERLEME', i: <Brain size={18} />, href: '/valuation' },
             { n: 'KARŞILAŞTIR', i: <GitCompare size={18} />, href: '/listings' },
-            { n: 'ANALİZ & RAPOR', i: <BarChart3 size={18} />, href: '/analytics' },
             { n: 'PORTFÖY', i: <Wallet size={18} />, href: '/wealth' },
             { n: 'DARK POOL', i: <Lock size={18} />, href: '/dark-pool' },
             { n: 'YATIRIMCI', i: <Network size={18} />, href: '/investor-network' },
@@ -136,6 +165,13 @@ export default async function DashboardPage() {
         </header>
 
         <div className="flex-1 overflow-y-auto p-10">
+          {/* DB COLD-START UYARISI */}
+          {dbError && (
+            <div className="mb-8 rounded-2xl border border-amber-200 bg-amber-50 px-6 py-4 text-[13px] font-semibold text-amber-700">
+              Veritabanına şu an ulaşılamıyor (uyku modundan uyanıyor olabilir). Veriler geçici olarak boş görünebilir — birkaç saniye sonra sayfayı yenileyin.
+            </div>
+          )}
+
           {/* STAT CARDS */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
             {stats.map((s) => (

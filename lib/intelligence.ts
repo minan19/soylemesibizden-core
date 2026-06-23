@@ -1,6 +1,9 @@
 export const calculateTrustScore = (identity: number, authority: number, document: number, priceFairness: number) => {
   // Sovereign Trust Algorithm
-  const score = (identity * 0.20) + (authority * 0.15) + (document * 0.15) + (priceFairness * 0.10);
+  // Ağırlıklar toplamı = 1.00 (0.35 + 0.25 + 0.25 + 0.15). Önceki sürümde toplam
+  // 0.60 idi; bu yüzden skor pratikte ~60'ta tıkanıp 100'e ulaşamıyordu (BUG).
+  // Orijinal önem sıralaması korundu: kimlik > yetki = belge > fiyat adaleti.
+  const score = (identity * 0.35) + (authority * 0.25) + (document * 0.25) + (priceFairness * 0.15);
   return Math.min(Math.max(score * 10, 0), 100).toFixed(1);
 }
 
