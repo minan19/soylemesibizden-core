@@ -11,8 +11,10 @@ model User {
   id            String         @id @default(uuid())
   email         String         @unique
   name          String?
+  phone         String?
   password      String?
   role          String         @default("USER") // USER, ADMIN, CONCIERGE
+  avatar        String?
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   listings      Listing[]
@@ -21,21 +23,65 @@ model User {
   ownedDeals    DealRoom[]     @relation("SellerDealRooms")
   advisoryCases AdvisoryCase[]
   assets        Asset[]
+  favorites     Favorite[]
+  inquiries     Inquiry[]
 }
 
 model Listing {
-  id          String     @id @default(uuid())
-  title       String
-  description String
-  price       Float
-  location    String?
-  status      String     @default("ACTIVE") // ACTIVE, PENDING, SOLD
-  ownerId     String
-  owner       User       @relation(fields: [ownerId], references: [id])
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  offers      Offer[]
-  dealRooms   DealRoom[]
+  id            String      @id @default(uuid())
+  title         String
+  description   String
+  price         Float
+  location      String?
+  city          String?
+  district      String?
+  neighborhood  String?
+  status        String      @default("ACTIVE") // ACTIVE, PENDING, SOLD
+  propertyType  String      @default("KONUT")  // KONUT, TİCARİ, ARAZI, DEPO, OFİS
+  listingType   String      @default("SATILIK") // SATILIK, KİRALIK
+  rooms         Int?
+  bathrooms     Int?
+  area          Float?      // m²
+  floor         Int?
+  totalFloors   Int?
+  buildingAge   Int?
+  hasElevator   Boolean     @default(false)
+  hasParking    Boolean     @default(false)
+  hasGarden     Boolean     @default(false)
+  isVerified    Boolean     @default(false)
+  views         Int         @default(0)
+  photos        String[]    @default([])
+  ownerId       String
+  owner         User        @relation(fields: [ownerId], references: [id])
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  offers        Offer[]
+  dealRooms     DealRoom[]
+  favorites     Favorite[]
+  inquiries     Inquiry[]
+}
+
+model Favorite {
+  id        String   @id @default(uuid())
+  userId    String
+  listingId String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  @@unique([userId, listingId])
+}
+
+model Inquiry {
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  phone     String?
+  message   String
+  listingId String
+  userId    String?
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  user      User?    @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
 }
 
 model Offer {

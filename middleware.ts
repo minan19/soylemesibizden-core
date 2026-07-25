@@ -35,5 +35,7 @@ export const config = {
     '/market-radar/:path*',
     '/analytics/:path*',
     '/security/:path*',
+    '/favorites/:path*',
+    '/profile/:path*',
   ],
 };

@@ -11,7 +11,7 @@ export default async function AssetsPage() {
   });
 
   const totalValue = assets.reduce((sum, a) => sum + a.value, 0);
-  const types = [...new Set(assets.map(a => a.type))];
+  const types = Array.from(new Set(assets.map(a => a.type)));
 
   return (
     <main className="min-h-screen bg-[#F8FAFC] text-gray-900">
