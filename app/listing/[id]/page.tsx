@@ -23,6 +23,7 @@ import {
   Mail,
   ImageOff,
   Tag,
+  Edit,
 } from 'lucide-react';
 import MortgageCalculator from '@/components/MortgageCalculator';
 import InquiryForm from '@/components/InquiryForm';
@@ -71,6 +72,12 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
       isFavorited = !!fav;
     }
   }
+
+  const sessionUser = session?.user as { id?: string; email?: string; role?: string } | undefined;
+  const canEdit = !!(
+    sessionUser &&
+    (sessionUser.id === listing.ownerId || sessionUser.role === 'ADMIN')
+  );
 
   // Increment views and fetch similar listings concurrently
   const [similarListings] = await Promise.all([
@@ -245,7 +252,17 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
                 <h1 className="text-2xl font-bold text-gray-900 leading-snug">
                   {listing.title}
                 </h1>
-                <FavoriteButton listingId={listing.id} initialFavorited={isFavorited} />
+                <div className="flex items-center gap-2">
+                  {canEdit && (
+                    <Link
+                      href={`/admin/edit-listing/${listing.id}`}
+                      className="flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 rounded-lg text-xs font-semibold text-gray-500 hover:text-gray-900 hover:border-gray-300 transition-all"
+                    >
+                      <Edit size={12} /> Düzenle
+                    </Link>
+                  )}
+                  <FavoriteButton listingId={listing.id} initialFavorited={isFavorited} />
+                </div>
               </div>
               {fullLocation && (
                 <p className="flex items-center gap-1.5 text-sm text-gray-500">

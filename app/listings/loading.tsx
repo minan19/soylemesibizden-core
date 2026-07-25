@@ -1,6 +1,6 @@
 export default function ListingsLoading() {
   return (
-    <main className="min-h-screen bg-white p-8">
+    <main className="min-h-screen bg-[#F8FAFC] p-8">
       <div className="max-w-7xl mx-auto space-y-8">
         <div className="border-b border-gray-100 pb-6">
           <div className="h-8 w-56 bg-gray-100 rounded animate-pulse" />
