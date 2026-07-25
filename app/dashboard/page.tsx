@@ -1,10 +1,14 @@
 import Link from 'next/link';
 import prisma from '@/lib/prisma';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { LayoutGrid, Radar, Lock, Shield, Zap, Bell, Globe, Moon, ShieldCheck, Mic, Crosshair, TrendingUp, ArrowRight, Activity } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
 export default async function SovereignDashboard() {
+  const session = await getServerSession(authOptions);
+
   const [listings, totalListings, totalOffers, totalDeals, totalAssets] = await Promise.all([
     prisma.listing.findMany({ take: 3, orderBy: { createdAt: 'desc' } }),
     prisma.listing.count(),
@@ -62,6 +66,11 @@ export default async function SovereignDashboard() {
           </div>
           
           <div className="flex items-center gap-6">
+            {session?.user?.name && (
+              <span className="text-xs font-semibold text-gray-700 tracking-wide">
+                {session.user.name}
+              </span>
+            )}
             <button className="text-gray-400 hover:text-gray-900 transition-colors"><Bell size={20} /></button>
             <div className="flex items-center gap-3 px-4 py-1.5 border border-gray-200 rounded-full text-xs font-medium text-gray-500">
               <Globe size={14} />
@@ -147,7 +156,7 @@ export default async function SovereignDashboard() {
 
                 <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl mb-4">
                   <span className="text-[10px] font-bold tracking-widest text-gray-500 uppercase">SESLİ ANALİZ<br/>DURUMU</span>
-                  <span className="text-[10px] font-bold tracking-widest text-[#00C49F] uppercase text-right">IDENTIFIED:<br/>MUSTAFA_INAN</span>
+                  <span className="text-[10px] font-bold tracking-widest text-[#00C49F] uppercase text-right">IDENTIFIED:<br/>{session?.user?.name?.replace(/\s+/g, '_').toUpperCase() ?? 'KULLANICI'}</span>
                 </div>
 
                 <div className="flex items-center justify-center gap-2 p-3 border border-gray-100 rounded-2xl text-xs font-bold tracking-wide">
