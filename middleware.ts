@@ -37,5 +37,6 @@ export const config = {
     '/security/:path*',
     '/favorites/:path*',
     '/profile/:path*',
+    '/my-listings/:path*',
   ],
 };

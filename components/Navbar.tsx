@@ -33,6 +33,7 @@ export default function Navbar() {
     { href: '/listings', label: 'İlanlar', authRequired: false },
     { href: '/search', label: 'Arama', authRequired: false },
     { href: '/favorites', label: 'Favoriler', authRequired: true },
+    { href: '/my-listings', label: 'İlanlarım', authRequired: true },
     { href: '/dashboard', label: 'Dashboard', authRequired: true },
   ];
 
@@ -137,6 +138,13 @@ export default function Navbar() {
                     className="block px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
                   >
                     Favorilerim
+                  </Link>
+                  <Link
+                    href="/my-listings"
+                    onClick={() => setDropdownOpen(false)}
+                    className="block px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    İlanlarım
                   </Link>
                   <button
                     onClick={() => {
