@@ -34,6 +34,9 @@ export default async function EditListingPage({ params }: { params: { id: string
     const hasParking = formData.get('hasParking') === 'on';
     const hasGarden = formData.get('hasGarden') === 'on';
 
+    const photosRaw = formData.get('photos') as string;
+    const photos = photosRaw ? photosRaw.split(',').map(u => u.trim()).filter(Boolean) : [];
+
     if (!title || !description || isNaN(price)) return;
 
     await prisma.listing.update({
@@ -57,6 +60,7 @@ export default async function EditListingPage({ params }: { params: { id: string
         hasElevator,
         hasParking,
         hasGarden,
+        photos,
       },
     });
 
@@ -285,6 +289,22 @@ export default async function EditListingPage({ params }: { params: { id: string
                   <span className="text-sm font-medium text-gray-700">{f.label}</span>
                 </label>
               ))}
+            </div>
+          </div>
+
+          {/* Fotoğraflar */}
+          <div className="bg-white rounded-2xl border border-gray-100 p-6 space-y-5">
+            <h2 className="text-[10px] font-bold tracking-widest text-[#00C49F] uppercase">Fotoğraflar</h2>
+            <div className="space-y-1.5">
+              <label className={labelCls}>Fotoğraf URL&apos;leri</label>
+              <p className="text-xs text-gray-400">Fotoğraf URL&apos;lerini virgülle ayırarak girin</p>
+              <textarea
+                name="photos"
+                rows={3}
+                defaultValue={listing.photos.join(', ')}
+                placeholder="https://..., https://..., https://..."
+                className={`${inputCls} resize-none`}
+              />
             </div>
           </div>
 

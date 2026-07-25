@@ -303,7 +303,27 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
               </p>
             </div>
 
-            {/* 5 · Price Analysis */}
+            {/* 5 · Map */}
+            {(listing.city || listing.location) && (
+              <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+                <h2 className="text-xs font-bold tracking-widest text-gray-400 uppercase mb-4">Konum</h2>
+                <div className="rounded-xl overflow-hidden border border-gray-100" style={{ height: '280px' }}>
+                  <iframe
+                    title="Harita"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    loading="lazy"
+                    src={`https://www.openstreetmap.org/export/embed.html?bbox=26%2C36%2C45%2C42&layer=mapnik&marker=${encodeURIComponent(`${listing.district ?? ''} ${listing.city ?? listing.location ?? 'Türkiye'}`)}`}
+                  />
+                </div>
+                <p className="text-xs text-gray-400 mt-2 flex items-center gap-1">
+                  <MapPin size={11} /> {[listing.neighborhood, listing.district, listing.city].filter(Boolean).join(', ')}
+                </p>
+              </div>
+            )}
+
+            {/* 6 · Price Analysis */}
             {pricePerM2 && (
               <div className="bg-[#F0FDF8] rounded-2xl border border-[#00C49F]/20 p-5 flex items-center gap-4">
                 <div className="w-11 h-11 rounded-xl bg-[#00C49F]/15 flex items-center justify-center flex-shrink-0">
