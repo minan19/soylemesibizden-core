@@ -1,6 +1,8 @@
 import prisma from '@/lib/prisma';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import {
   MapPin,
   ArrowLeft,
@@ -24,8 +26,27 @@ import {
 } from 'lucide-react';
 import MortgageCalculator from '@/components/MortgageCalculator';
 import InquiryForm from '@/components/InquiryForm';
+import FavoriteButton from '@/components/FavoriteButton';
+import OfferForm from '@/components/OfferForm';
 
 export const dynamic = 'force-dynamic';
+
+export async function generateMetadata({ params }: { params: { id: string } }) {
+  const listing = await prisma.listing.findUnique({
+    where: { id: params.id },
+    select: { title: true, description: true, price: true, city: true },
+  });
+  if (!listing) return { title: 'İlan Bulunamadı' };
+  return {
+    title: `${listing.title} | Söylemesi Bizden`,
+    description: listing.description?.slice(0, 160),
+    openGraph: {
+      title: listing.title,
+      description: listing.description?.slice(0, 160),
+      type: 'website',
+    },
+  };
+}
 
 export default async function ListingDetailPage({ params }: { params: { id: string } }) {
   const listing = await prisma.listing.findUnique({
@@ -37,6 +58,19 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
   });
 
   if (!listing) notFound();
+
+  // Check if the current user has favorited this listing
+  const session = await getServerSession(authOptions);
+  let isFavorited = false;
+  if (session?.user?.email) {
+    const user = await prisma.user.findUnique({ where: { email: session.user.email } });
+    if (user) {
+      const fav = await prisma.favorite.findUnique({
+        where: { userId_listingId: { userId: user.id, listingId: listing.id } },
+      });
+      isFavorited = !!fav;
+    }
+  }
 
   // Increment views and fetch similar listings concurrently
   const [similarListings] = await Promise.all([
@@ -207,9 +241,12 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
                   {listing.views.toLocaleString('tr-TR')} görüntülenme
                 </span>
               </div>
-              <h1 className="text-2xl font-bold text-gray-900 mb-2 leading-snug">
-                {listing.title}
-              </h1>
+              <div className="flex flex-wrap items-start justify-between gap-3 mb-2">
+                <h1 className="text-2xl font-bold text-gray-900 leading-snug">
+                  {listing.title}
+                </h1>
+                <FavoriteButton listingId={listing.id} initialFavorited={isFavorited} />
+              </div>
               {fullLocation && (
                 <p className="flex items-center gap-1.5 text-sm text-gray-500">
                   <MapPin size={14} className="text-[#00C49F] flex-shrink-0" />
@@ -405,6 +442,9 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
                 )}
               </div>
             </div>
+
+            {/* Offer Form */}
+            <OfferForm listingId={listing.id} listingPrice={listing.price} />
 
           </div>
         </div>
