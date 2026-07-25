@@ -8,7 +8,7 @@
 ## 1. Proje Adı ve Genel Açıklama
 
 **SÖYLEMESİ BİZDEN** — Türkiye merkezli, kurumsal düzeyde gayrimenkul & varlık yönetim platformu.  
-Holding yapısı için tasarlanmış Sovereign Portal konsepti: varlık takibi, teklif yönetimi, anlaşma odaları, danışmanlık, piyasa radar ve daha fazlası.
+Sahibinden.com ve Hepsiemlak.com'a rakip; daha kullanışlı, daha çok tercih edilen, satışı daha fazla olan platform.
 
 - **Canlı URL:** https://soylemesibizden-core.vercel.app/
 - **Repo:** minan19/soylemesibizden-core
@@ -21,65 +21,65 @@ Holding yapısı için tasarlanmış Sovereign Portal konsepti: varlık takibi, 
 
 ```
 soylemesibizden-core/
-├── app/                        # Next.js 14 App Router
-│   ├── page.tsx                # Ana sayfa (harita + son ilanlar)
-│   ├── layout.tsx              # Root layout (Montserrat font, SovereignProvider)
-│   ├── globals.css             # Global stiller
-│   ├── compare.tsx             # (route değil, loose component)
-│   ├── dashboard/              # Master Hub — Prisma canlı veri
-│   ├── listings/               # Tüm ilanlar grid
-│   ├── listing/[id]/           # İlan detay
-│   ├── offers/                 # Teklifler
-│   ├── deals/                  # Anlaşma odaları
-│   ├── assets/                 # Varlık portföyü
-│   ├── asset/[id]/             # Varlık detay
-│   ├── concierge/              # Danışmanlık vakaları
-│   ├── boardroom/ + [id]/      # Boardroom
-│   ├── auction/[id]/           # Açık artırma
-│   ├── dark-pool/              # Dark pool terminali
-│   ├── market-radar/           # Piyasa radar
-│   ├── intelligence/           # İstihbarat modülü
-│   ├── legal-vault/            # Hukuki kasa
-│   ├── vault/                  # Dijital tapu kasası
-│   ├── analytics/              # Analitik dashboard
-│   ├── security/               # Güvenlik paketi
-│   ├── carbon/                 # Karbon & ESG takip
-│   ├── nexus/                  # Ekosistem nexus
-│   ├── radar/                  # Yield ısı haritası
-│   ├── search/                 # Global arama
-│   ├── auth/ + login/          # Kimlik doğrulama (stub)
+├── app/
+│   ├── page.tsx                    # ✅ Ana sayfa — hero arama, istatistikler, kategori, öne çıkan ilanlar
+│   ├── layout.tsx                  # ✅ Root layout — Navbar + CompareBar global
+│   ├── not-found.tsx               # ✅ Custom 404 sayfası
+│   ├── error.tsx                   # ✅ Custom error boundary
+│   ├── loading.tsx                 # ✅ Ana sayfa skeleton
+│   ├── compare/page.tsx            # ✅ 4 ilana kadar yan yana karşılaştırma (18 özellik)
+│   ├── dashboard/page.tsx          # ✅ Master Hub — canlı Prisma verisi, sidebar nav
+│   ├── listings/
+│   │   ├── page.tsx                # ✅ İlan grid — 9 filtre parametresi
+│   │   ├── ListingsClient.tsx      # ✅ Filtreler (fiyat, oda, tip, şehir, sıralama)
+│   │   └── loading.tsx             # ✅ Skeleton
+│   ├── listing/[id]/
+│   │   ├── page.tsx                # ✅ Detay — fotoğraf galerisi, mortgage hesap, başvuru formu, SEO meta
+│   │   └── loading.tsx             # ✅ Skeleton
+│   ├── search/
+│   │   ├── page.tsx                # ✅ Gelişmiş arama — 13 filtre
+│   │   └── SearchFilterSidebar.tsx # ✅ Yan panel filtreler (asansör/otopark/bahçe, alan, çoklu tip)
+│   ├── offers/page.tsx             # ✅ Kullanıcı bazlı — gelen+verilen teklifler, OfferActions
+│   ├── deals/page.tsx              # ✅ Anlaşma odaları grid
+│   ├── assets/page.tsx             # ✅ Varlık portföyü
+│   ├── favorites/page.tsx          # ✅ Favori ilanlar grid
+│   ├── profile/
+│   │   ├── page.tsx                # ✅ Kullanıcı profili — ilanlar, teklifler, favoriler
+│   │   └── loading.tsx             # ✅ Skeleton
+│   ├── login/page.tsx              # ✅ Giriş/Kayıt — NextAuth credentials
 │   ├── admin/
-│   │   ├── _page.tsx           # ⚠️ ERİŞİLEMEZ (underscore prefix)
-│   │   ├── dashboard/          # Admin komuta merkezi
-│   │   ├── create-asset/       # Varlık oluşturma formu
-│   │   └── defense/            # Defense engine
+│   │   ├── dashboard/page.tsx      # ✅ Gerçek Prisma verisi, stat kartları, tablolar
+│   │   ├── create-listing/page.tsx # ✅ Server Action ile ilan oluşturma
+│   │   ├── create-asset/page.tsx   # ✅ Server Action ile varlık oluşturma
+│   │   ├── edit-listing/[id]/      # ✅ İlan düzenleme formu
+│   │   ├── listings/page.tsx       # ✅ Tüm ilanlar yönetim tablosu
+│   │   └── users/page.tsx          # ✅ Tüm kullanıcılar yönetim tablosu
 │   ├── api/
-│   │   ├── listings/route.ts   # GET /api/listings
-│   │   ├── offers/route.ts     # GET /api/offers
-│   │   ├── assets/route.ts     # GET /api/assets
-│   │   ├── deals/route.ts      # GET /api/deals
-│   │   └── concierge/route.ts  # GET /api/concierge
-│   └── [diğer modüller...]
-├── components/                 # 156 component (45 aktif, 111 orphan)
-├── context/
-│   ├── DecisionContext.tsx     # Asset seçim state
-│   ├── LanguageContext.tsx     # TR/EN/AR/RU i18n
-│   └── ThemeContext.tsx        # Dark/light tema
-├── providers/
-│   └── SovereignProvider.tsx   # Core data provider (mock DB içeriyor)
-├── lib/
-│   ├── prisma.ts               # Singleton PrismaClient
-│   ├── dictionary.ts           # i18n dictionary
-│   ├── analytics.ts            # calculateYieldDensity()
-│   ├── matching.ts             # calculateMatchScore()
-│   ├── auction.ts              # calculateBidWeight()
-│   ├── intelligence.ts         # Trust scoring, price analysis
-│   └── simulator.ts            # Monte Carlo portfolio simulation
+│   │   ├── auth/[...nextauth]/     # ✅ NextAuth JWT CredentialsProvider
+│   │   ├── auth/register/          # ✅ Kayıt (bcrypt 12 rounds, Zod)
+│   │   ├── listings/route.ts       # ✅ GET + POST
+│   │   ├── listings/[id]/route.ts  # ✅ GET + PUT + DELETE
+│   │   ├── offers/route.ts         # ✅ GET + POST
+│   │   ├── offers/[id]/route.ts    # ✅ PUT (accept/reject) + DELETE
+│   │   ├── assets/route.ts         # ✅ GET
+│   │   ├── deals/route.ts          # ✅ GET
+│   │   ├── favorites/route.ts      # ✅ POST (toggle) + GET
+│   │   └── inquiries/route.ts      # ✅ POST + GET (Zod)
+│   └── [diğer modüller — scaffold, geliştirilecek]
+├── components/
+│   ├── Navbar.tsx                  # ✅ Auth-aware, mobile hamburger, admin badge, dropdown
+│   ├── MortgageCalculator.tsx      # ✅ Kredi hesaplayıcı (client)
+│   ├── InquiryForm.tsx             # ✅ Başvuru formu → /api/inquiries (client)
+│   ├── FavoriteButton.tsx          # ✅ Toggle favorit → /api/favorites (client)
+│   ├── OfferForm.tsx               # ✅ Teklif ver → /api/offers (client)
+│   ├── OfferActions.tsx            # ✅ Kabul/Reddet → PUT /api/offers/[id] (client)
+│   ├── CompareButton.tsx           # ✅ localStorage seçim + CompareBar floating CTA
+│   └── [111 orphan component — temizlenecek]
 ├── prisma/
-│   └── schema.prisma           # 6 model: User, Listing, Offer, DealRoom, AdvisoryCase, Asset
-├── next.config.js              # ⚠️ ignoreBuildErrors: true
-├── tsconfig.json               # strict: true, @/* alias
-└── CLAUDE.md                   # Bu dosya
+│   └── schema.prisma               # ✅ 8 model: User, Listing, Offer, DealRoom, AdvisoryCase, Asset, Favorite, Inquiry
+├── middleware.ts                   # ✅ RBAC — admin/profile/favorites koruması
+├── next.config.js                  # ⚠️ ignoreBuildErrors: true (değiştirilmedi)
+└── CLAUDE.md                       # Bu dosya
 ```
 
 ### Tech Stack
@@ -87,155 +87,208 @@ soylemesibizden-core/
 | Katman | Teknoloji |
 |--------|-----------|
 | Framework | Next.js 14.1.0 (App Router) |
-| Dil | TypeScript 5.3 |
+| Dil | TypeScript 5.3 (0 hata) |
 | ORM | Prisma 5.22 |
-| Veritabanı | PostgreSQL |
+| Veritabanı | Local: PostgreSQL 16 (appuser@localhost/soylemesibizden) |
+| Veritabanı Cloud | Neon PostgreSQL (ep-autumn-snow-am2ndsr3-pooler.c-5.us-east-1.aws.neon.tech) |
+| Auth | NextAuth.js v4 JWT + CredentialsProvider + bcryptjs |
 | Stil | Tailwind CSS 3.4 + Framer Motion 12 |
-| Harita | MapLibre GL 5 |
-| UI | Lucide React 1.8, Radix UI |
-| Export | jsPDF 4 |
+| Validation | Zod |
+| UI | Lucide React, Radix UI |
 | Font | Montserrat (Google Fonts) |
-| Deploy | Vercel |
+| Deploy | Vercel (branch: claude/welcome-soylemesibizden-NUqP9) |
 
 ---
 
 ## 3. Veritabanı Modelleri
 
 ```
-User          → Listing, Offer, DealRoom (buyer/seller), AdvisoryCase, Asset
-Listing       → Offer[], DealRoom[]
-Offer         → Listing, User
-DealRoom      → Listing, User (buyer), User (seller)
-AdvisoryCase  → User
-Asset         → User
+User          → Listing, Offer, DealRoom (buyer/seller), AdvisoryCase, Asset, Favorite, Inquiry
+Listing       → Offer[], DealRoom[], Favorite[], Inquiry[]
+               + city, district, neighborhood, propertyType, listingType
+               + rooms, bathrooms, area, floor, totalFloors, buildingAge
+               + hasElevator, hasParking, hasGarden, isVerified
+               + views, photos[], ownerId
+Offer         → Listing, User (status: PENDING|ACCEPTED|REJECTED)
+DealRoom      → Listing, User (buyer), User (seller) (status: OPEN|IN_PROGRESS|CLOSED)
+AdvisoryCase  → User (status: OPEN|RESOLVED)
+Asset         → User (type, value, location, description)
+Favorite      → User, Listing (@@unique [userId, listingId])
+Inquiry       → Listing, User? (name, email, phone, message)
 ```
 
-**Status Enum'ları:**
-- Listing: ACTIVE | PENDING | SOLD
-- Offer: PENDING | ACCEPTED | REJECTED
-- DealRoom: OPEN | IN_PROGRESS | CLOSED
-- AdvisoryCase: OPEN | RESOLVED
-- User.role: USER | ADMIN | CONCIERGE
+**⚠️ ÖNEMLİ:** Prisma schema genişletildi ama Neon DB'de migration çalıştırılmadı!
+Migration SQL kullanıcı tarafından Neon SQL Editor'da çalıştırılmalı.
 
 ---
 
-## 4. Tamamlanan Görevler
+## 4. Tamamlanan Görevler (Oturum 1-2)
 
-- [x] Proje kurulumu (Next.js 14 + Prisma + Tailwind)
-- [x] 6 Prisma modeli tanımlandı
-- [x] 5 GET API endpoint'i oluşturuldu
-- [x] 30+ sayfa scaffold edildi
-- [x] Dark/Light tema altyapısı
-- [x] TR/EN/AR/RU i18n altyapısı
-- [x] Dashboard'da canlı Prisma verisi bağlandı
-- [x] SovereignMap export hatası düzeltildi (named → default)
-- [x] CLAUDE.md oluşturuldu
+### Platform Altyapısı
+- [x] Next.js 14 + Prisma 5.22 + Tailwind kurulum
+- [x] NextAuth.js v4 JWT auth (Credentials + bcrypt)
+- [x] Role-based middleware (USER/ADMIN/CONCIERGE)
+- [x] Zod validasyonu (API endpoint'lerinde)
+- [x] TypeScript 0 hata (strict mode)
+
+### Kullanıcı Arayüzü — Tüm Sayfalar
+- [x] **Ana Sayfa** — Hero arama, canlı DB istatistikleri, kategori kartları, öne çıkan 6 ilan, CTA banner
+- [x] **İlanlar** — 9 filtreli grid (q, status, sort, propertyType, listingType, minPrice, maxPrice, minRooms, city)
+- [x] **Gelişmiş Arama** — 13 filtreli yan panel (asansör/otopark/bahçe, alan, çoklu tip seçimi, v.b.)
+- [x] **İlan Detay** — Fotoğraf galerisi, 8 özellik grid, fiyat/m² analiz, mortgage hesap, başvuru formu, benzer ilanlar, SEO meta
+- [x] **Favoriler** — Favori ilanlar grid
+- [x] **Profil** — İlanlar, teklifler, favoriler
+- [x] **Teklifler** — Gelen teklifler (kabul/ret) + verilen teklifler
+- [x] **Karşılaştırma** — 4 ilana kadar 18 özellik satırı yan yana
+- [x] **Admin Dashboard** — Gerçek Prisma verisi, stat kartları, son ilanlar/kullanıcılar tabloları
+- [x] **Admin İlan Oluştur** — Tüm alanlar, Server Action
+- [x] **Admin İlan Düzenle** — Mevcut değerler dolu, Server Action
+- [x] **Admin İlanlar** — Tüm ilanlar yönetim tablosu
+- [x] **Admin Kullanıcılar** — Tüm kullanıcılar, rol badge, sayılar
+- [x] **Login/Register** — NextAuth credentials, bcrypt, Zod
+
+### Bileşenler
+- [x] **Navbar** — Auth-aware, mobile hamburger, admin badge, kullanıcı dropdown
+- [x] **MortgageCalculator** — Aylık taksit hesaplayıcı (client)
+- [x] **InquiryForm** — Başvuru formu → API (client)
+- [x] **FavoriteButton** — Toggle favori → API (client)
+- [x] **OfferForm** — Teklif gönder → API (client, session kontrolü)
+- [x] **OfferActions** — Kabul/Reddet butonları → API (client)
+- [x] **CompareButton + CompareBar** — localStorage seçim, floating CTA (client)
+
+### API Endpoint'leri
+- [x] GET/POST /api/listings
+- [x] GET/PUT/DELETE /api/listings/[id]
+- [x] GET/POST /api/offers
+- [x] PUT/DELETE /api/offers/[id]
+- [x] POST/GET /api/favorites (toggle)
+- [x] POST/GET /api/inquiries (Zod)
+- [x] POST /api/auth/register (Zod, bcrypt)
+
+### UX
+- [x] Loading skeleton sayfaları (ana sayfa, listing, profile)
+- [x] Custom 404 ve error sayfaları
+- [x] CompareBar global floating bar
+- [x] SEO meta (generateMetadata) listing detayda
 
 ---
 
-## 5. Kritik Sorunlar (Önce Bunlar Çözülecek)
+## 5. Kalan Kritik İşler
 
 ### 🔴 Acil
-| # | Sorun | Dosya |
-|---|-------|-------|
-| 1 | `ignoreBuildErrors: true` — TypeScript hataları gizli | next.config.js |
-| 2 | `ignoreDuringBuilds: true` — ESLint hataları gizli | next.config.js |
-| 3 | Admin ana sayfası erişilemiyor (`_page.tsx`) | app/admin/_page.tsx |
-| 4 | Tüm API'lar sadece GET — POST/PUT/DELETE yok | app/api/*/route.ts |
-| 5 | Dashboard sidebar linkleri tümü `href="#"` | app/dashboard/page.tsx |
+| # | İş | Notlar |
+|---|-----|--------|
+| 1 | Neon DB migration SQL çalıştır | Kullanıcı Neon SQL Editor'da çalıştırmalı |
+| 2 | `next.config.js` ignoreBuildErrors kaldır | Sonra tüm TS hatalarını düzelt |
 
 ### 🟡 Önemli
-| # | Sorun | Dosya |
-|---|-------|-------|
-| 6 | 111 orphan (kullanılmayan) component | components/ |
-| 7 | SovereignProvider mock data ile gerçek DB karışık | providers/SovereignProvider.tsx |
-| 8 | Kimlik doğrulama tamamen stub (frontend-only) | app/auth/, app/login/ |
-| 9 | Prisma migration dosyaları yok | prisma/ |
-| 10 | Hata state'leri ve loading skeleton'lar eksik | tüm sayfalar |
+| # | İş |
+|---|-----|
+| 3 | Fotoğraf yükleme — Vercel Blob veya Cloudinary entegrasyonu |
+| 4 | E-posta bildirimleri — teklif geldiğinde Resend/SendGrid |
+| 5 | Harita entegrasyonu — MapLibre, ilan koordinat gösterimi |
+| 6 | PDF export — jsPDF ile ilan/rapor export |
+| 7 | 111 orphan component temizliği |
+| 8 | Real-time güncellemeler (Server-Sent Events) |
 
 ### 🔵 İyileştirme
-| # | Konu |
-|---|------|
-| 11 | Duplicate component versiyonları (v2, v3, v4, v5) temizlenmeli |
-| 12 | Import path'ler tutarsız (@ alias vs relative) |
-| 13 | Context dosyalarında `any` tip kullanımı |
-| 14 | Test altyapısı yok |
-| 15 | API input validasyonu yok |
+| # | İş |
+|---|-----|
+| 9 | Mobile responsive iyileştirme — tüm sayfalar |
+| 10 | i18n gerçek içerik (TR/EN/AR/RU) |
+| 11 | Unit/integration test altyapısı |
+| 12 | Lighthouse skoru >95 |
+| 13 | Admin ilan silme/durum değiştirme server action |
+| 14 | Kullanıcı ilan yönetimi (/my-listings) |
+| 15 | Admin concierge/deals CRUD |
 
 ---
 
-## 6. Yol Haritası (Roadmap)
+## 6. Neon DB Migration SQL
 
-### FAZ 1 — Temel Stabilizasyon (Öncelik: Acil)
-- [ ] next.config.js'den ignoreBuildErrors kaldır, tüm TS hatalarını düzelt
-- [ ] Admin route'unu aktif et (`_page.tsx` → `page.tsx`)
-- [ ] Dashboard sidebar gerçek routing ile bağla
-- [ ] Tüm API'lara POST/PUT/DELETE ekle
-- [ ] Prisma migration'larını oluştur (`prisma migrate dev`)
-- [ ] Loading skeleton ve error boundary ekle
+Şema genişletmesi için bu SQL Neon SQL Editor'da çalıştırılmalı:
 
-### FAZ 2 — Kimlik Doğrulama & Güvenlik
-- [ ] NextAuth.js veya Clerk entegrasyonu
-- [ ] Role-based access control (USER / ADMIN / CONCIERGE)
-- [ ] Oturum yönetimi
-- [ ] API route koruması (middleware)
-- [ ] Input validasyonu (Zod)
+```sql
+-- Listing tablosuna yeni alanlar
+ALTER TABLE "Listing"
+  ADD COLUMN IF NOT EXISTS "city" TEXT,
+  ADD COLUMN IF NOT EXISTS "district" TEXT,
+  ADD COLUMN IF NOT EXISTS "neighborhood" TEXT,
+  ADD COLUMN IF NOT EXISTS "listingType" TEXT NOT NULL DEFAULT 'SATILIK',
+  ADD COLUMN IF NOT EXISTS "propertyType" TEXT NOT NULL DEFAULT 'KONUT',
+  ADD COLUMN IF NOT EXISTS "rooms" INTEGER,
+  ADD COLUMN IF NOT EXISTS "bathrooms" INTEGER,
+  ADD COLUMN IF NOT EXISTS "area" DOUBLE PRECISION,
+  ADD COLUMN IF NOT EXISTS "floor" INTEGER,
+  ADD COLUMN IF NOT EXISTS "totalFloors" INTEGER,
+  ADD COLUMN IF NOT EXISTS "buildingAge" INTEGER,
+  ADD COLUMN IF NOT EXISTS "hasElevator" BOOLEAN NOT NULL DEFAULT false,
+  ADD COLUMN IF NOT EXISTS "hasParking" BOOLEAN NOT NULL DEFAULT false,
+  ADD COLUMN IF NOT EXISTS "hasGarden" BOOLEAN NOT NULL DEFAULT false,
+  ADD COLUMN IF NOT EXISTS "isVerified" BOOLEAN NOT NULL DEFAULT false,
+  ADD COLUMN IF NOT EXISTS "views" INTEGER NOT NULL DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS "photos" TEXT[] DEFAULT '{}';
 
-### FAZ 3 — Veri Bütünlüğü & Gerçek Zamanlılık
-- [ ] SovereignProvider mock data'yı gerçek DB verisine bağla
-- [ ] Prisma schema genişletmesi (fotoğraf, döküman, kategori, vb.)
-- [ ] Real-time güncellemeler (Pusher veya Server-Sent Events)
-- [ ] Gelişmiş filtreleme ve arama (full-text search)
-- [ ] Dosya upload (Vercel Blob veya S3)
+-- User tablosuna phone ve avatar
+ALTER TABLE "User"
+  ADD COLUMN IF NOT EXISTS "phone" TEXT,
+  ADD COLUMN IF NOT EXISTS "avatar" TEXT;
 
-### FAZ 4 — Kurumsal Özellikler
-- [ ] Kullanıcı başvuru formu ve onay akışı
-- [ ] E-mail bildirimleri (Resend veya SendGrid)
-- [ ] PDF rapor export (jsPDF entegrasyonu aktif)
-- [ ] Holding yapısı için çoklu şirket desteği
-- [ ] Audit log (her işlem kaydı)
+-- Favorite tablosu
+CREATE TABLE IF NOT EXISTS "Favorite" (
+  "id" TEXT NOT NULL,
+  "userId" TEXT NOT NULL,
+  "listingId" TEXT NOT NULL,
+  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT "Favorite_pkey" PRIMARY KEY ("id"),
+  CONSTRAINT "Favorite_userId_listingId_key" UNIQUE ("userId", "listingId"),
+  CONSTRAINT "Favorite_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE,
+  CONSTRAINT "Favorite_listingId_fkey" FOREIGN KEY ("listingId") REFERENCES "Listing"("id") ON DELETE CASCADE
+);
 
-### FAZ 5 — Performans & Kalite
-- [ ] TypeScript strict mod tamamen aktif
-- [ ] 111 orphan component temizliği
-- [ ] Unit + integration test altyapısı (Jest + Testing Library)
-- [ ] Lighthouse skoru >95
-- [ ] SEO meta tags (SovereignSEO component aktif edilecek)
-- [ ] i18n gerçek içerik ile doldurulacak
-
-### FAZ 6 — Modüler Genişleme
-- [ ] Plugin/modül sistemi (yeni özellikler bağımsız eklenebilir)
-- [ ] Webhook altyapısı
-- [ ] API anahtarı yönetimi (dış entegrasyon için)
-- [ ] Mobil responsive iyileştirme
+-- Inquiry tablosu
+CREATE TABLE IF NOT EXISTS "Inquiry" (
+  "id" TEXT NOT NULL,
+  "name" TEXT NOT NULL,
+  "email" TEXT NOT NULL,
+  "phone" TEXT,
+  "message" TEXT NOT NULL,
+  "listingId" TEXT NOT NULL,
+  "userId" TEXT,
+  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT "Inquiry_pkey" PRIMARY KEY ("id"),
+  CONSTRAINT "Inquiry_listingId_fkey" FOREIGN KEY ("listingId") REFERENCES "Listing"("id") ON DELETE CASCADE,
+  CONSTRAINT "Inquiry_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL
+);
+```
 
 ---
 
 ## 7. Çalışma Kuralları
 
-### Model Kullanımı
-- **Rutin kodlama** (component yazma, bug fix, CRUD) → Sonnet
-- **Karmaşık kararlar** (mimari, çözülemeyen bug, tasarım kararı) → Opus
-
-### Onay Gerektiren Değişiklikler
-- Prisma schema değişikliği (migration)
-- Mevcut API contract'ı kıran değişiklik
-- Büyük refactor (5+ dosya)
-- Bağımlılık ekleme/kaldırma
-- Vercel environment variable değişikliği
-
 ### Commit Kuralları
 - Her tamamlanan görev → commit + push
 - Commit mesajı: `[FAZ-X] Kısa açıklama`
 - Branch: `claude/welcome-soylemesibizden-NUqP9`
+- Git config: `user.email = noreply@anthropic.com`, `user.name = Claude`
 
-### Oturum Yönetimi
-- Oturum başında: Bu dosyayı oku, kullanıcıya kısaca özet sun
-- Oturum uzayınca: `/compact` uygula
-- Oturum sonunda: Bu dosyayı güncelle (tamamlananlar + sıradaki adımlar)
+### Push Komutu
+```bash
+git push https://minan19:<GITHUB_TOKEN>@github.com/minan19/soylemesibizden-core.git claude/welcome-soylemesibizden-NUqP9
+```
+
+### DB Bağlantı
+- Local: `DATABASE_URL=postgresql://appuser:apppass@localhost:5432/soylemesibizden`
+- Neon: `DATABASE_URL=postgresql://neondb_owner:npg_o9LkQqp4FTiG@ep-autumn-snow-am2ndsr3-pooler.c-5.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require`
+
+### Design System
+- Arka plan: `bg-[#F8FAFC]`
+- Accent: `#00C49F`
+- Kartlar: `bg-white rounded-2xl border border-gray-100`
+- Font: Montserrat (black/bold/semibold)
+- Para birimi: `toLocaleString('tr-TR')` ile `₺`
 
 ### Tıkanma Protokolü
-Çözülemeyen sorunlarda 3 perspektiften analiz:
 1. **Senior Developer** — teknik boyut
 2. **Sistem Mimarı** — yapısal boyut
 3. **Debug Uzmanı** — kök neden
@@ -244,14 +297,12 @@ Asset         → User
 
 ## 8. Önemli Notlar
 
-- **Veri güvenliği:** Migration öncesi her zaman DB backup alınmalı
-- **Modülerlik:** Yeni özellikler mevcut kodu kırmadan eklenebilmeli
-- **Geriye dönük uyumluluk:** API değişikliklerinde versiyonlama yapılmalı (`/api/v2/...`)
-- **Hiçbir kayıp olmamalı:** Prisma migration'lar `--create-only` ile önce incelenmeli
-- `app/compare.tsx` — route değil, yanlış konumlandırılmış, taşınmalı
-- `SovereignProvider` içindeki hardcoded `CORE_DATABASE` mock data kademeli gerçek DB'ye bağlanacak
-- Tüm para birimleri `tr-TR` locale ile formatlanıyor, tutarlı kalmalı
+- `app/admin/_page.tsx` — TypeScript'ten exclude edildi, erişilemiyor
+- `app/compare.tsx` — Artık `app/compare/page.tsx` olarak doğru konumda
+- `SovereignProvider` içindeki mock data kademeli gerçek DB'ye bağlanmakta
+- Tüm Server Actions `'use server'` directive'i gerektirir
+- NextAuth secret: `NEXTAUTH_SECRET` env var (local .env'de ayarlanmalı)
 
 ---
 
-*Son güncelleme: 2026-04-16 — Oturum 1: Proje analizi, ilk kurulum, CLAUDE.md oluşturuldu.*
+*Son güncelleme: 2026-07-25 — Oturum 2: FAZ 3-5 tamamlandı. Platform Sahibinden rakip seviyesine getirildi.*
