@@ -4,6 +4,7 @@ import { Montserrat } from 'next/font/google';
 import { SovereignProvider } from '../providers/SovereignProvider';
 import AuthSessionProvider from '../providers/SessionProvider';
 import Navbar from '@/components/Navbar';
+import { CompareBar } from '@/components/CompareButton';
 
 const montserrat = Montserrat({ 
   subsets: ['latin'], 
@@ -29,6 +30,7 @@ export default function RootLayout({
           <SovereignProvider>
             <Navbar />
             {children}
+            <CompareBar />
           </SovereignProvider>
         </AuthSessionProvider>
       </body>
