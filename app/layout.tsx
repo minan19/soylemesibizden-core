@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { Montserrat } from 'next/font/google';
 import { SovereignProvider } from '../providers/SovereignProvider';
 import AuthSessionProvider from '../providers/SessionProvider';
+import Navbar from '@/components/Navbar';
 
 const montserrat = Montserrat({ 
   subsets: ['latin'], 
@@ -26,6 +27,7 @@ export default function RootLayout({
         {/* Tüm Ekosistem Veri Çekirdeği Tarafından Sarmalandı */}
         <AuthSessionProvider>
           <SovereignProvider>
+            <Navbar />
             {children}
           </SovereignProvider>
         </AuthSessionProvider>
