@@ -45,6 +45,9 @@ export default async function SovereignDashboard() {
           <Link href="/api-portal" className="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-gray-900 hover:bg-gray-50 rounded-xl text-sm font-medium tracking-wide transition-colors">
             <Zap size={18} /> API PORTAL
           </Link>
+          <Link href="/admin/create-listing" className="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-gray-900 hover:bg-gray-50 rounded-xl text-sm font-medium tracking-wide transition-colors">
+            <Zap size={18} /> YENİ İLAN
+          </Link>
           <Link href="/admin/dashboard" className="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-gray-900 hover:bg-gray-50 rounded-xl text-sm font-medium tracking-wide transition-colors">
             <ShieldCheck size={18} /> ADMİN
           </Link>

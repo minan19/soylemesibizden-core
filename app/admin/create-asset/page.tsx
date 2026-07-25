@@ -1,74 +1,93 @@
-"use client";
-import React from 'react';
-import { Montserrat } from 'next/font/google';
-import { ShieldCheck, Zap, Leaf, BarChart3, Save } from 'lucide-react';
+'use server';
 
-const montserrat = Montserrat({ subsets: ['latin'], weight: ['400', '900'] });
+import { redirect } from 'next/navigation';
+import prisma from '@/lib/prisma';
+import Link from 'next/link';
+import { ArrowLeft, Shield, Save } from 'lucide-react';
 
-export default function CreateAsset() {
+async function createAsset(formData: FormData) {
+  'use server';
+  const type = formData.get('type') as string;
+  const value = parseFloat(formData.get('value') as string);
+  const location = formData.get('location') as string;
+  const ownerEmail = formData.get('ownerEmail') as string;
+  if (!type || isNaN(value) || !ownerEmail) return;
+  let owner = await prisma.user.findUnique({ where: { email: ownerEmail } });
+  if (!owner) {
+    owner = await prisma.user.create({
+      data: { email: ownerEmail, name: ownerEmail.split('@')[0], role: 'USER' },
+    });
+  }
+  await prisma.asset.create({ data: { type, value, location: location || null, userId: owner.id } });
+  redirect('/assets');
+}
+
+export default async function CreateAssetPage() {
+  const users = await prisma.user.findMany({ orderBy: { createdAt: 'desc' }, take: 50 });
   return (
-    <div className={montserrat.className} style={{ minHeight: '100vh', backgroundColor: '#FFF', padding: '80px' }}>
-      <header style={{ maxWidth: '1000px', margin: '0 auto 60px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+    <main className="min-h-screen bg-[#F8FAFC]">
+      <div className="max-w-2xl mx-auto px-8 py-10 space-y-8">
         <div>
-          <div style={{ fontSize: '0.7rem', fontWeight: '950', color: '#1ABC9C', letterSpacing: '3px', marginBottom: '15px' }}>ADMIN TERMINAL</div>
-          <h1 style={{ fontSize: '3rem', fontWeight: '950', letterSpacing: '-2px' }}>Varlık İstihbaratı Oluştur</h1>
+          <Link href="/admin/dashboard" className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-gray-700 transition-colors mb-3">
+            <ArrowLeft size={14} /> Admin Panel
+          </Link>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-[#F0FDF8] flex items-center justify-center text-[#00C49F]">
+              <Shield size={18} />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight">Yeni Varlık Ekle</h1>
+              <p className="text-xs text-gray-400 mt-0.5">Admin · Varlık portföyüne kayıt</p>
+            </div>
+          </div>
         </div>
-        <button style={{ backgroundColor: '#0A0A0A', color: '#1ABC9C', padding: '20px 40px', border: 'none', fontWeight: '950', fontSize: '0.75rem', letterSpacing: '2px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', borderRadius: '4px' }}>
-          <Save size={18} /> DOSYAYI MÜHÜRLE
-        </button>
-      </header>
-
-      <main style={{ maxWidth: '1000px', margin: '0 auto', display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '60px' }}>
-        <section style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
-          {/* TEMEL BİLGİLER */}
-          <div style={{ padding: '40px', border: '1px solid #EEE', borderRadius: '12px' }}>
-            <h3 style={{ fontSize: '0.8rem', fontWeight: '950', letterSpacing: '2px', marginBottom: '30px' }}>TEMEL VERİLER</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              <input type="text" placeholder="Varlık Başlığı (Örn: Signature Mansion)" style={{ padding: '15px', border: '1px solid #EEE', borderRadius: '4px', outline: 'none', fontWeight: '700' }} />
-              <input type="text" placeholder="Lokasyon (SARIYER / YENİKÖY)" style={{ padding: '15px', border: '1px solid #EEE', borderRadius: '4px', outline: 'none', fontWeight: '700' }} />
-              <textarea placeholder="Stratejik Açıklama..." style={{ padding: '15px', border: '1px solid #EEE', borderRadius: '4px', outline: 'none', fontWeight: '600', height: '150px' }} />
-            </div>
-          </div>
-
-          {/* INTEL METRICS */}
-          <div style={{ padding: '40px', border: '1px solid #EEE', borderRadius: '12px' }}>
-            <h3 style={{ fontSize: '0.8rem', fontWeight: '950', letterSpacing: '2px', marginBottom: '30px' }}>İSTİHBARAT METRİKLERİ</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '15px', padding: '15px', border: '1px solid #F5F5F5', borderRadius: '4px' }}>
-                <Zap size={20} color="#1ABC9C" />
-                <input type="number" placeholder="Sovereign IQ (%)" style={{ border: 'none', outline: 'none', fontWeight: '900', width: '100%' }} />
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '15px', padding: '15px', border: '1px solid #F5F5F5', borderRadius: '4px' }}>
-                <BarChart3 size={20} color="#1ABC9C" />
-                <input type="text" placeholder="ROI Projeksiyonu (% / Yıl)" style={{ border: 'none', outline: 'none', fontWeight: '900', width: '100%' }} />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <aside style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
-          <div style={{ padding: '40px', backgroundColor: '#F4FBF9', border: '1px solid #E8F6F3', borderRadius: '12px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '25px' }}>
-              <Leaf size={20} color="#1ABC9C" />
-              <h3 style={{ fontSize: '0.75rem', fontWeight: '950', color: '#1ABC9C', letterSpacing: '2px' }}>KARBON & ENERJİ</h3>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              <select style={{ padding: '12px', border: '1px solid #EEE', borderRadius: '4px', backgroundColor: '#FFF', fontWeight: '900' }}>
-                <option>Karbon Sınıfı Seçin</option>
-                <option>A++ (Optimized)</option>
-                <option>A (Verified)</option>
+        <form action={createAsset} className="space-y-6">
+          <div className="bg-white rounded-2xl border border-gray-100 p-6 space-y-5">
+            <h2 className="text-[10px] font-bold tracking-widest text-[#00C49F] uppercase">Varlık Bilgileri</h2>
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold tracking-widest text-gray-500 uppercase">Tip *</label>
+              <select name="type" required className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:outline-none focus:border-[#00C49F] transition-colors">
+                <option value="">Tip seçin...</option>
+                <option value="GAYRIMENKUL">Gayrimenkul</option>
+                <option value="ARAZI">Arazi</option>
+                <option value="TİCARİ">Ticari Mülk</option>
+                <option value="ENDÜSTRİYEL">Endüstriyel</option>
+                <option value="DİĞER">Diğer</option>
               </select>
-              <input type="number" placeholder="Ofset Kapasitesi (tCO2e)" style={{ padding: '12px', border: '1px solid #EEE', borderRadius: '4px', fontWeight: '800' }} />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold tracking-widest text-gray-500 uppercase">Değer (₺) *</label>
+              <input name="value" type="number" required min="0" step="any" placeholder="0" className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:outline-none focus:border-[#00C49F] transition-colors" />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold tracking-widest text-gray-500 uppercase">Lokasyon</label>
+              <input name="location" placeholder="Örn: Sarıyer, İstanbul" className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:outline-none focus:border-[#00C49F] transition-colors" />
             </div>
           </div>
-
-          <div style={{ padding: '40px', border: '1px solid #EEE', borderRadius: '12px', textAlign: 'center' }}>
-            <ShieldCheck size={40} color="#CCC" style={{ marginBottom: '20px' }} />
-            <div style={{ fontSize: '0.65rem', fontWeight: '950', color: '#AAA', letterSpacing: '2px', marginBottom: '15px' }}>VERIFICATION STATUS</div>
-            <div style={{ fontWeight: '900', color: '#0A0A0A' }}>NOT YET SEALED</div>
+          <div className="bg-white rounded-2xl border border-gray-100 p-6 space-y-5">
+            <h2 className="text-[10px] font-bold tracking-widest text-[#00C49F] uppercase">Sahip</h2>
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold tracking-widest text-gray-500 uppercase">E-posta *</label>
+              {users.length > 0 ? (
+                <select name="ownerEmail" required className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:outline-none focus:border-[#00C49F] transition-colors">
+                  <option value="">Kullanıcı seçin...</option>
+                  {users.map(u => (
+                    <option key={u.id} value={u.email}>{u.name ? `${u.name} (${u.email})` : u.email}</option>
+                  ))}
+                </select>
+              ) : (
+                <input name="ownerEmail" type="email" required placeholder="ornek@email.com" className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:outline-none focus:border-[#00C49F] transition-colors" />
+              )}
+            </div>
           </div>
-        </aside>
-      </main>
-    </div>
+          <div className="flex gap-3">
+            <button type="submit" className="flex-1 flex items-center justify-center gap-2 py-4 bg-[#00C49F] hover:bg-[#00a882] text-white text-sm font-bold rounded-xl transition-colors">
+              <Save size={16} /> Varlığı Kaydet
+            </button>
+            <Link href="/assets" className="px-6 py-4 border border-gray-200 text-gray-500 text-sm font-semibold rounded-xl hover:bg-gray-50 transition-colors">İptal</Link>
+          </div>
+        </form>
+      </div>
+    </main>
   );
 }
