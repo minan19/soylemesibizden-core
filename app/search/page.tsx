@@ -57,6 +57,11 @@ export default async function SearchPage({
   if (maxArea) areaFilter.lte = Number(maxArea);
   const hasAreaFilter = Object.keys(areaFilter).length > 0;
 
+  // Property types — supports comma-separated multi-select from the sidebar
+  const propertyTypes = propertyType
+    ? propertyType.split(',').filter(Boolean)
+    : [];
+
   const listings = await prisma.listing.findMany({
     where: {
       ...(q
@@ -69,7 +74,9 @@ export default async function SearchPage({
           }
         : {}),
       ...(status && status !== 'ALL' ? { status } : {}),
-      ...(propertyType && propertyType !== 'ALL' ? { propertyType } : {}),
+      ...(propertyTypes.length > 0
+        ? { propertyType: { in: propertyTypes } }
+        : {}),
       ...(listingType && listingType !== 'ALL' ? { listingType } : {}),
       ...(hasPriceFilter ? { price: priceFilter } : {}),
       ...(hasAreaFilter ? { area: areaFilter } : {}),

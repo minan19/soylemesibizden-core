@@ -75,7 +75,7 @@ export default function SearchFilterSidebar({
   const [listingType, setListingType] = useState(currentListingType ?? 'ALL');
   const [selectedPropertyTypes, setSelectedPropertyTypes] = useState<string[]>(
     currentPropertyType && currentPropertyType !== 'ALL'
-      ? [currentPropertyType]
+      ? currentPropertyType.split(',').filter(Boolean)
       : [],
   );
   const [status, setStatus] = useState(currentStatus ?? 'ALL');
@@ -100,7 +100,7 @@ export default function SearchFilterSidebar({
     const sp = new URLSearchParams();
     if (q) sp.set('q', q);
     if (listingType !== 'ALL') sp.set('listingType', listingType);
-    if (selectedPropertyTypes.length === 1) sp.set('propertyType', selectedPropertyTypes[0]);
+    if (selectedPropertyTypes.length > 0) sp.set('propertyType', selectedPropertyTypes.join(','));
     if (status !== 'ALL') sp.set('status', status);
     if (priceMin) sp.set('minPrice', priceMin);
     if (priceMax) sp.set('maxPrice', priceMax);
