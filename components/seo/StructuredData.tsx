@@ -1,7 +1,22 @@
 "use client";
 import React from 'react';
 
-export const StructuredData = ({ asset }: any) => {
+interface StructuredDataAsset {
+  title?: string;
+  description?: string;
+  priceNum?: number;
+  location?: string;
+  id?: string;
+}
+
+function safeJsonLd(value: unknown): string {
+  return JSON.stringify(value)
+    .replace(/</g, '\\u003c')
+    .replace(/>/g, '\\u003e')
+    .replace(/&/g, '\\u0026');
+}
+
+export const StructuredData = ({ asset }: { asset: StructuredDataAsset }) => {
   const ldJson = {
     "@context": "https://schema.org",
     "@type": "RealEstateListing",
@@ -20,7 +35,7 @@ export const StructuredData = ({ asset }: any) => {
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(ldJson) }}
+      dangerouslySetInnerHTML={{ __html: safeJsonLd(ldJson) }}
     />
   );
 };

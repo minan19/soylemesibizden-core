@@ -1,26 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server';
-
-/**
- * Microservices Health Check Router
- *
- * Go microservices ile haberleşme
- * - notifications-service: User alerts + push
- * - analytics-service: Event tracking + dashboards
- */
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 
 const SERVICES = {
   notifications: process.env.NOTIFICATIONS_SERVICE_URL ?? 'http://localhost:3001',
   analytics: process.env.ANALYTICS_SERVICE_URL ?? 'http://localhost:3002',
 };
 
+export const dynamic = 'force-dynamic';
+
 interface ServiceHealth {
   name: string;
-  url: string;
   status: 'UP' | 'DOWN';
   latency: number;
 }
 
+async function requireSession() {
+  const session = await getServerSession(authOptions);
+  return (session?.user as { id?: string } | undefined)?.id ?? null;
+}
+
 export async function GET() {
+  if (!(await requireSession())) {
+    return NextResponse.json({ error: 'Oturum gereklidir.' }, { status: 401 });
+  }
+
   const health: ServiceHealth[] = [];
 
   for (const [name, url] of Object.entries(SERVICES)) {
@@ -29,20 +33,10 @@ export async function GET() {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 2000);
       const res = await fetch(`${url}/health`, { signal: controller.signal });
-      const latency = Date.now() - start;
-      health.push({
-        name,
-        url,
-        status: res.ok ? 'UP' : 'DOWN',
-        latency,
-      });
+      clearTimeout(timeoutId);
+      health.push({ name, status: res.ok ? 'UP' : 'DOWN', latency: Date.now() - start });
     } catch {
-      health.push({
-        name,
-        url,
-        status: 'DOWN',
-        latency: Date.now() - start,
-      });
+      health.push({ name, status: 'DOWN', latency: Date.now() - start });
     }
   }
 
@@ -55,7 +49,11 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  const { service, event, payload } = await request.json() as {
+  if (!(await requireSession())) {
+    return NextResponse.json({ error: 'Oturum gereklidir.' }, { status: 401 });
+  }
+
+  const { service, event, payload } = (await request.json()) as {
     service: string;
     event: string;
     payload?: unknown;
@@ -64,6 +62,9 @@ export async function POST(request: NextRequest) {
   const url = SERVICES[service as keyof typeof SERVICES];
   if (!url) {
     return NextResponse.json({ error: 'Service not found' }, { status: 400 });
+  }
+  if (typeof event !== 'string' || event.length === 0) {
+    return NextResponse.json({ error: 'Geçersiz olay.' }, { status: 400 });
   }
 
   try {
@@ -77,9 +78,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(await res.json());
   } catch (error) {
     console.error(`[Microservices] ${service} error:`, error);
-    return NextResponse.json(
-      { error: 'Service unavailable' },
-      { status: 503 }
-    );
+    return NextResponse.json({ error: 'Service unavailable' }, { status: 503 });
   }
 }
