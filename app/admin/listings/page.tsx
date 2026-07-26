@@ -1,7 +1,8 @@
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
-import { ArrowLeft, Plus, ArrowUpRight } from 'lucide-react';
+import { ArrowLeft, Plus, ArrowUpRight, Pencil } from 'lucide-react';
 import DeleteListingButton from '@/components/DeleteListingButton';
+import ChangeStatusButton from '@/components/ChangeStatusButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -64,7 +65,7 @@ export default async function AdminListingsPage() {
             <table className="w-full text-sm">
               <thead className="bg-gray-50 border-b border-gray-100">
                 <tr>
-                  {['Başlık', 'Sahip', 'Fiyat', 'Tip', 'Durum', 'Tarih', 'İşlem'].map((h) => (
+                  {['Başlık', 'Sahip', 'Fiyat', 'Tip', 'Durum', 'Tarih', 'Düzenle', 'İşlem'].map((h) => (
                     <th
                       key={h}
                       className="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider whitespace-nowrap"
@@ -97,12 +98,20 @@ export default async function AdminListingsPage() {
                       <td className="px-5 py-4 text-gray-500 whitespace-nowrap">
                         {listing.propertyType}
                       </td>
-                      <td className="px-5 py-4">{statusBadge(listing.status)}</td>
+                      <td className="px-5 py-4">
+                        <ChangeStatusButton listingId={listing.id} currentStatus={listing.status as 'ACTIVE' | 'PENDING' | 'SOLD'} />
+                      </td>
                       <td className="px-5 py-4 text-gray-400 whitespace-nowrap text-xs">
                         {new Date(listing.createdAt).toLocaleDateString('tr-TR')}
                       </td>
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-2">
+                          <Link
+                            href={`/admin/edit-listing/${listing.id}`}
+                            className="inline-flex items-center gap-1 text-gray-500 hover:text-gray-800 text-xs font-semibold transition-colors"
+                          >
+                            <Pencil size={12} /> Düzenle
+                          </Link>
                           <Link
                             href={`/listing/${listing.id}`}
                             className="inline-flex items-center gap-1 text-[#00C49F] hover:text-[#00b38e] text-xs font-semibold transition-colors"

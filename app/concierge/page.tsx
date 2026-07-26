@@ -1,6 +1,8 @@
 import prisma from '@/lib/prisma';
 import Link from 'next/link';
 import { ArrowLeft, Headphones, CheckCircle, Clock, MessageSquare, ArrowRight } from 'lucide-react';
+import ResolveCaseButton from '@/components/ResolveCaseButton';
+import NewCaseForm from '@/components/NewCaseForm';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,7 +19,7 @@ export default async function ConciergePage() {
     <main className="min-h-screen bg-[#F8FAFC] text-gray-900">
       <div className="max-w-5xl mx-auto px-8 py-10 space-y-8">
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-start justify-between gap-4">
           <div>
             <Link href="/dashboard" className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-gray-700 transition-colors mb-3">
               <ArrowLeft size={14} /> Dashboard
@@ -25,6 +27,7 @@ export default async function ConciergePage() {
             <h1 className="text-3xl font-bold tracking-tight">Konsiyerj & Danışmanlık</h1>
             <p className="text-sm text-gray-500 mt-1">{cases.length} vaka</p>
           </div>
+          <NewCaseForm />
         </div>
 
         <div className="grid grid-cols-3 gap-4">
@@ -69,6 +72,7 @@ export default async function ConciergePage() {
                       : <><Clock size={11} /> AÇIK</>
                     }
                   </span>
+                  <ResolveCaseButton caseId={c.id} currentStatus={c.status} />
                   <ArrowRight size={14} className="text-gray-300 group-hover:text-[#00C49F] transition-colors" />
                 </div>
               </div>
