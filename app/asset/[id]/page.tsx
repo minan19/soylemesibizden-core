@@ -1,91 +1,114 @@
-"use client";
-import React, { useState } from 'react';
-import { Montserrat } from 'next/font/google';
-import dynamic from 'next/dynamic';
-import { useParams } from 'next/navigation';
-import { ShieldCheck, MapPin, Zap, ArrowRight, Download, Crosshair } from 'lucide-react';
+import prisma from '@/lib/prisma';
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+import { ArrowLeft, Shield, MapPin, User, Calendar, TrendingUp, ShieldCheck } from 'lucide-react';
 
-// Temel Bileşenler
-import { Sidebar } from '../../../components/Sidebar';
-import { GlobalHeader } from '../../../components/GlobalHeader';
-import { SmartContractModal } from '../../../components/SmartContractModal'; // Modal eklendi
+export const dynamic = 'force-dynamic';
 
-// Otorite Modülleri (Lazy Load)
-const SpatialAssetViewer = dynamic(() => import('../../../components/SpatialAssetViewer').then(m => m.SpatialAssetViewer), { ssr: false });
-const SovereignMap = dynamic(() => import('../../../components/SovereignMap'), { ssr: false });
-const LegalArchitect = dynamic(() => import('../../../components/LegalArchitect').then(m => m.LegalArchitect), { ssr: false });
+export async function generateMetadata({ params }: { params: { id: string } }) {
+  const asset = await prisma.asset.findUnique({ where: { id: params.id }, select: { type: true, value: true } });
+  if (!asset) return { title: 'Varlık Bulunamadı' };
+  return { title: `${asset.type} Varlığı | Söylemesi Bizden` };
+}
 
-const montserrat = Montserrat({ subsets: ['latin'], weight: ['400', '900'] });
+export default async function AssetDetailPage({ params }: { params: { id: string } }) {
+  const asset = await prisma.asset.findUnique({
+    where: { id: params.id },
+    include: { user: { select: { name: true, email: true } } },
+  });
 
-export default function AssetDetailMatrix() {
-  const params = useParams();
-  const assetId = params.id;
-  
-  // Modal State Yönetimi
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  if (!asset) notFound();
 
   return (
-    <div className={montserrat.className} style={{ display: 'flex', minHeight: '100vh', backgroundColor: 'var(--bg-primary)' }}>
-      <Sidebar />
-      <main style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowX: 'hidden' }}>
-        <GlobalHeader />
-        
-        <div style={{ padding: '40px', display: 'grid', gridTemplateColumns: 'minmax(0, 2.5fr) 400px', gap: '40px', maxWidth: '1920px', margin: '0 auto', width: '100%' }}>
-          
-          <section style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
-            <header style={{ padding: '40px', backgroundColor: 'var(--bg-secondary)', borderRadius: '32px', border: '1px solid var(--border-color)', position: 'relative', overflow: 'hidden' }}>
-              <div style={{ position: 'absolute', top: '-20px', right: '-20px', opacity: 0.05, transform: 'scale(2)' }}>
-                <Crosshair size={200} />
+    <main className="min-h-screen bg-[#F8FAFC]">
+      <div className="max-w-4xl mx-auto px-8 py-10 space-y-8">
+
+        <div>
+          <Link href="/assets" className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-gray-700 transition-colors mb-3">
+            <ArrowLeft size={14} /> Varlık Portföyü
+          </Link>
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-[#F0FDF8] flex items-center justify-center text-[#00C49F] shrink-0">
+                <Shield size={22} />
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--accent-emerald)', fontWeight: '950', fontSize: '0.8rem', letterSpacing: '3px', marginBottom: '15px' }}>
-                <MapPin size={18} /> ASSET_ID: {assetId} | ELITE LISTING
-              </div>
-              <h1 style={{ fontSize: '3.5rem', fontWeight: '950', letterSpacing: '-2px', marginBottom: '10px' }}>Çanakkale Stratejik Tarla</h1>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem', fontWeight: '600' }}>Ayvacık, Çanakkale — 14.500 m² Denize Sıfır Parsel</p>
-            </header>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '30px' }}>
-              <SpatialAssetViewer />
-              <SovereignMap />
-            </div>
-          </section>
-          
-          <aside style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
-            <div style={{ padding: '35px', backgroundColor: 'var(--bg-secondary)', borderRadius: '32px', border: '1px solid var(--accent-emerald)', boxShadow: '0 20px 40px rgba(26,188,156,0.05)' }}>
-              <div style={{ fontSize: '0.7rem', fontWeight: '950', color: 'var(--text-secondary)', letterSpacing: '2px', marginBottom: '10px' }}>GÜNCEL DEĞERLEME</div>
-              <div style={{ fontSize: '3rem', fontWeight: '950', letterSpacing: '-2px', color: 'var(--text-primary)', marginBottom: '5px' }}>₺ 8.5M</div>
-              <div style={{ fontSize: '0.8rem', fontWeight: '800', color: 'var(--accent-emerald)', marginBottom: '30px', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                <Zap size={14} /> %14.2 Yıllık ROI Projeksiyonu
-              </div>
-
-              {/* MODAL TETİKLEYİCİ BUTON */}
-              <button 
-                onClick={() => setIsModalOpen(true)}
-                style={{ width: '100%', padding: '20px', backgroundColor: 'var(--accent-emerald)', color: '#FFF', borderRadius: '16px', border: 'none', fontWeight: '950', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', cursor: 'pointer', marginBottom: '15px' }}
-              >
-                AKILLI KONTRAT İLE AL <ArrowRight size={18} />
-              </button>
-              
-              <button style={{ width: '100%', padding: '15px', backgroundColor: 'transparent', color: 'var(--text-primary)', borderRadius: '16px', border: '1px solid var(--border-color)', fontWeight: '800', fontSize: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', cursor: 'pointer' }}>
-                <Download size={16} /> YATIRIMCI DOSYASINI İNDİR (NDA)
-              </button>
-            </div>
-
-            <LegalArchitect />
-
-            <div style={{ padding: '20px', backgroundColor: '#FFF', borderRadius: '20px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '15px' }}>
-              <ShieldCheck size={24} color="var(--accent-emerald)" />
               <div>
-                <div style={{ fontSize: '0.8rem', fontWeight: '950' }}>SOVEREIGN VERIFIED</div>
-                <div style={{ fontSize: '0.6rem', color: 'var(--text-secondary)', fontWeight: '600' }}>Bu mülk yapay zeka adli tıp taramasından %100 temiz geçmiştir.</div>
+                <div className="flex items-center gap-2 mb-1">
+                  <h1 className="text-2xl font-bold tracking-tight text-gray-900">{asset.type}</h1>
+                  <span className="text-[10px] font-bold px-2 py-0.5 bg-[#F0FDF8] text-[#00C49F] rounded-full border border-[#00C49F]/20 flex items-center gap-1">
+                    <ShieldCheck size={10} /> KAYITLI
+                  </span>
+                </div>
+                <p className="text-sm text-gray-400 font-mono">{asset.id.slice(0, 20)}...</p>
               </div>
             </div>
-          </aside>
+          </div>
         </div>
-      </main>
 
-      {/* SİHİRLİ MODAL BURADA ÇAĞRILIYOR */}
-      <SmartContractModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} assetId={assetId} />
-    </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+          {/* Ana Bilgiler */}
+          <div className="lg:col-span-2 space-y-5">
+
+            {/* Değerleme */}
+            <div className="bg-white rounded-2xl border border-[#00C49F]/20 p-6">
+              <p className="text-[10px] font-bold tracking-widest text-[#00C49F] uppercase mb-2">Güncel Değerleme</p>
+              <p className="text-4xl font-black text-gray-900 font-mono mb-1">
+                ₺ {asset.value.toLocaleString('tr-TR')}
+              </p>
+              <p className="text-xs text-gray-400 flex items-center gap-1">
+                <TrendingUp size={11} /> Son değerleme: {new Date(asset.createdAt).toLocaleDateString('tr-TR')}
+              </p>
+            </div>
+
+            {/* Detaylar */}
+            <div className="bg-white rounded-2xl border border-gray-100 p-6">
+              <h2 className="text-[10px] font-bold tracking-widest text-[#00C49F] uppercase mb-5">Varlık Detayları</h2>
+              <div className="grid grid-cols-2 gap-4">
+                {[
+                  { label: 'Varlık Tipi', value: asset.type, icon: <Shield size={14} /> },
+                  { label: 'Konum', value: asset.location ?? '—', icon: <MapPin size={14} /> },
+                  { label: 'Sahip', value: asset.user.name ?? asset.user.email, icon: <User size={14} /> },
+                  { label: 'Kayıt Tarihi', value: new Date(asset.createdAt).toLocaleDateString('tr-TR'), icon: <Calendar size={14} /> },
+                ].map(row => (
+                  <div key={row.label} className="space-y-1">
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-gray-400 uppercase tracking-widest">
+                      {row.icon} {row.label}
+                    </div>
+                    <p className="text-sm font-semibold text-gray-700">{row.value}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+          </div>
+
+          {/* Sağ Panel */}
+          <div className="space-y-4">
+            <div className="bg-white rounded-2xl border border-gray-100 p-5 flex items-center gap-3">
+              <ShieldCheck size={20} className="text-[#00C49F] shrink-0" />
+              <div>
+                <p className="text-xs font-bold text-gray-900">Sovereign Verified</p>
+                <p className="text-[10px] text-gray-400 mt-0.5">Varlık sisteme kayıtlı ve doğrulanmış.</p>
+              </div>
+            </div>
+
+            <div className="bg-[#F0FDF8] rounded-2xl border border-[#00C49F]/20 p-5">
+              <p className="text-[10px] font-bold tracking-widest text-[#00C49F] uppercase mb-3">Toplam Değer</p>
+              <p className="text-2xl font-black text-gray-900 font-mono">
+                ₺ {asset.value.toLocaleString('tr-TR')}
+              </p>
+            </div>
+
+            <Link
+              href="/assets"
+              className="flex items-center justify-center gap-2 py-3 border border-gray-200 text-gray-600 text-sm font-semibold rounded-xl hover:bg-gray-50 transition-colors"
+            >
+              <ArrowLeft size={14} /> Portföye Dön
+            </Link>
+          </div>
+        </div>
+      </div>
+    </main>
   );
 }
