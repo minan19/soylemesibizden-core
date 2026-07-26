@@ -2,19 +2,25 @@ import Link from 'next/link';
 import prisma from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import { LayoutGrid, Radar, Lock, Shield, Zap, Bell, Globe, Moon, ShieldCheck, Mic, Crosshair, TrendingUp, ArrowRight, Activity } from 'lucide-react';
+import { LayoutGrid, Radar, Lock, Shield, Zap, Bell, Globe, Moon, ShieldCheck, Crosshair, TrendingUp, ArrowRight, Activity, CheckCircle, Clock, MessageSquare } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
 export default async function SovereignDashboard() {
   const session = await getServerSession(authOptions);
 
-  const [listings, totalListings, totalOffers, totalDeals, totalAssets] = await Promise.all([
+  const [listings, totalListings, totalOffers, totalDeals, totalAssets, recentOffers, openCases] = await Promise.all([
     prisma.listing.findMany({ take: 3, orderBy: { createdAt: 'desc' } }),
     prisma.listing.count(),
     prisma.offer.count(),
     prisma.dealRoom.count(),
     prisma.asset.count(),
+    prisma.offer.findMany({
+      take: 5,
+      orderBy: { createdAt: 'desc' },
+      include: { listing: { select: { title: true } }, user: { select: { name: true } } },
+    }),
+    prisma.advisoryCase.count({ where: { status: 'OPEN' } }),
   ]);
 
   return (
@@ -141,51 +147,90 @@ export default async function SovereignDashboard() {
               </div>{/* xl:col-span-2 */}
 
             <div className="space-y-6">
-              <div className="p-6 bg-white rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.03)] relative overflow-hidden">
-                <div className="flex justify-between items-start mb-6">
+              {/* Recent Offers */}
+              <div className="p-6 bg-white rounded-3xl border border-gray-100">
+                <div className="flex justify-between items-center mb-5">
                   <span className="text-[10px] font-bold tracking-widest text-[#00C49F] uppercase flex items-center gap-2">
-                    <Mic size={12} /> SPATIAL VOICE COMMAND
+                    <TrendingUp size={12} /> Son Teklifler
                   </span>
-                  <div className="w-8 h-8 rounded-full bg-[#F0FDF8] text-[#00C49F] flex items-center justify-center"><Mic size={14}/></div>
+                  <Link href="/offers" className="text-[10px] font-bold text-gray-400 hover:text-[#00C49F] transition-colors flex items-center gap-1">
+                    Tümü <ArrowRight size={10} />
+                  </Link>
                 </div>
-                <h3 className="text-2xl font-semibold leading-tight mb-8">Sinirsel Komuta<br/>Merkezi</h3>
-                
-                <div className="h-12 w-full bg-gray-50 rounded-xl mb-8 flex items-center justify-center relative overflow-hidden">
-                   <div className="w-3/4 border-b-2 border-[#00C49F] border-dashed opacity-50 animate-pulse"></div>
-                </div>
-
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl mb-4">
-                  <span className="text-[10px] font-bold tracking-widest text-gray-500 uppercase">SESLİ ANALİZ<br/>DURUMU</span>
-                  <span className="text-[10px] font-bold tracking-widest text-[#00C49F] uppercase text-right">IDENTIFIED:<br/>{session?.user?.name?.replace(/\s+/g, '_').toUpperCase() ?? 'KULLANICI'}</span>
-                </div>
-
-                <div className="flex items-center justify-center gap-2 p-3 border border-gray-100 rounded-2xl text-xs font-bold tracking-wide">
-                  <ShieldCheck size={14} className="text-[#00C49F]" /> HAPTIC FEEDBACK: READY <Zap size={14} className="text-[#00C49F]" />
-                </div>
-              </div>
-
-              <div className="p-6 bg-white rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.03)]">
-                <div className="flex justify-between items-start mb-4">
-                  <span className="text-[10px] font-bold tracking-widest text-[#00C49F] uppercase flex items-center gap-2">
-                    <Globe size={12} /> GEOSPATIAL COMMAND CENTER
-                  </span>
-                  <div className="w-8 h-8 rounded-full bg-gray-50 text-[#00C49F] flex items-center justify-center"><Crosshair size={14}/></div>
-                </div>
-                <h3 className="text-xl font-semibold mb-6">Küresel Varlık Projeksiyonu</h3>
-                <div className="h-32 bg-gray-50 rounded-2xl border border-dashed border-gray-200"></div>
-              </div>
-
-              <div className="p-6 bg-white rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.03)]">
-                <div className="flex justify-between items-start mb-4">
-                  <span className="text-[10px] font-bold tracking-widest text-[#00C49F] uppercase flex items-center gap-2">
-                    <TrendingUp size={12} /> ELITE TREASURY V2
-                  </span>
-                </div>
-                <div className="flex items-end justify-between">
-                  <h3 className="text-xl font-semibold">Küresel<br/>Likidite</h3>
-                  <div className="px-3 py-1.5 bg-[#F0FDF8] text-[#00C49F] rounded-xl text-[10px] font-bold tracking-widest uppercase flex items-center gap-1">
-                    <Zap size={12}/> SYSTEM_SOLVENCY: 100%
+                {recentOffers.length === 0 ? (
+                  <p className="text-xs text-gray-400 text-center py-4">Henüz teklif yok</p>
+                ) : (
+                  <div className="space-y-3">
+                    {recentOffers.map(offer => (
+                      <div key={offer.id} className="flex items-center gap-3">
+                        <div className={`w-2 h-2 rounded-full shrink-0 ${
+                          offer.status === 'ACCEPTED' ? 'bg-[#00C49F]' :
+                          offer.status === 'REJECTED' ? 'bg-red-400' : 'bg-amber-400'
+                        }`} />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-semibold text-gray-800 truncate">{offer.listing.title}</p>
+                          <p className="text-[10px] text-gray-400">{offer.user.name ?? '—'} · ₺{offer.amount.toLocaleString('tr-TR')}</p>
+                        </div>
+                      </div>
+                    ))}
                   </div>
+                )}
+              </div>
+
+              {/* Quick Actions */}
+              <div className="p-6 bg-white rounded-3xl border border-gray-100">
+                <span className="text-[10px] font-bold tracking-widest text-[#00C49F] uppercase flex items-center gap-2 mb-5">
+                  <Zap size={12} /> Hızlı İşlemler
+                </span>
+                <div className="space-y-2">
+                  {[
+                    { label: 'Yeni İlan Ekle', href: '/create-listing', icon: <Crosshair size={14} /> },
+                    { label: 'Favorilerimi Gör', href: '/favorites', icon: <Globe size={14} /> },
+                    { label: 'Tekliflerimi İncele', href: '/offers', icon: <TrendingUp size={14} /> },
+                    { label: 'Güvenlik Merkezi', href: '/security', icon: <ShieldCheck size={14} /> },
+                  ].map(item => (
+                    <Link key={item.href} href={item.href}
+                      className="flex items-center gap-3 p-3 rounded-xl hover:bg-[#F0FDF8] text-gray-600 hover:text-[#00C49F] transition-colors group">
+                      <div className="text-gray-400 group-hover:text-[#00C49F] transition-colors">{item.icon}</div>
+                      <span className="text-xs font-semibold">{item.label}</span>
+                      <ArrowRight size={12} className="ml-auto text-gray-300 group-hover:text-[#00C49F] transition-colors" />
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              {/* Advisory Cases */}
+              <div className="p-6 bg-white rounded-3xl border border-gray-100">
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-[10px] font-bold tracking-widest text-[#00C49F] uppercase flex items-center gap-2">
+                    <MessageSquare size={12} /> Danışmanlık
+                  </span>
+                  <Link href="/concierge" className="text-[10px] font-bold text-gray-400 hover:text-[#00C49F] transition-colors flex items-center gap-1">
+                    Git <ArrowRight size={10} />
+                  </Link>
+                </div>
+                <div className="flex items-center gap-3">
+                  {openCases > 0 ? (
+                    <>
+                      <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-500">
+                        <Clock size={18} />
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold text-gray-900">{openCases} açık vaka</p>
+                        <p className="text-[10px] text-gray-400">Yanıt bekliyor</p>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="w-10 h-10 rounded-xl bg-[#F0FDF8] flex items-center justify-center text-[#00C49F]">
+                        <CheckCircle size={18} />
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold text-gray-900">Tüm vakalar çözüldü</p>
+                        <p className="text-[10px] text-gray-400">Açık talep yok</p>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
 
