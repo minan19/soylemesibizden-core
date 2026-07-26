@@ -29,6 +29,7 @@ import MortgageCalculator from '@/components/MortgageCalculator';
 import InquiryForm from '@/components/InquiryForm';
 import FavoriteButton from '@/components/FavoriteButton';
 import OfferForm from '@/components/OfferForm';
+import CreateDealButton from '@/components/CreateDealButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -482,6 +483,9 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
 
             {/* Offer Form */}
             <OfferForm listingId={listing.id} listingPrice={listing.price} />
+
+            {/* Deal Room */}
+            <CreateDealButton listingId={listing.id} sellerId={listing.ownerId} />
 
           </div>
         </div>
