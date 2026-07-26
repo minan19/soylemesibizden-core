@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { ArrowLeft, Plus, ArrowUpRight } from 'lucide-react';
+import DeleteListingButton from '@/components/DeleteListingButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -101,12 +102,15 @@ export default async function AdminListingsPage() {
                         {new Date(listing.createdAt).toLocaleDateString('tr-TR')}
                       </td>
                       <td className="px-5 py-4">
-                        <Link
-                          href={`/listing/${listing.id}`}
-                          className="inline-flex items-center gap-1 text-[#00C49F] hover:text-[#00b38e] text-xs font-semibold transition-colors"
-                        >
-                          Detay <ArrowUpRight size={13} />
-                        </Link>
+                        <div className="flex items-center gap-2">
+                          <Link
+                            href={`/listing/${listing.id}`}
+                            className="inline-flex items-center gap-1 text-[#00C49F] hover:text-[#00b38e] text-xs font-semibold transition-colors"
+                          >
+                            Detay <ArrowUpRight size={13} />
+                          </Link>
+                          <DeleteListingButton listingId={listing.id} listingTitle={listing.title} />
+                        </div>
                       </td>
                     </tr>
                   ))
