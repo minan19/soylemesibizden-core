@@ -21,7 +21,6 @@ export default withAuth(
 export const config = {
   matcher: [
     '/dashboard/:path*',
-    '/listings/:path*',
     '/offers/:path*',
     '/deals/:path*',
     '/assets/:path*',
@@ -38,5 +37,8 @@ export const config = {
     '/favorites/:path*',
     '/profile/:path*',
     '/my-listings/:path*',
+    '/genealogy/:path*',
+    '/authority/:path*',
+    '/nexus/:path*',
   ],
 };

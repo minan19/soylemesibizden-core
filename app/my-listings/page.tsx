@@ -40,14 +40,12 @@ export default async function MyListingsPage() {
               {listings.length} ilan · {active} aktif · {totalOffers} teklif
             </p>
           </div>
-          {user.role === 'ADMIN' ? (
-            <Link
-              href="/admin/create-listing"
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#00C49F] hover:bg-[#00a882] text-white text-sm font-bold rounded-xl transition-colors"
-            >
-              <Plus size={15} /> Yeni İlan
-            </Link>
-          ) : null}
+          <Link
+            href={user.role === 'ADMIN' ? '/admin/create-listing' : '/create-listing'}
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#00C49F] hover:bg-[#00a882] text-white text-sm font-bold rounded-xl transition-colors"
+          >
+            <Plus size={15} /> Yeni İlan
+          </Link>
         </div>
 
         {/* Stats */}
@@ -69,10 +67,15 @@ export default async function MyListingsPage() {
           <div className="bg-white rounded-2xl border border-dashed border-gray-200 py-20 text-center">
             <TrendingUp size={32} className="text-gray-300 mx-auto mb-3" />
             <p className="text-gray-500 font-medium">Henüz ilanınız yok</p>
-            <p className="text-gray-400 text-sm mt-1">İlk ilanınızı oluşturmak için yöneticinizle iletişime geçin.</p>
-            <Link href="/listings" className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 bg-[#00C49F] hover:bg-[#00a882] text-white text-sm font-bold rounded-xl transition-colors">
-              İlanları Keşfet
-            </Link>
+            <p className="text-gray-400 text-sm mt-1">İlk ilanınızı oluşturun ve alıcılarla buluşun.</p>
+            <div className="mt-6 flex items-center gap-3 justify-center">
+              <Link href={user.role === 'ADMIN' ? '/admin/create-listing' : '/create-listing'} className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#00C49F] hover:bg-[#00a882] text-white text-sm font-bold rounded-xl transition-colors">
+                <Plus size={15} /> İlan Oluştur
+              </Link>
+              <Link href="/listings" className="inline-flex items-center gap-2 px-5 py-2.5 border border-gray-200 text-gray-600 text-sm font-semibold rounded-xl hover:bg-gray-50 transition-colors">
+                İlanları Keşfet
+              </Link>
+            </div>
           </div>
         ) : (
           <div className="space-y-3">
@@ -106,14 +109,12 @@ export default async function MyListingsPage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
-                    {user.role === 'ADMIN' && (
-                      <Link
-                        href={`/admin/edit-listing/${listing.id}`}
-                        className="flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 rounded-lg text-xs font-semibold text-gray-500 hover:text-gray-900 hover:border-gray-300 transition-all"
-                      >
-                        <Edit size={12} /> Düzenle
-                      </Link>
-                    )}
+                    <Link
+                      href={user.role === 'ADMIN' ? `/admin/edit-listing/${listing.id}` : `/edit-listing/${listing.id}`}
+                      className="flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 rounded-lg text-xs font-semibold text-gray-500 hover:text-gray-900 hover:border-gray-300 transition-all"
+                    >
+                      <Edit size={12} /> Düzenle
+                    </Link>
                     <Link
                       href={`/listing/${listing.id}`}
                       className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 rounded-lg text-xs font-semibold text-gray-600 hover:bg-gray-100 transition-all"
