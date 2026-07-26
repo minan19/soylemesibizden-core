@@ -1,49 +1,88 @@
-"use client";
-import React from 'react';
-import { Montserrat } from 'next/font/google';
-import dynamic from 'next/dynamic';
+import prisma from '@/lib/prisma';
+import Link from 'next/link';
+import { ArrowLeft, Globe, Network, TrendingUp, Users, Building2, Activity, ArrowRight } from 'lucide-react';
 
-// Temel Bileşenler
-import { Sidebar } from '../../components/Sidebar';
-import { GlobalHeader } from '../../components/GlobalHeader';
-import { EcosystemNexus } from '../../components/EcosystemNexus';
+export const dynamic = 'force-dynamic';
 
-// Destek Modülleri (Lazy Load)
-const NeuralOptimizationV3 = dynamic(() => import('../../components/NeuralOptimizationV3').then(m => m.NeuralOptimizationV3), { ssr: false });
-const GlobalSynergyV2 = dynamic(() => import('../../components/GlobalSynergyV2').then(m => m.GlobalSynergyV2), { ssr: false });
+export default async function NexusPage() {
+  const [listingCount, userCount, offerCount, assetCount, dealCount, caseCount] = await Promise.all([
+    prisma.listing.count({ where: { status: 'ACTIVE' } }),
+    prisma.user.count(),
+    prisma.offer.count(),
+    prisma.asset.count(),
+    prisma.dealRoom.count(),
+    prisma.advisoryCase.count(),
+  ]);
 
-const montserrat = Montserrat({ subsets: ['latin'], weight: ['400', '900'] });
+  const modules = [
+    { label: 'Aktif İlanlar', value: listingCount, href: '/listings', icon: <Building2 size={18} />, color: 'text-[#00C49F]', bg: 'bg-[#F0FDF8]' },
+    { label: 'Kullanıcılar', value: userCount, href: '/admin/users', icon: <Users size={18} />, color: 'text-blue-500', bg: 'bg-blue-50' },
+    { label: 'Teklifler', value: offerCount, href: '/offers', icon: <TrendingUp size={18} />, color: 'text-amber-500', bg: 'bg-amber-50' },
+    { label: 'Varlıklar', value: assetCount, href: '/assets', icon: <Network size={18} />, color: 'text-purple-500', bg: 'bg-purple-50' },
+    { label: 'Anlaşma Odaları', value: dealCount, href: '/deals', icon: <Activity size={18} />, color: 'text-rose-500', bg: 'bg-rose-50' },
+    { label: 'Danışmanlık', value: caseCount, href: '/concierge', icon: <Globe size={18} />, color: 'text-gray-600', bg: 'bg-gray-50' },
+  ];
 
-export default function NexusPage() {
   return (
-    <div className={montserrat.className} style={{ display: 'flex', minHeight: '100vh', backgroundColor: 'var(--bg-primary)' }}>
-      <Sidebar />
-      <main style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowX: 'hidden' }}>
-        <GlobalHeader />
-        
-        <div style={{ padding: '40px', display: 'grid', gridTemplateColumns: 'minmax(0, 3fr) 350px', gap: '40px', maxWidth: '1920px', margin: '0 auto', width: '100%' }}>
-          
-          <section style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
-            <EcosystemNexus />
-          </section>
+    <main className="min-h-screen bg-[#F8FAFC]">
+      <div className="max-w-5xl mx-auto px-8 py-10 space-y-8">
 
-          <aside style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
-             <div style={{ padding: '30px', backgroundColor: '#FFF', borderRadius: '24px', border: '1px solid var(--border-color)', textAlign: 'center' }}>
-                <h4 style={{ fontSize: '0.75rem', fontWeight: '950', color: 'var(--text-secondary)', letterSpacing: '2px', marginBottom: '15px' }}>AĞ MİMARİSİ</h4>
-                <div style={{ fontSize: '1.2rem', fontWeight: '950', color: 'var(--text-primary)' }}>DOMAIN SENKRONİZASYONU</div>
-                <p style={{ fontSize: '0.7rem', fontWeight: '600', color: 'var(--text-secondary)', marginTop: '10px' }}>
-                  soylemesibizden.com<br/>
-                  atlasio.com.tr<br/>
-                  econiq_core
-                </p>
-             </div>
-             
-             <GlobalSynergyV2 />
-             <NeuralOptimizationV3 />
-          </aside>
-          
+        <div>
+          <Link href="/dashboard" className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-gray-700 transition-colors mb-3">
+            <ArrowLeft size={14} /> Dashboard
+          </Link>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-[#F0FDF8] flex items-center justify-center text-[#00C49F]">
+              <Network size={18} />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight">Ekosistem Nexus</h1>
+              <p className="text-xs text-gray-400 mt-0.5">Platform modülleri ve bağlantı durumu</p>
+            </div>
+          </div>
         </div>
-      </main>
-    </div>
+
+        {/* Modül Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          {modules.map(m => (
+            <Link key={m.label} href={m.href}
+              className="bg-white rounded-2xl border border-gray-100 p-6 hover:shadow-md hover:border-[#00C49F]/20 transition-all group">
+              <div className={`w-10 h-10 rounded-xl ${m.bg} flex items-center justify-center ${m.color} mb-4`}>
+                {m.icon}
+              </div>
+              <p className={`text-3xl font-black ${m.color}`}>{m.value}</p>
+              <p className="text-sm font-semibold text-gray-700 mt-1">{m.label}</p>
+              <div className="flex items-center gap-1 mt-3 text-xs text-gray-400 group-hover:text-[#00C49F] transition-colors">
+                Modüle Git <ArrowRight size={11} />
+              </div>
+            </Link>
+          ))}
+        </div>
+
+        {/* Durum */}
+        <div className="bg-white rounded-2xl border border-gray-100 p-6">
+          <h2 className="text-[10px] font-bold tracking-widest text-[#00C49F] uppercase mb-5">Sistem Durumu</h2>
+          <div className="space-y-3">
+            {[
+              { name: 'Veritabanı Bağlantısı', status: 'Canlı', ok: true },
+              { name: 'Kimlik Doğrulama (NextAuth)', status: 'Aktif', ok: true },
+              { name: 'API Katmanı', status: 'Aktif', ok: true },
+              { name: 'Fotoğraf Upload', status: 'Yakında', ok: false },
+              { name: 'E-posta Bildirimleri', status: 'Yakında', ok: false },
+              { name: 'Gerçek Zamanlı Güncellemeler', status: 'Planlananlar', ok: false },
+            ].map(s => (
+              <div key={s.name} className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
+                <span className="text-sm font-medium text-gray-700">{s.name}</span>
+                <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full ${
+                  s.ok ? 'bg-[#F0FDF8] text-[#00C49F]' : 'bg-gray-100 text-gray-500'
+                }`}>
+                  {s.status}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </main>
   );
 }
