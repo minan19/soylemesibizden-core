@@ -1,61 +1,133 @@
-"use client";
-import React from 'react';
-import { Montserrat } from 'next/font/google';
-import { ChevronLeft, Share2, Info } from 'lucide-react';
+import prisma from '@/lib/prisma';
 import Link from 'next/link';
-import { BiddingTerminal } from '../../../components/BiddingTerminal';
-import { GlobalIndex } from '../../../components/GlobalIndex';
+import { notFound } from 'next/navigation';
+import { ArrowLeft, Gavel, TrendingUp, Clock, ShieldCheck } from 'lucide-react';
 
-const montserrat = Montserrat({ subsets: ['latin'], weight: ['400', '900'] });
+export const dynamic = 'force-dynamic';
 
-export default function AuctionRoom({ params }: { params: { id: string } }) {
+function formatPrice(price: number) {
+  return new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY', maximumFractionDigits: 0 }).format(price);
+}
+
+export default async function AuctionPage({ params }: { params: { id: string } }) {
+  const listing = await prisma.listing.findUnique({
+    where: { id: params.id },
+    include: {
+      owner: { select: { name: true, email: true } },
+      offers: { orderBy: { amount: 'desc' }, take: 10, include: { user: { select: { name: true } } } },
+    },
+  });
+
+  if (!listing) notFound();
+
+  const highestOffer = listing.offers[0]?.amount ?? listing.price;
+  const offerCount = listing.offers.length;
+
   return (
-    <div className={montserrat.className} style={{ minHeight: '100vh', backgroundColor: '#FAFAFA' }}>
-      <GlobalIndex />
-      <nav style={{ padding: '25px 80px', backgroundColor: '#FFF', borderBottom: '1px solid #EEE', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, zIndex: 100 }}>
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none', color: '#0A0A0A', fontWeight: '950', fontSize: '0.7rem' }}>
-          <ChevronLeft size={20} /> TERMİNALE DÖN
-        </Link>
-        <div style={{ fontSize: '0.8rem', fontWeight: '950', letterSpacing: '5px' }}>SÖYLEMESİ<span style={{ color: '#1ABC9C' }}>BİZDEN</span> // AUCTION</div>
-        <Share2 size={20} color="#AAA" style={{ cursor: 'pointer' }} />
-      </nav>
+    <main className="min-h-screen bg-[#F8FAFC]">
+      <div className="max-w-5xl mx-auto px-8 py-10 space-y-8">
 
-      <main style={{ maxWidth: '1400px', margin: '60px auto', padding: '0 80px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '100px' }}>
-          <section>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#1ABC9C', fontWeight: '950', fontSize: '0.7rem', letterSpacing: '3px', marginBottom: '20px' }}>
-               LIVE AUCTION • #SV-{params.id.toUpperCase()}
+        <div>
+          <Link href="/listings" className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-gray-700 transition-colors mb-3">
+            <ArrowLeft size={14} /> İlanlara Dön
+          </Link>
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-600 shrink-0">
+              <Gavel size={22} />
             </div>
-            <h1 style={{ fontSize: '3.5rem', fontWeight: '950', letterSpacing: '-2px', lineHeight: '1.1', marginBottom: '30px' }}>Signature Legacy Waterfront</h1>
-            
-            <div style={{ width: '100%', height: '550px', backgroundColor: '#FFF', border: '1px solid #EEE', borderRadius: '16px', marginBottom: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-               <div style={{ color: '#EEE', fontSize: '1rem', fontWeight: '900' }}>[ SOVEREIGN ASSET VISUALIZER ]</div>
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight text-gray-900">{listing.title}</h1>
+              <p className="text-sm text-gray-400 mt-0.5">{listing.city ?? '—'} · {listing.propertyType} · {listing.listingType}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-5">
+
+            {/* Price info */}
+            <div className="bg-white rounded-2xl border border-[#00C49F]/20 p-6">
+              <p className="text-[10px] font-bold tracking-widest text-[#00C49F] uppercase mb-2">Talep Fiyatı</p>
+              <p className="text-4xl font-black text-gray-900 font-mono">{formatPrice(listing.price)}</p>
+              {listing.area && (
+                <p className="text-xs text-gray-400 mt-1 flex items-center gap-1">
+                  <TrendingUp size={11} /> {formatPrice(Math.round(listing.price / listing.area))}/m²
+                  · {listing.area} m²
+                </p>
+              )}
             </div>
 
-            <div style={{ backgroundColor: '#FFF', padding: '50px', borderRadius: '12px', border: '1px solid #EEE' }}>
-              <h3 style={{ fontSize: '0.8rem', fontWeight: '950', letterSpacing: '2px', marginBottom: '20px' }}>MÜZAYEDE ŞARTNAMESİ</h3>
-              <p style={{ fontSize: '1rem', color: '#444', lineHeight: '1.8', fontWeight: '500' }}>
-                Bu varlık, sadece "Sovereign ID" seviyesi 3 ve üzeri olan doğrulanmış yatırımcılara açıktır. Teklifler Blockchain tabanlı mühürlenir. Müzayede sonunda en yüksek ağırlıklı teklif sahibine 24 saatlik öncelikli satın alım hakkı mühürlü protokol ile tanınır.
-              </p>
-            </div>
-          </section>
-
-          <aside>
-            <div style={{ position: 'sticky', top: '120px' }}>
-              <BiddingTerminal />
-              <div style={{ marginTop: '30px', padding: '35px', border: '1px solid #EEE', borderRadius: '12px', backgroundColor: '#FFF' }}>
-                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-                   <Info size={18} color="#1ABC9C" />
-                   <span style={{ fontSize: '0.7rem', fontWeight: '950', color: '#AAA', letterSpacing: '2px' }}>YARDIM & DESTEK</span>
-                 </div>
-                 <p style={{ fontSize: '0.85rem', fontWeight: '600', color: '#666', lineHeight: '1.6' }}>
-                   Müzayede süreci, teklif ağırlıklandırma algoritması ve yasal prosedürler hakkında sorularınız için <strong style={{ color: '#0A0A0A' }}>Sovereign Concierge</strong> her an hazırdır.
-                 </p>
+            {/* Details */}
+            <div className="bg-white rounded-2xl border border-gray-100 p-6">
+              <h2 className="text-[10px] font-bold tracking-widest text-[#00C49F] uppercase mb-5">İlan Detayları</h2>
+              <div className="grid grid-cols-2 gap-4">
+                {[
+                  { label: 'Mülk Tipi', value: listing.propertyType },
+                  { label: 'İlan Türü', value: listing.listingType },
+                  { label: 'Şehir', value: listing.city ?? '—' },
+                  { label: 'Alan', value: listing.area ? `${listing.area} m²` : '—' },
+                  { label: 'Oda Sayısı', value: listing.rooms ?? '—' },
+                  { label: 'Bina Yaşı', value: listing.buildingAge ? `${listing.buildingAge} yıl` : '—' },
+                ].map(row => (
+                  <div key={row.label}>
+                    <p className="text-[9px] font-bold tracking-widest text-gray-400 uppercase">{row.label}</p>
+                    <p className="text-sm font-semibold text-gray-700 mt-0.5">{String(row.value)}</p>
+                  </div>
+                ))}
               </div>
             </div>
-          </aside>
+
+            {/* Offers/bids */}
+            {offerCount > 0 && (
+              <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-50 flex items-center gap-2">
+                  <TrendingUp size={14} className="text-[#00C49F]" />
+                  <h2 className="text-[10px] font-bold tracking-widest text-[#00C49F] uppercase">Gelen Teklifler</h2>
+                </div>
+                <div className="divide-y divide-gray-50">
+                  {listing.offers.map((offer, idx) => (
+                    <div key={offer.id} className="flex items-center gap-4 px-6 py-3">
+                      <span className="text-xs font-black text-gray-300 w-5">{idx + 1}</span>
+                      <span className="text-sm font-semibold text-gray-800">{offer.user.name ?? '—'}</span>
+                      <span className={`ml-auto text-sm font-bold ${idx === 0 ? 'text-[#00C49F]' : 'text-gray-600'}`}>
+                        {formatPrice(offer.amount)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Right panel */}
+          <div className="space-y-4">
+            <div className="bg-amber-50 rounded-2xl border border-amber-200 p-5">
+              <div className="flex items-center gap-2 mb-2">
+                <Clock size={16} className="text-amber-600" />
+                <p className="text-xs font-bold text-amber-700">En Yüksek Teklif</p>
+              </div>
+              <p className="text-2xl font-black text-gray-900 font-mono">{formatPrice(highestOffer)}</p>
+              <p className="text-xs text-gray-500 mt-1">{offerCount} teklif</p>
+            </div>
+
+            <div className="bg-[#F0FDF8] rounded-2xl border border-[#00C49F]/20 p-5">
+              <ShieldCheck size={20} className="text-[#00C49F] mb-2" />
+              <p className="text-xs font-bold text-gray-800">Sovereign Verified</p>
+              <p className="text-[10px] text-gray-400 mt-0.5">İlan doğrulanmış ve kayıtlıdır.</p>
+            </div>
+
+            <Link href={`/listing/${listing.id}`}
+              className="flex items-center justify-center gap-2 py-3 bg-[#00C49F] text-white text-sm font-semibold rounded-xl hover:bg-[#00B090] transition-colors">
+              İlan Detayını Gör
+            </Link>
+
+            <Link href="/listings"
+              className="flex items-center justify-center gap-2 py-3 border border-gray-200 text-gray-600 text-sm font-semibold rounded-xl hover:bg-gray-50 transition-colors">
+              <ArrowLeft size={14} /> Tüm İlanlar
+            </Link>
+          </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </main>
   );
 }
