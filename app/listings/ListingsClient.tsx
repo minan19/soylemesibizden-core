@@ -45,6 +45,8 @@ export interface FilterParams {
   currentMinPrice?: string;
   currentMaxPrice?: string;
   currentMinRooms?: string;
+  currentMinArea?: string;
+  currentMaxArea?: string;
   currentCity?: string;
   currentNeighborhood?: string;
   currentHasElevator?: string;
@@ -118,6 +120,8 @@ export default function ListingsClient({
   currentMinPrice,
   currentMaxPrice,
   currentMinRooms,
+  currentMinArea,
+  currentMaxArea,
   currentCity,
   currentNeighborhood,
   currentHasElevator,
@@ -132,6 +136,8 @@ export default function ListingsClient({
   const [q, setQ] = useState(currentQ ?? '');
   const [priceMin, setPriceMin] = useState(currentMinPrice ?? '');
   const [priceMax, setPriceMax] = useState(currentMaxPrice ?? '');
+  const [areaMin, setAreaMin] = useState(currentMinArea ?? '');
+  const [areaMax, setAreaMax] = useState(currentMaxArea ?? '');
 
   const activeStatus = currentStatus ?? 'ALL';
   const activeSort = currentSort ?? 'newest';
@@ -150,6 +156,8 @@ export default function ListingsClient({
       minPrice: priceMin || undefined,
       maxPrice: priceMax || undefined,
       minRooms: activeMinRooms || undefined,
+      minArea: areaMin || undefined,
+      maxArea: areaMax || undefined,
       city: currentCity || undefined,
       neighborhood: currentNeighborhood || undefined,
       hasElevator: currentHasElevator || undefined,
@@ -368,6 +376,37 @@ export default function ListingsClient({
             </button>
             {(priceMin || priceMax) && (
               <button onClick={clearPrice} className="text-gray-400 hover:text-gray-700">
+                <X size={14} />
+              </button>
+            )}
+          </div>
+
+          {/* Row 4b — area filter */}
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs text-gray-400 font-medium shrink-0">Alan (m²):</span>
+            <input
+              type="number"
+              value={areaMin}
+              onChange={e => setAreaMin(e.target.value)}
+              placeholder="Min"
+              className="w-24 px-3 py-2 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#00C49F] transition-colors"
+            />
+            <span className="text-gray-300">—</span>
+            <input
+              type="number"
+              value={areaMax}
+              onChange={e => setAreaMax(e.target.value)}
+              placeholder="Maks"
+              className="w-24 px-3 py-2 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#00C49F] transition-colors"
+            />
+            <button
+              onClick={() => push({ minArea: areaMin || undefined, maxArea: areaMax || undefined })}
+              className="px-3 py-2 text-xs font-semibold bg-[#00C49F] hover:bg-[#00a882] text-white rounded-xl transition-colors"
+            >
+              Uygula
+            </button>
+            {(areaMin || areaMax) && (
+              <button onClick={() => { setAreaMin(''); setAreaMax(''); push({ minArea: undefined, maxArea: undefined }); }} className="text-gray-400 hover:text-gray-700">
                 <X size={14} />
               </button>
             )}

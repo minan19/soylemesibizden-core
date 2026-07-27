@@ -32,6 +32,8 @@ type SearchParams = {
   minPrice?: string;
   maxPrice?: string;
   minRooms?: string;
+  minArea?: string;
+  maxArea?: string;
   city?: string;
   neighborhood?: string;
   page?: string;
@@ -54,6 +56,8 @@ export default async function ListingsPage({
     minPrice,
     maxPrice,
     minRooms,
+    minArea,
+    maxArea,
     city,
     neighborhood,
     page,
@@ -86,6 +90,7 @@ export default async function ListingsPage({
     ...(listingType && listingType !== 'ALL' ? { listingType } : {}),
     ...(hasPriceFilter ? { price: priceFilter } : {}),
     ...(minRooms ? { rooms: { gte: Number(minRooms) } } : {}),
+    ...((minArea || maxArea) ? { area: { ...(minArea ? { gte: Number(minArea) } : {}), ...(maxArea ? { lte: Number(maxArea) } : {}) } } : {}),
     ...(city ? { city: { contains: city, mode: 'insensitive' as const } } : {}),
     ...(neighborhood ? { neighborhood: { contains: neighborhood, mode: 'insensitive' as const } } : {}),
     ...(hasElevator === '1' ? { hasElevator: true } : {}),
@@ -131,6 +136,8 @@ export default async function ListingsPage({
     if (minPrice) sp.set('minPrice', minPrice);
     if (maxPrice) sp.set('maxPrice', maxPrice);
     if (minRooms) sp.set('minRooms', minRooms);
+    if (minArea) sp.set('minArea', minArea);
+    if (maxArea) sp.set('maxArea', maxArea);
     if (city) sp.set('city', city);
     if (neighborhood) sp.set('neighborhood', neighborhood);
     if (hasElevator) sp.set('hasElevator', hasElevator);
@@ -173,6 +180,8 @@ export default async function ListingsPage({
               ...(minPrice ? { minPrice } : {}),
               ...(maxPrice ? { maxPrice } : {}),
               ...(minRooms ? { minRooms } : {}),
+              ...(minArea ? { minArea } : {}),
+              ...(maxArea ? { maxArea } : {}),
               ...(city ? { city } : {}),
               ...(neighborhood ? { neighborhood } : {}),
               ...(hasElevator ? { hasElevator } : {}),
@@ -192,6 +201,8 @@ export default async function ListingsPage({
           currentMinPrice={minPrice}
           currentMaxPrice={maxPrice}
           currentMinRooms={minRooms}
+          currentMinArea={minArea}
+          currentMaxArea={maxArea}
           currentCity={city}
           currentNeighborhood={neighborhood}
           currentHasElevator={hasElevator}
