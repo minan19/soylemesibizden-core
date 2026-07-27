@@ -607,6 +607,7 @@ export default async function HomePage() {
                   { href: '/favorites', label: 'Favoriler' },
                   { href: '/market-radar', label: 'Piyasa Radarı' },
                   { href: '/valuation', label: 'Değerleme Aracı' },
+                  { href: '/hesaplama', label: 'Hesaplama Araçları' },
                   { href: '/saved-searches', label: 'Kayıtlı Aramalar' },
                 ].map(l => (
                   <Link key={l.href} href={l.href} className="text-sm text-gray-400 hover:text-[#00C49F] transition-colors">{l.label}</Link>
