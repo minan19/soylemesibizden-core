@@ -628,6 +628,7 @@ export default async function HomePage() {
               © 2026 Söylemesi Bizden. Tüm hakları saklıdır.
             </p>
             <div className="flex items-center gap-6 text-sm text-gray-400">
+              <Link href="/agents" className="hover:text-[#00C49F] transition-colors">Danışmanlar</Link>
               <Link href="/concierge" className="hover:text-[#00C49F] transition-colors">Danışmanlık</Link>
               <Link href="/contact" className="hover:text-[#00C49F] transition-colors">İletişim</Link>
               <Link href="/deals" className="hover:text-[#00C49F] transition-colors">Anlaşmalar</Link>
