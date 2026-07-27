@@ -3,15 +3,29 @@ import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 import prisma from '@/lib/prisma';
 import { sendWelcomeEmail } from '@/lib/emailService';
+import { checkRateLimit } from '@/lib/ratelimit';
+
+export const dynamic = 'force-dynamic';
+
+function clientIp(request: Request): string {
+  const fwd = request.headers.get('x-forwarded-for');
+  if (fwd) return fwd.split(',')[0].trim();
+  return request.headers.get('x-real-ip') ?? 'unknown';
+}
 
 const registerSchema = z.object({
   email: z.string().email('Geçerli bir e-posta girin'),
-  password: z.string().min(6, 'Şifre en az 6 karakter olmalı'),
+  password: z.string().min(10, 'Şifre en az 10 karakter olmalı'),
   name: z.string().min(2, 'İsim en az 2 karakter olmalı').optional(),
 });
 
 export async function POST(request: Request) {
   try {
+    const rl = await checkRateLimit('register:' + clientIp(request), { limit: 5, window: '15 m' });
+    if (!rl.success) {
+      return NextResponse.json({ error: 'Cok fazla deneme yapildi. Lutfen daha sonra tekrar deneyin.' }, { status: 429 });
+    }
+
     const body = await request.json();
     const { email, password, name } = registerSchema.parse(body);
 

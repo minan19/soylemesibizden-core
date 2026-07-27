@@ -10,6 +10,7 @@ const securityHeaders = [
 const nextConfig = {
   images: { unoptimized: true },
   poweredByHeader: false,
+  experimental: { instrumentationHook: true },
   async headers() {
     return [{ source: '/:path*', headers: securityHeaders }];
   },

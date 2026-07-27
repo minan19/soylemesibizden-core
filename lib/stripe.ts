@@ -71,12 +71,15 @@ export type PlanKey = keyof typeof PLANS;
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
 export function getPlanByPriceId(priceId: string): PlanKey | null {
+  if (!priceId) return null;
   for (const [key, plan] of Object.entries(PLANS)) {
-    if (plan.priceId === priceId) return key as PlanKey;
+    if (plan.priceId && plan.priceId === priceId) return key as PlanKey;
   }
   return null;
 }
 
-export function isStripConfigured(): boolean {
+export function isStripeConfigured(): boolean {
   return Boolean(process.env.STRIPE_SECRET_KEY);
 }
+
+export const isStripConfigured = isStripeConfigured;
