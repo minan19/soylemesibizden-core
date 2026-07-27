@@ -1,27 +1,59 @@
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
-import { ArrowLeft, Plus, ArrowUpRight, Pencil, Clock } from 'lucide-react';
+import { ArrowLeft, Plus, ArrowUpRight, Pencil, Clock, Search } from 'lucide-react';
 import DeleteListingButton from '@/components/DeleteListingButton';
 import ChangeStatusButton from '@/components/ChangeStatusButton';
 import ApproveListingButton from '@/components/ApproveListingButton';
 
 export const dynamic = 'force-dynamic';
 
+const PAGE_SIZE = 20;
+
 export default async function AdminListingsPage({
   searchParams,
 }: {
-  searchParams: { filter?: string };
+  searchParams: { filter?: string; page?: string; q?: string };
 }) {
   const isPending = searchParams.filter === 'pending';
+  const currentPage = Math.max(1, parseInt(searchParams.page ?? '1') || 1);
+  const skip = (currentPage - 1) * PAGE_SIZE;
+  const q = searchParams.q?.trim();
 
-  const [listings, pendingCount] = await Promise.all([
+  const where = {
+    ...(isPending ? { status: 'PENDING' } : {}),
+    ...(q ? {
+      OR: [
+        { title: { contains: q, mode: 'insensitive' as const } },
+        { owner: { email: { contains: q, mode: 'insensitive' as const } } },
+        { city: { contains: q, mode: 'insensitive' as const } },
+      ],
+    } : {}),
+  };
+
+  const [listings, totalCount, pendingCount] = await Promise.all([
     prisma.listing.findMany({
-      where: isPending ? { status: 'PENDING' } : undefined,
+      where,
       orderBy: { createdAt: 'desc' },
+      skip,
+      take: PAGE_SIZE,
       include: { owner: { select: { name: true, email: true } } },
     }),
+    prisma.listing.count({ where }),
     prisma.listing.count({ where: { status: 'PENDING' } }),
   ]);
+
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE);
+
+  const buildUrl = (overrides: Record<string, string | undefined>) => {
+    const sp = new URLSearchParams();
+    if (isPending) sp.set('filter', 'pending');
+    if (q) sp.set('q', q);
+    if (currentPage > 1) sp.set('page', String(currentPage));
+    Object.entries(overrides).forEach(([k, v]) => {
+      if (v) sp.set(k, v); else sp.delete(k);
+    });
+    return `/admin/listings?${sp.toString()}`;
+  };
 
   const statusBadge = (status: string) => {
     const map: Record<string, string> = {
@@ -41,6 +73,8 @@ export default async function AdminListingsPage({
     );
   };
 
+  void statusBadge; // referenced below but not via this function
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] font-sans">
       <div className="max-w-7xl mx-auto px-6 py-10">
@@ -58,7 +92,7 @@ export default async function AdminListingsPage({
             <span className="text-gray-300">|</span>
             <h1 className="text-xl font-extrabold text-gray-900 tracking-tight">
               {isPending ? 'Bekleyen İlanlar' : 'Tüm İlanlar'}
-              <span className="ml-2 text-base font-semibold text-gray-400">({listings.length} adet)</span>
+              <span className="ml-2 text-base font-semibold text-gray-400">({totalCount} adet)</span>
             </h1>
           </div>
           <Link
@@ -70,8 +104,8 @@ export default async function AdminListingsPage({
           </Link>
         </div>
 
-        {/* Filter bar */}
-        <div className="flex items-center gap-3 mb-6">
+        {/* Filter & Search bar */}
+        <div className="flex flex-wrap items-center gap-3 mb-6">
           <Link
             href="/admin/listings"
             className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border transition-colors ${
@@ -100,6 +134,21 @@ export default async function AdminListingsPage({
               </span>
             )}
           </Link>
+
+          {/* Search */}
+          <form method="get" action="/admin/listings" className="flex-1 min-w-[200px] max-w-xs">
+            {isPending && <input type="hidden" name="filter" value="pending" />}
+            <div className="relative">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                name="q"
+                defaultValue={q}
+                placeholder="Başlık, email, şehir..."
+                className="w-full pl-9 pr-4 py-2 text-sm bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-[#00C49F] transition-colors"
+              />
+            </div>
+          </form>
         </div>
 
         {/* Table */}
@@ -174,6 +223,49 @@ export default async function AdminListingsPage({
             </table>
           </div>
         </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between mt-6">
+            <p className="text-sm text-gray-400">
+              Sayfa {currentPage} / {totalPages} · {totalCount} ilan
+            </p>
+            <div className="flex items-center gap-2">
+              {currentPage > 1 && (
+                <Link
+                  href={buildUrl({ page: String(currentPage - 1) })}
+                  className="px-4 py-2 text-sm font-semibold bg-white border border-gray-200 rounded-xl hover:border-[#00C49F] hover:text-[#00C49F] transition-colors"
+                >
+                  ← Önceki
+                </Link>
+              )}
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                const p = Math.max(1, Math.min(currentPage - 2 + i, totalPages - 4 + i));
+                return (
+                  <Link
+                    key={p}
+                    href={buildUrl({ page: String(p) })}
+                    className={`w-9 h-9 flex items-center justify-center text-sm font-semibold rounded-xl transition-colors ${
+                      p === currentPage
+                        ? 'bg-[#00C49F] text-white'
+                        : 'bg-white border border-gray-200 text-gray-600 hover:border-[#00C49F] hover:text-[#00C49F]'
+                    }`}
+                  >
+                    {p}
+                  </Link>
+                );
+              })}
+              {currentPage < totalPages && (
+                <Link
+                  href={buildUrl({ page: String(currentPage + 1) })}
+                  className="px-4 py-2 text-sm font-semibold bg-white border border-gray-200 rounded-xl hover:border-[#00C49F] hover:text-[#00C49F] transition-colors"
+                >
+                  Sonraki →
+                </Link>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
