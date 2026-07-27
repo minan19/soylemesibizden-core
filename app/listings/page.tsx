@@ -1,8 +1,24 @@
 import prisma from '@/lib/prisma';
 import Link from 'next/link';
+import { Metadata } from 'next';
 import ListingsClient from './ListingsClient';
 
 export const dynamic = 'force-dynamic';
+
+export async function generateMetadata({ searchParams }: { searchParams: { city?: string; propertyType?: string; listingType?: string; q?: string } }): Promise<Metadata> {
+  const parts: string[] = [];
+  if (searchParams.city) parts.push(searchParams.city);
+  if (searchParams.propertyType) parts.push(searchParams.propertyType);
+  if (searchParams.listingType) parts.push(searchParams.listingType);
+  if (searchParams.q) parts.push(`"${searchParams.q}"`);
+  const title = parts.length > 0
+    ? `${parts.join(' · ')} İlanları | Söylemesi Bizden`
+    : 'Tüm İlanlar | Söylemesi Bizden';
+  const description = parts.length > 0
+    ? `${parts.join(', ')} için ${searchParams.listingType === 'KİRALIK' ? 'kiralık' : 'satılık'} gayrimenkul ilanları.`
+    : 'Türkiye\'nin en güncel gayrimenkul ilanları. Konut, ticari, arazi, satılık ve kiralık ilanlar.';
+  return { title, description, openGraph: { title, description, type: 'website' } };
+}
 
 const PAGE_SIZE = 24;
 
