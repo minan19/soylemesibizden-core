@@ -167,13 +167,13 @@ export default async function AdminDashboardPage() {
             </div>
             <ArrowUpRight size={13} className="text-gray-300 ml-auto" />
           </Link>
-          <Link href="/admin/listings?filter=pending" className="flex items-center gap-3 bg-white rounded-2xl px-4 py-3 border border-gray-100 hover:border-amber-300 hover:shadow-sm transition-all">
+          <Link href="/admin/pending" className="flex items-center gap-3 bg-white rounded-2xl px-4 py-3 border border-amber-200 hover:border-amber-400 hover:shadow-sm transition-all">
             <Clock size={16} className="text-amber-500" />
             <div>
-              <p className="text-xs font-bold text-gray-700">Bekleyen</p>
-              <p className="text-[10px] text-gray-400">{pendingListings} ilan</p>
+              <p className="text-xs font-bold text-gray-700">Onay Kuyruğu</p>
+              <p className="text-[10px] text-amber-500 font-semibold">{pendingListings} ilan bekliyor</p>
             </div>
-            <ArrowUpRight size={13} className="text-gray-300 ml-auto" />
+            <ArrowUpRight size={13} className="text-amber-400 ml-auto" />
           </Link>
         </div>
 
@@ -243,11 +243,11 @@ export default async function AdminDashboardPage() {
 
         {/* Pending listings alert */}
         {pendingListings > 0 && (
-          <Link href="/admin/listings" className="flex items-center gap-4 bg-amber-50 border border-amber-200 rounded-2xl px-6 py-4 mb-6 hover:bg-amber-100 transition-colors">
+          <Link href="/admin/pending" className="flex items-center gap-4 bg-amber-50 border border-amber-200 rounded-2xl px-6 py-4 mb-6 hover:bg-amber-100 transition-colors">
             <Clock size={18} className="text-amber-600 shrink-0" />
             <div className="flex-1">
               <p className="text-sm font-bold text-amber-800">Onay Bekleyen {pendingListings} İlan</p>
-              <p className="text-xs text-amber-600">Kullanıcılar tarafından gönderilen ilanlar admin onayı bekliyor.</p>
+              <p className="text-xs text-amber-600">Kullanıcılar tarafından gönderilen ilanlar admin onayı bekliyor. Onay kuyruğuna git →</p>
             </div>
             <ArrowUpRight size={16} className="text-amber-600" />
           </Link>
