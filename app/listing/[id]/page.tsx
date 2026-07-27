@@ -33,6 +33,7 @@ import CreateDealButton from '@/components/CreateDealButton';
 import CompareButton from '@/components/CompareButton';
 import ShareButton from '@/components/ShareButton';
 import RecordView from '@/components/RecordView';
+import PhotoGallery from '@/components/PhotoGallery';
 
 export const dynamic = 'force-dynamic';
 
@@ -230,47 +231,7 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
           <div className="lg:col-span-2 space-y-6">
 
             {/* 1 · Photo Gallery */}
-            {listing.photos.length > 0 ? (
-              <div className="space-y-2">
-                <div className="w-full h-[420px] rounded-3xl overflow-hidden bg-gray-100">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={listing.photos[0]}
-                    alt={listing.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                {listing.photos.length > 1 && (
-                  <div className="grid grid-cols-3 gap-2">
-                    {listing.photos.slice(1, 4).map((photo, i) => (
-                      <div
-                        key={i}
-                        className="relative h-36 rounded-2xl overflow-hidden bg-gray-100"
-                      >
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={photo}
-                          alt={`${listing.title} fotoğraf ${i + 2}`}
-                          className="w-full h-full object-cover"
-                        />
-                        {i === 2 && listing.photos.length > 4 && (
-                          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                            <span className="text-white font-bold text-xl">
-                              +{listing.photos.length - 4}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="w-full h-72 rounded-3xl bg-gray-100 border border-gray-200 flex flex-col items-center justify-center gap-3 text-gray-400">
-                <ImageOff size={44} strokeWidth={1.5} />
-                <p className="text-sm font-medium">Fotoğraf eklenmemiş</p>
-              </div>
-            )}
+            <PhotoGallery photos={listing.photos} title={listing.title} />
 
             {/* 2 · Title & Key Info Bar */}
             <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
