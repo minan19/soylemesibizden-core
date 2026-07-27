@@ -12,6 +12,10 @@ import {
   Star,
   ArrowRight,
   CheckCircle,
+  FileText,
+  Handshake,
+  Phone,
+  Mail,
 } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
@@ -414,6 +418,97 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* ─── HOW IT WORKS ─────────────────────────────────────────── */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
+        <div className="text-center mb-10">
+          <h2 className="text-2xl font-bold text-gray-900 mb-3">Nasıl Çalışır?</h2>
+          <p className="text-gray-500 text-sm max-w-xl mx-auto">
+            Üç adımda hayalinizdeki mülke kavuşun veya ilanınızı yayınlayın.
+          </p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {[
+            {
+              step: '01',
+              Icon: Search,
+              title: 'Arayın',
+              desc: 'Gelişmiş filtrelerle bütçe, konum, oda sayısı ve özellik bazlı arama yapın. 13\'ten fazla filtre seçeneği.',
+              href: '/search',
+              cta: 'Aramaya Başla',
+              color: 'text-blue-500',
+              bg: 'bg-blue-50',
+              border: 'border-blue-100',
+            },
+            {
+              step: '02',
+              Icon: FileText,
+              title: 'Teklif Verin',
+              desc: 'Beğendiğiniz ilana teklif gönderin. Satıcı teklifinizi değerlendirir ve anında bildirim alırsınız.',
+              href: '/listings',
+              cta: 'İlanları Gör',
+              color: 'text-[#00C49F]',
+              bg: 'bg-[#F0FDF8]',
+              border: 'border-[#00C49F]/20',
+            },
+            {
+              step: '03',
+              Icon: Handshake,
+              title: 'Anlaşın',
+              desc: 'Teklif kabul edilince anlaşma odası açılır. Güvenli ortamda süreci tamamlayın.',
+              href: '/deals',
+              cta: 'Anlaşmalarım',
+              color: 'text-purple-500',
+              bg: 'bg-purple-50',
+              border: 'border-purple-100',
+            },
+          ].map(({ step, Icon, title, desc, href, cta, color, bg, border }) => (
+            <div key={step} className={`bg-white border ${border} rounded-2xl p-7 flex flex-col gap-5 hover:shadow-lg transition-all`}>
+              <div className="flex items-center gap-4">
+                <span className="text-4xl font-black text-gray-100 leading-none">{step}</span>
+                <div className={`w-11 h-11 ${bg} rounded-xl flex items-center justify-center shrink-0`}>
+                  <Icon className={`w-5 h-5 ${color}`} />
+                </div>
+              </div>
+              <div>
+                <h3 className="font-bold text-gray-900 text-lg mb-2">{title}</h3>
+                <p className="text-gray-500 text-sm leading-relaxed">{desc}</p>
+              </div>
+              <Link href={href} className={`inline-flex items-center gap-1.5 text-sm font-semibold ${color} hover:underline mt-auto`}>
+                {cta} <ArrowRight size={14} />
+              </Link>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ─── POPULAR CITIES ───────────────────────────────────────── */}
+      <section className="bg-gray-50 border-y border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
+          <h2 className="text-xl font-bold text-gray-900 mb-6 text-center">Şehre Göre İlanlar</h2>
+          <div className="flex flex-wrap justify-center gap-3">
+            {[
+              { city: 'İstanbul', icon: '🏙️' },
+              { city: 'Ankara', icon: '🏛️' },
+              { city: 'İzmir', icon: '🌊' },
+              { city: 'Antalya', icon: '🌴' },
+              { city: 'Bursa', icon: '🏔️' },
+              { city: 'Bodrum', icon: '⛵' },
+              { city: 'Mersin', icon: '🌅' },
+              { city: 'Adana', icon: '🌾' },
+            ].map(({ city, icon }) => (
+              <Link
+                key={city}
+                href={`/listings?city=${encodeURIComponent(city)}`}
+                className="flex items-center gap-2 px-5 py-2.5 bg-white border border-gray-200 rounded-full text-sm font-semibold text-gray-700 hover:border-[#00C49F] hover:text-[#00C49F] hover:shadow-sm transition-all"
+              >
+                <span>{icon}</span>
+                {city}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ─── CTA ───────────────────────────────────────────────────── */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
         <div className="bg-gradient-to-r from-slate-900 to-slate-800 rounded-3xl px-8 py-12 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
@@ -440,24 +535,73 @@ export default async function HomePage() {
 
       {/* ─── FOOTER ────────────────────────────────────────────────── */}
       <footer className="border-t border-gray-100 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-gray-500 text-sm font-medium">
-            © 2025 Söylemesi Bizden. Tüm hakları saklıdır.
-          </p>
-          <nav className="flex items-center gap-6 text-sm text-gray-400">
-            <Link href="/listings" className="hover:text-[#00C49F] transition-colors font-medium">
-              İlanlar
-            </Link>
-            <Link href="/dashboard" className="hover:text-[#00C49F] transition-colors font-medium">
-              Dashboard
-            </Link>
-            <Link href="/search" className="hover:text-[#00C49F] transition-colors font-medium">
-              Arama
-            </Link>
-            <Link href="/market-radar" className="hover:text-[#00C49F] transition-colors font-medium">
-              Piyasa Radarı
-            </Link>
-          </nav>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
+            {/* Brand */}
+            <div className="col-span-2 md:col-span-1">
+              <p className="font-black text-gray-900 tracking-tight text-lg mb-2">SÖYLEMESİ BİZDEN</p>
+              <p className="text-sm text-gray-400 leading-relaxed mb-4">
+                Türkiye&apos;nin güvenilir gayrimenkul & varlık yönetim platformu.
+              </p>
+              <div className="flex flex-col gap-2 text-xs text-gray-400">
+                <a href="mailto:info@soylemesibizden.com" className="flex items-center gap-2 hover:text-[#00C49F] transition-colors">
+                  <Mail size={12} /> info@soylemesibizden.com
+                </a>
+                <a href="tel:+902121234567" className="flex items-center gap-2 hover:text-[#00C49F] transition-colors">
+                  <Phone size={12} /> +90 212 123 45 67
+                </a>
+              </div>
+            </div>
+            {/* İlanlar */}
+            <div>
+              <p className="text-xs font-bold tracking-widest text-gray-900 uppercase mb-4">İlanlar</p>
+              <div className="flex flex-col gap-2.5">
+                {[
+                  { href: '/listings?listingType=SATILIK', label: 'Satılık İlanlar' },
+                  { href: '/listings?listingType=KİRALIK', label: 'Kiralık İlanlar' },
+                  { href: '/listings?propertyType=KONUT', label: 'Konut' },
+                  { href: '/listings?propertyType=TİCARİ', label: 'Ticari' },
+                  { href: '/search', label: 'Gelişmiş Arama' },
+                ].map(l => (
+                  <Link key={l.href} href={l.href} className="text-sm text-gray-400 hover:text-[#00C49F] transition-colors">{l.label}</Link>
+                ))}
+              </div>
+            </div>
+            {/* Platform */}
+            <div>
+              <p className="text-xs font-bold tracking-widest text-gray-900 uppercase mb-4">Platform</p>
+              <div className="flex flex-col gap-2.5">
+                {[
+                  { href: '/dashboard', label: 'Dashboard' },
+                  { href: '/my-listings', label: 'İlanlarım' },
+                  { href: '/offers', label: 'Teklifler' },
+                  { href: '/favorites', label: 'Favoriler' },
+                  { href: '/market-radar', label: 'Piyasa Radarı' },
+                ].map(l => (
+                  <Link key={l.href} href={l.href} className="text-sm text-gray-400 hover:text-[#00C49F] transition-colors">{l.label}</Link>
+                ))}
+              </div>
+            </div>
+            {/* Şehirler */}
+            <div>
+              <p className="text-xs font-bold tracking-widest text-gray-900 uppercase mb-4">Popüler Şehirler</p>
+              <div className="flex flex-col gap-2.5">
+                {['İstanbul', 'Ankara', 'İzmir', 'Antalya', 'Bursa', 'Bodrum'].map(city => (
+                  <Link key={city} href={`/listings?city=${encodeURIComponent(city)}`} className="text-sm text-gray-400 hover:text-[#00C49F] transition-colors">{city}</Link>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className="border-t border-gray-100 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="text-gray-400 text-sm">
+              © 2026 Söylemesi Bizden. Tüm hakları saklıdır.
+            </p>
+            <div className="flex items-center gap-6 text-sm text-gray-400">
+              <Link href="/concierge" className="hover:text-[#00C49F] transition-colors">Danışmanlık</Link>
+              <Link href="/deals" className="hover:text-[#00C49F] transition-colors">Anlaşmalar</Link>
+              <Link href="/profile/settings" className="hover:text-[#00C49F] transition-colors">Hesap</Link>
+            </div>
+          </div>
         </div>
       </footer>
     </main>
