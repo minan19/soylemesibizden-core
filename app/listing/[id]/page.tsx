@@ -32,6 +32,7 @@ import OfferForm from '@/components/OfferForm';
 import CreateDealButton from '@/components/CreateDealButton';
 import CompareButton from '@/components/CompareButton';
 import ShareButton from '@/components/ShareButton';
+import RecordView from '@/components/RecordView';
 
 export const dynamic = 'force-dynamic';
 
@@ -191,6 +192,14 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
 
   return (
     <main className="min-h-screen bg-[#F8FAFC]">
+      <RecordView item={{
+        id: listing.id,
+        title: listing.title,
+        price: listing.price,
+        city: listing.city,
+        listingType: listing.listingType,
+        photo: listing.photos[0] ?? null,
+      }} />
       <div className="max-w-7xl mx-auto px-6 py-10 space-y-10">
 
         {/* Breadcrumb */}

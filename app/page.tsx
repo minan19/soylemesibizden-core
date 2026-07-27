@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import SearchAutocomplete from '@/components/SearchAutocomplete';
 import CompareButton from '@/components/CompareButton';
+import RecentlyViewed from '@/components/RecentlyViewed';
 
 export const dynamic = 'force-dynamic';
 
@@ -343,6 +344,9 @@ export default async function HomePage() {
           </div>
         )}
       </section>
+
+      {/* ─── RECENTLY VIEWED ──────────────────────────────────────── */}
+      <RecentlyViewed />
 
       {/* ─── WHY US ────────────────────────────────────────────────── */}
       <section className="bg-white border-y border-gray-100">
