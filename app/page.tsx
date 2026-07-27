@@ -632,6 +632,25 @@ export default async function HomePage() {
           </div>
         </div>
       </footer>
+
+      {/* JSON-LD Organization Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'RealEstateAgent',
+            name: 'Söylemesi Bizden',
+            url: 'https://soylemesibizden-core.vercel.app',
+            description: 'Türkiye\'nin en güvenilir gayrimenkul platformu. Satılık ve kiralık konut, ticari alan, arazi ilanları.',
+            areaServed: {
+              '@type': 'Country',
+              name: 'Türkiye',
+            },
+            numberOfEmployees: { '@type': 'QuantitativeValue', value: '50+' },
+          }),
+        }}
+      />
     </main>
   );
 }

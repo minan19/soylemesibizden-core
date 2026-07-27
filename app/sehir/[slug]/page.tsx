@@ -313,6 +313,26 @@ export default async function CityPage({ params }: { params: { slug: string } })
         </div>
 
       </div>
+
+      {/* JSON-LD */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'ItemList',
+            name: `${city} Gayrimenkul İlanları`,
+            description: `${city} şehrinde ${totalActive} aktif gayrimenkul ilanı`,
+            numberOfItems: totalActive,
+            itemListElement: recentListings.slice(0, 5).map((l, i) => ({
+              '@type': 'ListItem',
+              position: i + 1,
+              url: `https://soylemesibizden-core.vercel.app/listing/${l.id}`,
+              name: l.title,
+            })),
+          }),
+        }}
+      />
     </main>
   );
 }
