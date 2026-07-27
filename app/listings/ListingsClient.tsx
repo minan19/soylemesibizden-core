@@ -16,6 +16,8 @@ import {
   Eye,
   Layers,
   ExternalLink,
+  LayoutGrid,
+  List,
 } from 'lucide-react';
 import CompareButton from '@/components/CompareButton';
 
@@ -142,6 +144,7 @@ export default function ListingsClient({
   const [areaMin, setAreaMin] = useState(currentMinArea ?? '');
   const [areaMax, setAreaMax] = useState(currentMaxArea ?? '');
   const [quickView, setQuickView] = useState<Listing | null>(null);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   const activeStatus = currentStatus ?? 'ALL';
   const activeSort = currentSort ?? 'newest';
@@ -490,13 +493,80 @@ export default function ListingsClient({
         );
       })()}
 
-      {/* ── Listing grid ──────────────────────────────────────────────── */}
+      {/* ── View toggle ───────────────────────────────────────────────── */}
+      <div className="flex items-center justify-end gap-1">
+        <button
+          onClick={() => setViewMode('grid')}
+          className={`p-2 rounded-lg transition-colors ${viewMode === 'grid' ? 'bg-[#00C49F] text-white' : 'bg-white border border-gray-200 text-gray-400 hover:text-gray-700'}`}
+          title="Izgara görünümü"
+        >
+          <LayoutGrid size={15} />
+        </button>
+        <button
+          onClick={() => setViewMode('list')}
+          className={`p-2 rounded-lg transition-colors ${viewMode === 'list' ? 'bg-[#00C49F] text-white' : 'bg-white border border-gray-200 text-gray-400 hover:text-gray-700'}`}
+          title="Liste görünümü"
+        >
+          <List size={15} />
+        </button>
+      </div>
+
+      {/* ── Listing grid / list ───────────────────────────────────────── */}
       <div
-        className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 transition-opacity duration-200 ${
+        className={`${viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5' : 'flex flex-col gap-3'} transition-opacity duration-200 ${
           isPending ? 'opacity-40 pointer-events-none' : 'opacity-100'
         }`}
       >
         {listings.map(listing => (
+          viewMode === 'list' ? (
+            /* List view card */
+            <div key={listing.id} className="relative group bg-white border border-gray-100 rounded-2xl hover:shadow-md hover:border-[#00C49F]/20 transition-all overflow-hidden flex">
+              <Link href={`/listing/${listing.id}`} className="flex flex-1 min-w-0">
+                {/* Thumbnail */}
+                <div className="w-28 sm:w-40 h-28 flex-shrink-0 bg-gradient-to-br from-slate-100 to-slate-200 relative overflow-hidden">
+                  {listing.photos.length > 0 ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img src={listing.photos[0]} alt={listing.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center"><Building2 size={22} className="text-slate-300" /></div>
+                  )}
+                  {listing.isVerified && (
+                    <span className="absolute top-1 left-1 bg-white/90 text-[#00C49F] text-[9px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
+                      <CheckCircle2 size={8} /> Onaylı
+                    </span>
+                  )}
+                </div>
+                {/* Content */}
+                <div className="flex-1 p-4 min-w-0 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center gap-1.5 mb-1 flex-wrap">
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${STATUS_COLOR[listing.status] ?? 'bg-gray-100 text-gray-500'}`}>{STATUS_LABEL[listing.status] ?? listing.status}</span>
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${LISTING_TYPE_COLOR[listing.listingType] ?? 'bg-gray-100 text-gray-600'}`}>{listing.listingType}</span>
+                      <span className="text-[10px] text-gray-400 font-medium">{listing.propertyType}</span>
+                    </div>
+                    <h2 className="text-sm font-bold text-gray-900 line-clamp-1 group-hover:text-[#00C49F] transition-colors">{listing.title}</h2>
+                    {(listing.location || listing.city) && (
+                      <p className="text-xs text-gray-400 flex items-center gap-1 mt-0.5">
+                        <MapPin size={9} className="shrink-0" />
+                        {listing.location ?? listing.city}
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex items-center justify-between mt-2 flex-wrap gap-2">
+                    <div className="flex gap-3">
+                      {listing.rooms != null && <span className="text-xs text-gray-500">{listing.rooms} oda</span>}
+                      {listing.area != null && <span className="text-xs text-gray-500">{listing.area} m²</span>}
+                      {listing.views > 0 && <span className="text-xs text-gray-400">{listing.views} 👁</span>}
+                    </div>
+                    <span className="text-base font-bold text-gray-900 font-mono">₺ {listing.price.toLocaleString('tr-TR')}</span>
+                  </div>
+                </div>
+              </Link>
+              <div className="flex items-center pr-3 shrink-0">
+                <CompareButton listingId={listing.id} />
+              </div>
+            </div>
+          ) : (
           <div key={listing.id} className="relative group">
           <Link
             href={`/listing/${listing.id}`}
@@ -615,6 +685,7 @@ export default function ListingsClient({
             <CompareButton listingId={listing.id} />
           </div>
           </div>
+          ) /* end grid view card */
         ))}
 
         {listings.length === 0 && (
