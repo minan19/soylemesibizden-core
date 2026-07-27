@@ -14,6 +14,7 @@ import {
   Maximize2,
   Building2,
 } from 'lucide-react';
+import CompareButton from '@/components/CompareButton';
 
 export interface Listing {
   id: string;
@@ -342,10 +343,10 @@ export default function ListingsClient({
         }`}
       >
         {listings.map(listing => (
+          <div key={listing.id} className="relative group">
           <Link
-            key={listing.id}
             href={`/listing/${listing.id}`}
-            className="group bg-white border border-gray-100 rounded-2xl hover:shadow-lg hover:border-[#00C49F]/20 transition-all overflow-hidden"
+            className="block bg-white border border-gray-100 rounded-2xl hover:shadow-lg hover:border-[#00C49F]/20 transition-all overflow-hidden"
           >
             {/* Photo thumbnail */}
             <div className="w-full h-40 bg-gradient-to-br from-slate-100 to-slate-200 relative overflow-hidden">
@@ -437,6 +438,10 @@ export default function ListingsClient({
             </div>
             </div>{/* /p-5 */}
           </Link>
+          <div className="absolute bottom-4 right-4 z-10">
+            <CompareButton listingId={listing.id} />
+          </div>
+          </div>
         ))}
 
         {listings.length === 0 && (
