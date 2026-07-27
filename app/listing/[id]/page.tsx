@@ -31,6 +31,7 @@ import FavoriteButton from '@/components/FavoriteButton';
 import OfferForm from '@/components/OfferForm';
 import CreateDealButton from '@/components/CreateDealButton';
 import CompareButton from '@/components/CompareButton';
+import ShareButton from '@/components/ShareButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -265,6 +266,7 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
                   )}
                   <FavoriteButton listingId={listing.id} initialFavorited={isFavorited} />
                   <CompareButton listingId={listing.id} />
+                  <ShareButton title={listing.title} />
                 </div>
               </div>
               {fullLocation && (
