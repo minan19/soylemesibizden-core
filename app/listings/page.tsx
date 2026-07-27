@@ -63,6 +63,8 @@ export default async function ListingsPage({
         ? { price: 'desc' }
         : sort === 'area_asc'
         ? { area: 'asc' }
+        : sort === 'views'
+        ? { views: 'desc' }
         : { createdAt: 'desc' },
     include: {
       owner: { select: { name: true, email: true } },
@@ -80,7 +82,7 @@ export default async function ListingsPage({
         <header className="flex items-start justify-between flex-wrap gap-3">
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-gray-900">
-              Kritik Varlıklar
+              {q ? `"${q}" için sonuçlar` : city ? `${city} İlanları` : 'Tüm İlanlar'}
             </h1>
             <p className="text-sm text-gray-500 mt-1">
               {listings.length} ilan bulundu

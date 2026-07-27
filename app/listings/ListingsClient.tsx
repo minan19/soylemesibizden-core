@@ -77,6 +77,7 @@ const SORT_OPTIONS = [
   { label: 'Fiyat ↑', value: 'price_asc' },
   { label: 'Fiyat ↓', value: 'price_desc' },
   { label: 'Alan ↑', value: 'area_asc' },
+  { label: 'Popüler', value: 'views' },
 ];
 
 const PROPERTY_TYPES = [

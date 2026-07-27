@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Heart } from 'lucide-react';
 
 interface FavoriteButtonProps {
@@ -11,6 +12,7 @@ interface FavoriteButtonProps {
 export default function FavoriteButton({ listingId, initialFavorited }: FavoriteButtonProps) {
   const [favorited, setFavorited] = useState(initialFavorited);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   async function handleToggle() {
     if (loading) return;
@@ -24,6 +26,7 @@ export default function FavoriteButton({ listingId, initialFavorited }: Favorite
       if (res.ok) {
         const data: { favorited: boolean } = await res.json();
         setFavorited(data.favorited);
+        router.refresh();
       }
     } catch {
       // silent fail

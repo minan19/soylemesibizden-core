@@ -1,12 +1,20 @@
 import prisma from '@/lib/prisma';
 import Link from 'next/link';
-import { ArrowLeft, Activity, ArrowRight, Users, Clock } from 'lucide-react';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { ArrowLeft, Activity, ArrowRight, Users, Clock, DoorOpen } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
 export default async function DealsPage() {
+  const session = await getServerSession(authOptions);
+  const me = session?.user?.email
+    ? await prisma.user.findUnique({ where: { email: session.user.email } })
+    : null;
+
   const deals = await prisma.dealRoom.findMany({
     orderBy: { createdAt: 'desc' },
+    where: me ? { OR: [{ buyerId: me.id }, { sellerId: me.id }] } : undefined,
     include: {
       listing: true,
       buyer: true,
@@ -34,7 +42,9 @@ export default async function DealsPage() {
               <ArrowLeft size={14} /> Dashboard
             </Link>
             <h1 className="text-3xl font-bold tracking-tight">Anlaşma Odaları</h1>
-            <p className="text-sm text-gray-500 mt-1">{deals.length} anlaşma odası</p>
+            <p className="text-sm text-gray-500 mt-1">
+              {me ? 'Katıldığınız anlaşmalar' : 'Tüm anlaşmalar'} · {deals.length} adet
+            </p>
           </div>
         </div>
 
@@ -70,9 +80,17 @@ export default async function DealsPage() {
                       <p className="text-xs text-gray-400 font-mono mt-0.5">{deal.id.slice(0, 16)}...</p>
                     </div>
                   </div>
-                  <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold tracking-widest ${cfg.className}`}>
-                    {cfg.label}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold tracking-widest ${cfg.className}`}>
+                      {cfg.label}
+                    </span>
+                    <Link
+                      href={`/boardroom/${deal.id}`}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#00C49F] text-white rounded-full text-[10px] font-bold tracking-widest hover:bg-[#00a882] transition-colors"
+                    >
+                      <DoorOpen size={11} /> Odaya Gir
+                    </Link>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gray-50">

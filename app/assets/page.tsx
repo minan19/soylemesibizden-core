@@ -1,11 +1,19 @@
 import prisma from '@/lib/prisma';
 import Link from 'next/link';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { ArrowLeft, Shield, MapPin, ArrowRight, User } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
 export default async function AssetsPage() {
+  const session = await getServerSession(authOptions);
+  const sessionUser = session?.user as { email?: string | null; role?: string } | undefined;
+  const isAdmin = sessionUser?.role === 'ADMIN';
+  const me = sessionUser?.email ? await prisma.user.findUnique({ where: { email: sessionUser.email } }) : null;
+
   const assets = await prisma.asset.findMany({
+    where: me && !isAdmin ? { userId: me.id } : undefined,
     orderBy: { createdAt: 'desc' },
     include: { user: true },
   });
@@ -23,11 +31,15 @@ export default async function AssetsPage() {
               <ArrowLeft size={14} /> Dashboard
             </Link>
             <h1 className="text-3xl font-bold tracking-tight">Varlık Portföyü</h1>
-            <p className="text-sm text-gray-500 mt-1">{assets.length} varlık kayıtlı</p>
+            <p className="text-sm text-gray-500 mt-1">
+              {isAdmin ? 'Tüm varlıklar' : 'Varlıklarım'} · {assets.length} kayıt
+            </p>
           </div>
-          <Link href="/admin/create-asset" className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#00C49F] hover:bg-[#00a882] text-white text-sm font-bold rounded-xl transition-colors">
-            <Shield size={15} /> Varlık Ekle
-          </Link>
+          {isAdmin && (
+            <Link href="/admin/create-asset" className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#00C49F] hover:bg-[#00a882] text-white text-sm font-bold rounded-xl transition-colors">
+              <Shield size={15} /> Varlık Ekle
+            </Link>
+          )}
         </div>
 
         {/* Toplam Değer Kartı */}

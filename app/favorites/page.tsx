@@ -4,6 +4,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { redirect } from 'next/navigation';
 import { Heart, MapPin, ArrowRight, Home } from 'lucide-react';
+import FavoriteButton from '@/components/FavoriteButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -74,7 +75,10 @@ export default async function FavoritesPage() {
                   <span className="text-lg font-bold text-gray-900 font-mono">
                     ₺ {listing.price.toLocaleString('tr-TR')}
                   </span>
-                  <ArrowRight size={16} className="text-gray-300 group-hover:text-[#00C49F] transition-colors" />
+                  <div className="flex items-center gap-2">
+                    <FavoriteButton listingId={listing.id} initialFavorited={true} />
+                    <ArrowRight size={16} className="text-gray-300 group-hover:text-[#00C49F] transition-colors" />
+                  </div>
                 </div>
               </Link>
             ))}
