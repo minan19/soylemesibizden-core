@@ -24,7 +24,7 @@ import RecentlyViewed from '@/components/RecentlyViewed';
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
-  const [totalListings, activeListings, totalUsers, totalOffers, featuredListings] =
+  const [totalListings, activeListings, totalUsers, totalOffers, featuredListings, cityCounts] =
     await Promise.all([
       prisma.listing.count(),
       prisma.listing.count({ where: { status: 'ACTIVE' } }),
@@ -41,7 +41,14 @@ export default async function HomePage() {
           createdAt: true,
         },
       }),
+      prisma.listing.groupBy({
+        by: ['city'],
+        where: { status: 'ACTIVE', city: { in: ['İstanbul', 'Ankara', 'İzmir', 'Antalya', 'Bursa', 'Bodrum', 'Mersin', 'Adana'] } },
+        _count: true,
+      }),
     ]);
+
+  const cityCountMap = new Map(cityCounts.map(c => [c.city!, c._count]));
 
   return (
     <main className="min-h-screen bg-[#F8FAFC]">
@@ -496,6 +503,11 @@ export default async function HomePage() {
               >
                 <span>{icon}</span>
                 {city}
+                {cityCountMap.has(city) && (
+                  <span className="text-xs font-bold text-[#00C49F] bg-[#F0FDF8] px-1.5 py-0.5 rounded-full">
+                    {cityCountMap.get(city)}
+                  </span>
+                )}
               </Link>
             ))}
           </div>
@@ -602,7 +614,7 @@ export default async function HomePage() {
               <p className="text-xs font-bold tracking-widest text-gray-900 uppercase mb-4">Popüler Şehirler</p>
               <div className="flex flex-col gap-2.5">
                 {['İstanbul', 'Ankara', 'İzmir', 'Antalya', 'Bursa', 'Bodrum'].map(city => (
-                  <Link key={city} href={`/listings?city=${encodeURIComponent(city)}`} className="text-sm text-gray-400 hover:text-[#00C49F] transition-colors">{city}</Link>
+                  <Link key={city} href={`/sehir/${encodeURIComponent(city)}`} className="text-sm text-gray-400 hover:text-[#00C49F] transition-colors">{city}</Link>
                 ))}
               </div>
             </div>
