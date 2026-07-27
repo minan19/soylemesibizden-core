@@ -30,6 +30,9 @@ export default async function MyListingsPage() {
   const listings = user.listings;
   const active = listings.filter(l => l.status === 'ACTIVE').length;
   const totalOffers = listings.reduce((s, l) => s + l._count.offers, 0);
+  const totalViews = listings.reduce((s, l) => s + l.views, 0);
+  const totalFavorites = listings.reduce((s, l) => s + l._count.favorites, 0);
+  const totalInquiries = listings.reduce((s, l) => s + l._count.inquiries, 0);
 
   return (
     <main className="min-h-screen bg-[#F8FAFC]">
@@ -51,14 +54,17 @@ export default async function MyListingsPage() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-3 lg:grid-cols-6 gap-4">
           {[
-            { label: 'TOPLAM', value: listings.length, color: 'text-gray-900' },
+            { label: 'TOPLAM İLAN', value: listings.length, color: 'text-gray-900' },
             { label: 'AKTİF', value: active, color: 'text-[#00C49F]' },
-            { label: 'TOPLAM TEKLİF', value: totalOffers, color: 'text-amber-600' },
+            { label: 'TEKLIFLER', value: totalOffers, color: 'text-amber-600' },
+            { label: 'GÖRÜNTÜLENMELERİ', value: totalViews.toLocaleString('tr-TR'), color: 'text-blue-600' },
+            { label: 'FAVORİLER', value: totalFavorites, color: 'text-pink-500' },
+            { label: 'BAŞVURULAR', value: totalInquiries, color: 'text-purple-600' },
           ].map(s => (
-            <div key={s.label} className="bg-white rounded-2xl border border-gray-100 p-5">
-              <p className={`text-3xl font-bold ${s.color}`}>{s.value}</p>
+            <div key={s.label} className="bg-white rounded-2xl border border-gray-100 p-4">
+              <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>
               <p className="text-[9px] font-bold tracking-widest text-gray-400 mt-1">{s.label}</p>
             </div>
           ))}
