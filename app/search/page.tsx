@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import ListingsClient from '@/app/listings/ListingsClient';
 import SearchFilterSidebar from './SearchFilterSidebar';
+import SaveSearchButton from '@/components/SaveSearchButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -122,11 +123,29 @@ export default async function SearchPage({
                 İlan Ara
               </h1>
             </div>
-            <div className="bg-white border border-gray-100 rounded-2xl px-4 py-2.5 shadow-sm">
-              <span className="text-2xl font-bold text-gray-900 font-mono">
-                {listings.length}
-              </span>
-              <span className="text-sm text-gray-400 ml-2">ilan bulundu</span>
+            <div className="flex items-center gap-3">
+              <div className="bg-white border border-gray-100 rounded-2xl px-4 py-2.5 shadow-sm">
+                <span className="text-2xl font-bold text-gray-900 font-mono">
+                  {listings.length}
+                </span>
+                <span className="text-sm text-gray-400 ml-2">ilan bulundu</span>
+              </div>
+              <SaveSearchButton filters={{
+                ...(q ? { q } : {}),
+                ...(status && status !== 'ALL' ? { status } : {}),
+                ...(sort ? { sort } : {}),
+                ...(propertyType && propertyType !== 'ALL' ? { propertyType } : {}),
+                ...(listingType && listingType !== 'ALL' ? { listingType } : {}),
+                ...(minPrice ? { minPrice } : {}),
+                ...(maxPrice ? { maxPrice } : {}),
+                ...(minRooms ? { minRooms } : {}),
+                ...(minArea ? { minArea } : {}),
+                ...(maxArea ? { maxArea } : {}),
+                ...(city ? { city } : {}),
+                ...(hasElevator ? { hasElevator } : {}),
+                ...(hasParking ? { hasParking } : {}),
+                ...(hasGarden ? { hasGarden } : {}),
+              }} />
             </div>
           </div>
         </header>
