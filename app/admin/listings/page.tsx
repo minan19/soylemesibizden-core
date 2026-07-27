@@ -1,16 +1,27 @@
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
-import { ArrowLeft, Plus, ArrowUpRight, Pencil } from 'lucide-react';
+import { ArrowLeft, Plus, ArrowUpRight, Pencil, Clock } from 'lucide-react';
 import DeleteListingButton from '@/components/DeleteListingButton';
 import ChangeStatusButton from '@/components/ChangeStatusButton';
+import ApproveListingButton from '@/components/ApproveListingButton';
 
 export const dynamic = 'force-dynamic';
 
-export default async function AdminListingsPage() {
-  const listings = await prisma.listing.findMany({
-    orderBy: { createdAt: 'desc' },
-    include: { owner: { select: { name: true, email: true } } },
-  });
+export default async function AdminListingsPage({
+  searchParams,
+}: {
+  searchParams: { filter?: string };
+}) {
+  const isPending = searchParams.filter === 'pending';
+
+  const [listings, pendingCount] = await Promise.all([
+    prisma.listing.findMany({
+      where: isPending ? { status: 'PENDING' } : undefined,
+      orderBy: { createdAt: 'desc' },
+      include: { owner: { select: { name: true, email: true } } },
+    }),
+    prisma.listing.count({ where: { status: 'PENDING' } }),
+  ]);
 
   const statusBadge = (status: string) => {
     const map: Record<string, string> = {
@@ -35,7 +46,7 @@ export default async function AdminListingsPage() {
       <div className="max-w-7xl mx-auto px-6 py-10">
 
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div className="flex items-center gap-4">
             <Link
               href="/admin/dashboard"
@@ -46,7 +57,7 @@ export default async function AdminListingsPage() {
             </Link>
             <span className="text-gray-300">|</span>
             <h1 className="text-xl font-extrabold text-gray-900 tracking-tight">
-              Tüm İlanlar
+              {isPending ? 'Bekleyen İlanlar' : 'Tüm İlanlar'}
               <span className="ml-2 text-base font-semibold text-gray-400">({listings.length} adet)</span>
             </h1>
           </div>
@@ -56,6 +67,38 @@ export default async function AdminListingsPage() {
           >
             <Plus size={16} />
             + Yeni İlan
+          </Link>
+        </div>
+
+        {/* Filter bar */}
+        <div className="flex items-center gap-3 mb-6">
+          <Link
+            href="/admin/listings"
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border transition-colors ${
+              !isPending
+                ? 'bg-[#00C49F] text-white border-[#00C49F]'
+                : 'bg-white text-gray-600 border-gray-200 hover:border-[#00C49F] hover:text-[#00C49F]'
+            }`}
+          >
+            Tümü
+          </Link>
+          <Link
+            href="/admin/listings?filter=pending"
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border transition-colors ${
+              isPending
+                ? 'bg-amber-500 text-white border-amber-500'
+                : 'bg-white text-gray-600 border-gray-200 hover:border-amber-400 hover:text-amber-600'
+            }`}
+          >
+            <Clock size={14} />
+            Bekleyenler
+            {pendingCount > 0 && (
+              <span className={`ml-1 px-1.5 py-0.5 rounded-full text-xs font-bold ${
+                isPending ? 'bg-white text-amber-600' : 'bg-amber-100 text-amber-700'
+              }`}>
+                {pendingCount}
+              </span>
+            )}
           </Link>
         </div>
 
@@ -78,13 +121,13 @@ export default async function AdminListingsPage() {
               <tbody className="divide-y divide-gray-50">
                 {listings.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-5 py-12 text-center text-sm text-gray-400">
-                      Henüz ilan bulunmuyor.
+                    <td colSpan={8} className="px-5 py-12 text-center text-sm text-gray-400">
+                      {isPending ? 'Onay bekleyen ilan bulunmuyor.' : 'Henüz ilan bulunmuyor.'}
                     </td>
                   </tr>
                 ) : (
                   listings.map((listing) => (
-                    <tr key={listing.id} className="hover:bg-gray-50 transition-colors">
+                    <tr key={listing.id} className={`hover:bg-gray-50 transition-colors ${listing.status === 'PENDING' ? 'bg-amber-50/30' : ''}`}>
                       <td className="px-5 py-4 font-semibold text-gray-800 max-w-[200px] truncate">
                         {listing.title}
                       </td>
@@ -120,6 +163,9 @@ export default async function AdminListingsPage() {
                           </Link>
                           <DeleteListingButton listingId={listing.id} listingTitle={listing.title} />
                         </div>
+                      </td>
+                      <td className="px-5 py-4">
+                        <ApproveListingButton listingId={listing.id} currentStatus={listing.status} />
                       </td>
                     </tr>
                   ))

@@ -92,13 +92,22 @@ export default async function AdminDashboardPage() {
             <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">Admin Komuta Merkezi</h1>
             <p className="text-sm text-gray-400 mt-1">{today}</p>
           </div>
-          <Link
-            href="/admin/create-listing"
-            className="inline-flex items-center gap-2 bg-[#00C49F] hover:bg-[#00b38e] text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors"
-          >
-            <Plus size={16} />
-            YENİ İLAN
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/admin/create-asset"
+              className="inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-700 text-sm font-semibold px-5 py-2.5 rounded-xl border border-gray-200 transition-colors"
+            >
+              <Plus size={16} />
+              Varlık Ekle
+            </Link>
+            <Link
+              href="/admin/create-listing"
+              className="inline-flex items-center gap-2 bg-[#00C49F] hover:bg-[#00b38e] text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors"
+            >
+              <Plus size={16} />
+              YENİ İLAN
+            </Link>
+          </div>
         </div>
 
         {/* Stat Cards */}
