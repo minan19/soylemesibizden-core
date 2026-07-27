@@ -4,6 +4,8 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { redirect } from 'next/navigation';
 import { Plus, MapPin, ArrowRight, Edit, TrendingUp, BarChart2 } from 'lucide-react';
+import DeleteListingButton from '@/components/DeleteListingButton';
+import ChangeStatusButton from '@/components/ChangeStatusButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -108,7 +110,8 @@ export default async function MyListingsPage() {
                       <span>{listing.views} görüntülenme</span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 shrink-0">
+                  <div className="flex flex-wrap items-center gap-2 shrink-0">
+                    <ChangeStatusButton listingId={listing.id} currentStatus={listing.status as 'ACTIVE' | 'PENDING' | 'SOLD'} />
                     <Link
                       href={`/my-listings/${listing.id}/analytics`}
                       className="flex items-center gap-1.5 px-3 py-1.5 bg-[#F0FDF8] rounded-lg text-xs font-semibold text-[#00C49F] hover:bg-[#00C49F] hover:text-white transition-all"
@@ -127,6 +130,7 @@ export default async function MyListingsPage() {
                     >
                       Görüntüle <ArrowRight size={12} />
                     </Link>
+                    <DeleteListingButton listingId={listing.id} listingTitle={listing.title} />
                   </div>
                 </div>
               </div>
