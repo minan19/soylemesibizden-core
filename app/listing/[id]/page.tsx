@@ -38,16 +38,25 @@ export const dynamic = 'force-dynamic';
 export async function generateMetadata({ params }: { params: { id: string } }) {
   const listing = await prisma.listing.findUnique({
     where: { id: params.id },
-    select: { title: true, description: true, price: true, city: true },
+    select: { title: true, description: true, price: true, city: true, photos: true },
   });
   if (!listing) return { title: 'İlan Bulunamadı' };
+  const title = `${listing.title} | Söylemesi Bizden`;
+  const description = `${listing.city ? listing.city + ' · ' : ''}${listing.description?.slice(0, 140) ?? ''}`;
   return {
-    title: `${listing.title} | Söylemesi Bizden`,
-    description: listing.description?.slice(0, 160),
+    title,
+    description,
     openGraph: {
       title: listing.title,
-      description: listing.description?.slice(0, 160),
+      description,
       type: 'website',
+      ...(listing.photos[0] ? { images: [{ url: listing.photos[0] }] } : {}),
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: listing.title,
+      description,
+      ...(listing.photos[0] ? { images: [listing.photos[0]] } : {}),
     },
   };
 }
@@ -184,14 +193,26 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
     <main className="min-h-screen bg-[#F8FAFC]">
       <div className="max-w-7xl mx-auto px-6 py-10 space-y-10">
 
-        {/* Back navigation */}
-        <Link
-          href="/listings"
-          className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 font-medium transition-colors"
-        >
-          <ArrowLeft size={16} />
-          Tüm İlanlar
-        </Link>
+        {/* Breadcrumb */}
+        <nav className="flex items-center gap-2 text-xs text-gray-400 flex-wrap">
+          <Link href="/" className="hover:text-[#00C49F] transition-colors">Ana Sayfa</Link>
+          <span>/</span>
+          <Link href="/listings" className="hover:text-[#00C49F] transition-colors">İlanlar</Link>
+          {listing.city && (
+            <>
+              <span>/</span>
+              <Link href={`/listings?city=${encodeURIComponent(listing.city)}`} className="hover:text-[#00C49F] transition-colors">{listing.city}</Link>
+            </>
+          )}
+          {listing.propertyType && (
+            <>
+              <span>/</span>
+              <Link href={`/listings?city=${encodeURIComponent(listing.city ?? '')}&propertyType=${listing.propertyType}`} className="hover:text-[#00C49F] transition-colors">{listing.propertyType}</Link>
+            </>
+          )}
+          <span>/</span>
+          <span className="text-gray-600 font-medium line-clamp-1 max-w-[200px]">{listing.title}</span>
+        </nav>
 
         {/* ────────── Main grid ────────── */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
@@ -634,6 +655,33 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
         )}
 
       </div>
+
+      {/* JSON-LD Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'RealEstateListing',
+            name: listing.title,
+            description: listing.description,
+            url: `https://soylemesibizden-core.vercel.app/listing/${listing.id}`,
+            ...(listing.photos[0] ? { image: listing.photos[0] } : {}),
+            offers: {
+              '@type': 'Offer',
+              price: listing.price,
+              priceCurrency: 'TRY',
+              availability: listing.status === 'ACTIVE' ? 'https://schema.org/InStock' : 'https://schema.org/SoldOut',
+            },
+            address: {
+              '@type': 'PostalAddress',
+              addressLocality: listing.district ?? listing.city ?? undefined,
+              addressRegion: listing.city ?? undefined,
+              addressCountry: 'TR',
+            },
+          }),
+        }}
+      />
     </main>
   );
 }

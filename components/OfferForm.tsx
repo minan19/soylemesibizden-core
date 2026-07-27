@@ -45,17 +45,10 @@ export default function OfferForm({ listingId, listingPrice }: OfferFormProps) {
     setLoading(true);
 
     try {
-      const userId = (session?.user as { id?: string })?.id;
-      if (!userId) {
-        setError('Oturum bilgisi alınamadı. Lütfen tekrar giriş yapın.');
-        setLoading(false);
-        return;
-      }
-
       const res = await fetch('/api/offers', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ listingId, userId, amount: parseFloat(amount) }),
+        body: JSON.stringify({ listingId, amount: parseFloat(amount) }),
       });
 
       if (res.status === 201) {

@@ -31,6 +31,7 @@ export interface Listing {
   isVerified: boolean;
   photos: string[];
   views: number;
+  createdAt: Date | string;
   owner: { name: string | null; email: string };
   _count?: { favorites: number };
 }
@@ -433,6 +434,11 @@ export default function ListingsClient({
               {listing.isVerified && (
                 <span className="absolute top-2 left-2 bg-white/90 text-[#00C49F] text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-0.5 shadow-sm">
                   <CheckCircle2 size={9} /> Onaylı
+                </span>
+              )}
+              {!listing.isVerified && new Date().getTime() - new Date(listing.createdAt).getTime() < 3 * 24 * 60 * 60 * 1000 && (
+                <span className="absolute top-2 right-2 bg-amber-400 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
+                  YENİ
                 </span>
               )}
             </div>
