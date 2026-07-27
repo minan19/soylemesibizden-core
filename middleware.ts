@@ -43,5 +43,6 @@ export const config = {
     '/notifications/:path*',
     '/create-listing/:path*',
     '/edit-listing/:path*',
+    '/saved-searches/:path*',
   ],
 };

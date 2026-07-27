@@ -507,6 +507,26 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* ─── VALUATION CTA ─────────────────────────────────────────── */}
+      <section className="bg-[#F0FDF8] border-y border-[#00C49F]/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div>
+            <p className="text-[10px] font-bold tracking-widest text-[#00C49F] uppercase mb-2">Ücretsiz Araç</p>
+            <h2 className="text-xl font-bold text-gray-900 mb-2">Mülkünüzün Piyasa Değerini Öğrenin</h2>
+            <p className="text-sm text-gray-500 max-w-md">
+              Gerçek piyasa verisine dayalı anlık değerleme. Şehir, mülk tipi ve alan bilgisiyle dakikalar içinde sonuç alın.
+            </p>
+          </div>
+          <Link
+            href="/valuation"
+            className="flex items-center gap-2 bg-[#00C49F] hover:bg-[#00a882] text-white font-bold px-6 py-3.5 rounded-2xl transition-colors whitespace-nowrap shadow-lg shadow-[#00C49F]/20"
+          >
+            Değerleme Yap
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+      </section>
+
       {/* ─── FOOTER ────────────────────────────────────────────────── */}
       <footer className="border-t border-gray-100 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
@@ -551,6 +571,8 @@ export default async function HomePage() {
                   { href: '/offers', label: 'Teklifler' },
                   { href: '/favorites', label: 'Favoriler' },
                   { href: '/market-radar', label: 'Piyasa Radarı' },
+                  { href: '/valuation', label: 'Değerleme Aracı' },
+                  { href: '/saved-searches', label: 'Kayıtlı Aramalar' },
                 ].map(l => (
                   <Link key={l.href} href={l.href} className="text-sm text-gray-400 hover:text-[#00C49F] transition-colors">{l.label}</Link>
                 ))}

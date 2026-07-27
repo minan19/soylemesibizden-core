@@ -82,8 +82,8 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
     (sessionUser.id === listing.ownerId || sessionUser.role === 'ADMIN')
   );
 
-  // Increment views and fetch similar listings concurrently
-  const [similarListings] = await Promise.all([
+  // Increment views, fetch similar listings, and market context concurrently
+  const [similarListings, , marketContext] = await Promise.all([
     prisma.listing.findMany({
       where: {
         id: { not: listing.id },
@@ -99,6 +99,19 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
     prisma.listing.update({
       where: { id: params.id },
       data: { views: { increment: 1 } },
+    }),
+    prisma.listing.aggregate({
+      where: {
+        id: { not: listing.id },
+        status: 'ACTIVE',
+        propertyType: listing.propertyType,
+        listingType: listing.listingType,
+        ...(listing.city ? { city: listing.city } : {}),
+      },
+      _avg: { price: true },
+      _count: { id: true },
+      _min: { price: true },
+      _max: { price: true },
     }),
   ]);
 
@@ -364,7 +377,50 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
               </div>
             )}
 
-            {/* 6 · Mortgage Calculator */}
+            {/* 6b · Market Context */}
+            {marketContext._count.id > 0 && marketContext._avg.price && (
+              <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+                <h2 className="text-[11px] font-bold tracking-widest text-gray-400 uppercase mb-4">
+                  Piyasa Karşılaştırması
+                </h2>
+                <div className="grid grid-cols-3 gap-4 mb-4">
+                  {[
+                    {
+                      label: 'Piyasa Ort.',
+                      value: Math.round(marketContext._avg.price!),
+                      note: `${marketContext._count.id} benzer ilan`,
+                    },
+                    { label: 'En Düşük', value: Math.round(marketContext._min.price!), note: 'Piyasada' },
+                    { label: 'En Yüksek', value: Math.round(marketContext._max.price!), note: 'Piyasada' },
+                  ].map(item => (
+                    <div key={item.label} className="text-center p-3 bg-gray-50 rounded-xl">
+                      <p className="text-xs text-gray-400 font-medium mb-1">{item.label}</p>
+                      <p className="text-sm font-bold text-gray-800">
+                        ₺{item.value.toLocaleString('tr-TR')}
+                      </p>
+                      <p className="text-[10px] text-gray-400 mt-0.5">{item.note}</p>
+                    </div>
+                  ))}
+                </div>
+                {(() => {
+                  const pct = ((listing.price - marketContext._avg.price!) / marketContext._avg.price!) * 100;
+                  const isAbove = pct > 2;
+                  const isBelow = pct < -2;
+                  if (!isAbove && !isBelow) return (
+                    <p className="text-xs text-gray-500 text-center">Bu ilan piyasa ortalamasında.</p>
+                  );
+                  return (
+                    <div className={`flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-semibold ${isAbove ? 'bg-amber-50 text-amber-700' : 'bg-[#F0FDF8] text-[#00C49F]'}`}>
+                      <TrendingUp size={13} />
+                      Bu ilan piyasa ortalamasının{' '}
+                      <strong>{Math.abs(pct).toFixed(1)}% {isAbove ? 'üzerinde' : 'altında'}</strong>
+                    </div>
+                  );
+                })()}
+              </div>
+            )}
+
+            {/* 7 · Mortgage Calculator */}
             <MortgageCalculator defaultPrice={listing.price} />
 
             {/* 7 · Inquiry / Contact Form */}
