@@ -1,22 +1,57 @@
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
-import { ArrowLeft, Users } from 'lucide-react';
+import { ArrowLeft, Users, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import ChangeRoleButton from '@/components/ChangeRoleButton';
 
 export const dynamic = 'force-dynamic';
 
-export default async function AdminUsersPage() {
-  const [users, totalCount, adminCount, conciergeCount] = await Promise.all([
+const PAGE_SIZE = 20;
+
+function buildUrl(p: number, q?: string, role?: string) {
+  const sp = new URLSearchParams();
+  if (q) sp.set('q', q);
+  if (role && role !== 'ALL') sp.set('role', role);
+  if (p > 1) sp.set('page', String(p));
+  const qs = sp.toString();
+  return `/admin/users${qs ? '?' + qs : ''}`;
+}
+
+export default async function AdminUsersPage({
+  searchParams,
+}: {
+  searchParams: { q?: string; page?: string; role?: string };
+}) {
+  const { q, role } = searchParams;
+  const currentPage = Math.max(1, parseInt(searchParams.page ?? '1') || 1);
+  const skip = (currentPage - 1) * PAGE_SIZE;
+
+  const where = {
+    ...(q ? {
+      OR: [
+        { name: { contains: q, mode: 'insensitive' as const } },
+        { email: { contains: q, mode: 'insensitive' as const } },
+      ],
+    } : {}),
+    ...(role && role !== 'ALL' ? { role } : {}),
+  };
+
+  const [users, totalCount, adminCount, conciergeCount, userCount] = await Promise.all([
     prisma.user.findMany({
+      where,
       orderBy: { createdAt: 'desc' },
+      skip,
+      take: PAGE_SIZE,
       include: {
         _count: { select: { listings: true, offers: true, favorites: true } },
       },
     }),
-    prisma.user.count(),
+    prisma.user.count({ where }),
     prisma.user.count({ where: { role: 'ADMIN' } }),
     prisma.user.count({ where: { role: 'CONCIERGE' } }),
+    prisma.user.count({ where: { role: 'USER' } }),
   ]);
+
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] font-sans">
@@ -25,12 +60,8 @@ export default async function AdminUsersPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
           <div className="flex items-center gap-4">
-            <Link
-              href="/admin/dashboard"
-              className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 font-medium transition-colors"
-            >
-              <ArrowLeft size={15} />
-              Admin Panel
+            <Link href="/admin/dashboard" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 font-medium transition-colors">
+              <ArrowLeft size={15} /> Admin Panel
             </Link>
             <span className="text-gray-300">|</span>
             <h1 className="text-xl font-extrabold text-gray-900 tracking-tight">
@@ -41,13 +72,14 @@ export default async function AdminUsersPage() {
         </div>
 
         {/* Stat Cards */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-4 gap-4 mb-6">
           {[
-            { label: 'Toplam Kullanıcı', value: totalCount, color: 'text-gray-800', bg: 'bg-gray-50' },
-            { label: 'Admin', value: adminCount, color: 'text-green-700', bg: 'bg-green-50' },
-            { label: 'Concierge', value: conciergeCount, color: 'text-blue-700', bg: 'bg-blue-50' },
+            { label: 'Toplam', value: totalCount, color: 'text-gray-800', bg: 'bg-gray-50', filterRole: undefined },
+            { label: 'Kullanıcı', value: userCount, color: 'text-gray-700', bg: 'bg-gray-50', filterRole: 'USER' },
+            { label: 'Admin', value: adminCount, color: 'text-green-700', bg: 'bg-green-50', filterRole: 'ADMIN' },
+            { label: 'Concierge', value: conciergeCount, color: 'text-blue-700', bg: 'bg-blue-50', filterRole: 'CONCIERGE' },
           ].map((s) => (
-            <div key={s.label} className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm flex items-center gap-4">
+            <Link key={s.label} href={buildUrl(1, q, s.filterRole)} className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm flex items-center gap-4 hover:border-[#00C49F]/30 transition-colors">
               <div className={`w-10 h-10 ${s.bg} rounded-xl flex items-center justify-center`}>
                 <Users size={18} className={s.color} />
               </div>
@@ -55,21 +87,57 @@ export default async function AdminUsersPage() {
                 <p className={`text-2xl font-extrabold ${s.color}`}>{s.value}</p>
                 <p className="text-xs text-gray-400 font-semibold">{s.label}</p>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 
+        {/* Search + Role Filter */}
+        <div className="flex gap-3 mb-6 flex-wrap">
+          <form method="get" action="/admin/users" className="flex gap-2 flex-1 min-w-64">
+            {role && role !== 'ALL' && <input type="hidden" name="role" value={role} />}
+            <div className="relative flex-1">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input
+                name="q"
+                defaultValue={q ?? ''}
+                placeholder="İsim veya email ara…"
+                className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:border-[#00C49F] bg-white"
+              />
+            </div>
+            <button type="submit" className="px-4 py-2 bg-[#00C49F] text-white text-sm font-semibold rounded-xl hover:bg-[#00a882] transition-colors">
+              Ara
+            </button>
+          </form>
+          <div className="flex gap-2">
+            {[
+              { label: 'Tümü', val: 'ALL' },
+              { label: 'USER', val: 'USER' },
+              { label: 'ADMIN', val: 'ADMIN' },
+              { label: 'CONCIERGE', val: 'CONCIERGE' },
+            ].map(({ label, val }) => (
+              <Link
+                key={val}
+                href={buildUrl(1, q, val === 'ALL' ? undefined : val)}
+                className={`px-3 py-2 text-xs font-semibold rounded-xl border transition-colors ${
+                  (role ?? 'ALL') === val
+                    ? 'bg-[#00C49F] text-white border-[#00C49F]'
+                    : 'bg-white text-gray-600 border-gray-200 hover:border-[#00C49F]/50'
+                }`}
+              >
+                {label}
+              </Link>
+            ))}
+          </div>
+        </div>
+
         {/* Table */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-gray-50 border-b border-gray-100">
                 <tr>
                   {['Kullanıcı', 'Email', 'Rol', 'İlan', 'Teklif', 'Favori', 'Üyelik', ''].map((h) => (
-                    <th
-                      key={h}
-                      className="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider whitespace-nowrap"
-                    >
+                    <th key={h} className="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider whitespace-nowrap">
                       {h}
                     </th>
                   ))}
@@ -79,7 +147,7 @@ export default async function AdminUsersPage() {
                 {users.length === 0 ? (
                   <tr>
                     <td colSpan={8} className="px-5 py-12 text-center text-sm text-gray-400">
-                      Henüz kullanıcı bulunmuyor.
+                      Kullanıcı bulunamadı.
                     </td>
                   </tr>
                 ) : (
@@ -101,23 +169,14 @@ export default async function AdminUsersPage() {
                       <td className="px-5 py-4">
                         <ChangeRoleButton userId={user.id} currentRole={user.role as 'USER' | 'ADMIN' | 'CONCIERGE'} />
                       </td>
-                      <td className="px-5 py-4 text-center font-semibold text-gray-700">
-                        {user._count.listings}
-                      </td>
-                      <td className="px-5 py-4 text-center font-semibold text-gray-700">
-                        {user._count.offers}
-                      </td>
-                      <td className="px-5 py-4 text-center font-semibold text-gray-700">
-                        {user._count.favorites}
-                      </td>
+                      <td className="px-5 py-4 text-center font-semibold text-gray-700">{user._count.listings}</td>
+                      <td className="px-5 py-4 text-center font-semibold text-gray-700">{user._count.offers}</td>
+                      <td className="px-5 py-4 text-center font-semibold text-gray-700">{user._count.favorites}</td>
                       <td className="px-5 py-4 text-gray-400 whitespace-nowrap text-xs">
                         {new Date(user.createdAt).toLocaleDateString('tr-TR')}
                       </td>
                       <td className="px-5 py-4 text-right">
-                        <Link
-                          href={`/admin/users/${user.id}`}
-                          className="text-xs text-[#00C49F] hover:text-[#00a882] font-semibold transition-colors"
-                        >
+                        <Link href={`/admin/users/${user.id}`} className="text-xs text-[#00C49F] hover:text-[#00a882] font-semibold transition-colors">
                           Detay →
                         </Link>
                       </td>
@@ -128,6 +187,28 @@ export default async function AdminUsersPage() {
             </table>
           </div>
         </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-gray-500">
+              {skip + 1}–{Math.min(skip + PAGE_SIZE, totalCount)} / {totalCount} kullanıcı
+            </p>
+            <div className="flex items-center gap-2">
+              {currentPage > 1 && (
+                <Link href={buildUrl(currentPage - 1, q, role)} className="flex items-center gap-1 px-3 py-1.5 text-sm font-semibold bg-white border border-gray-200 rounded-xl hover:border-[#00C49F] hover:text-[#00C49F] transition-colors">
+                  <ChevronLeft size={14} /> Önceki
+                </Link>
+              )}
+              <span className="px-3 py-1.5 text-sm text-gray-600">{currentPage} / {totalPages}</span>
+              {currentPage < totalPages && (
+                <Link href={buildUrl(currentPage + 1, q, role)} className="flex items-center gap-1 px-3 py-1.5 text-sm font-semibold bg-white border border-gray-200 rounded-xl hover:border-[#00C49F] hover:text-[#00C49F] transition-colors">
+                  Sonraki <ChevronRight size={14} />
+                </Link>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
