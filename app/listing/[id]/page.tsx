@@ -34,6 +34,7 @@ import CompareButton from '@/components/CompareButton';
 import ShareButton from '@/components/ShareButton';
 import RecordView from '@/components/RecordView';
 import PhotoGallery from '@/components/PhotoGallery';
+import ViewingRequestForm from '@/components/ViewingRequestForm';
 
 export const dynamic = 'force-dynamic';
 
@@ -563,6 +564,9 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
 
             {/* Deal Room */}
             <CreateDealButton listingId={listing.id} sellerId={listing.ownerId} />
+
+            {/* Viewing Request */}
+            <ViewingRequestForm listingId={listing.id} listingTitle={listing.title} />
 
           </div>
         </div>
