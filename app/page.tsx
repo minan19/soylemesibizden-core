@@ -18,6 +18,7 @@ import {
   Mail,
 } from 'lucide-react';
 import SearchAutocomplete from '@/components/SearchAutocomplete';
+import CompareButton from '@/components/CompareButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -34,7 +35,9 @@ export default async function HomePage() {
         orderBy: { views: 'desc' },
         select: {
           id: true, title: true, price: true, status: true, listingType: true,
-          city: true, district: true, rooms: true, area: true, isVerified: true, photos: true,
+          propertyType: true, city: true, district: true, neighborhood: true,
+          rooms: true, area: true, isVerified: true, photos: true, views: true,
+          createdAt: true,
         },
       }),
     ]);
@@ -238,93 +241,105 @@ export default async function HomePage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {featuredListings.map((listing) => (
-              <Link
-                key={listing.id}
-                href={`/listing/${listing.id}`}
-                className="group bg-white border border-gray-100 rounded-2xl overflow-hidden hover:shadow-xl transition-all hover:-translate-y-0.5"
-              >
-                {/* Photo */}
-                <div className="w-full h-44 overflow-hidden relative bg-gradient-to-br from-slate-100 to-slate-200">
-                  {listing.photos && listing.photos.length > 0 ? (
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img
-                      src={listing.photos[0]}
-                      alt={listing.title}
-                      className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-300"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <Building2 className="w-10 h-10 text-slate-300" />
+            {featuredListings.map((listing) => {
+              const isNew = new Date().getTime() - new Date(listing.createdAt).getTime() < 3 * 24 * 60 * 60 * 1000;
+              const locationParts = [listing.neighborhood, listing.district, listing.city].filter(Boolean);
+              return (
+                <div
+                  key={listing.id}
+                  className="group bg-white border border-gray-100 rounded-2xl overflow-hidden hover:shadow-xl transition-all hover:-translate-y-0.5 flex flex-col"
+                >
+                  {/* Photo */}
+                  <Link href={`/listing/${listing.id}`} className="block w-full h-44 overflow-hidden relative bg-gradient-to-br from-slate-100 to-slate-200 flex-shrink-0">
+                    {listing.photos && listing.photos.length > 0 ? (
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img
+                        src={listing.photos[0]}
+                        alt={listing.title}
+                        className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-300"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Building2 className="w-10 h-10 text-slate-300" />
+                      </div>
+                    )}
+                    {isNew && !listing.isVerified && (
+                      <span className="absolute top-3 right-3 bg-amber-400 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
+                        YENİ
+                      </span>
+                    )}
+                    {listing.isVerified && (
+                      <span className="absolute top-3 left-3 bg-white/90 text-[#00C49F] text-xs font-bold px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+                        <CheckCircle className="w-3 h-3" />
+                        Doğrulandı
+                      </span>
+                    )}
+                    {listing.photos && listing.photos.length > 1 && (
+                      <span className="absolute bottom-3 right-3 bg-black/60 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                        +{listing.photos.length - 1}
+                      </span>
+                    )}
+                  </Link>
+
+                  <div className="p-5 flex flex-col flex-1">
+                    {/* Type badges row */}
+                    <div className="flex items-center gap-2 mb-3 flex-wrap">
+                      <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${
+                        listing.listingType === 'KİRALIK' ? 'bg-blue-50 text-blue-600' : 'bg-[#F0FDF8] text-[#00C49F]'
+                      }`}>
+                        {listing.listingType}
+                      </span>
+                      {listing.propertyType && (
+                        <span className="text-xs font-semibold text-gray-400 bg-gray-50 px-2.5 py-1 rounded-full">
+                          {listing.propertyType}
+                        </span>
+                      )}
                     </div>
-                  )}
-                  {listing.isVerified && (
-                    <span className="absolute top-3 left-3 bg-white/90 text-[#00C49F] text-xs font-bold px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
-                      <CheckCircle className="w-3 h-3" />
-                      Doğrulandı
-                    </span>
-                  )}
-                  {listing.photos && listing.photos.length > 1 && (
-                    <span className="absolute bottom-3 right-3 bg-black/60 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                      +{listing.photos.length - 1} fotoğraf
-                    </span>
-                  )}
-                </div>
 
-                <div className="p-5">
-                  {/* Status + Type badges */}
-                  <div className="flex items-center justify-between mb-3">
-                    <span
-                      className={`text-xs font-bold px-2.5 py-1 rounded-full ${
-                        listing.status === 'ACTIVE'
-                          ? 'bg-green-50 text-green-600'
-                          : listing.status === 'SOLD'
-                          ? 'bg-gray-100 text-gray-500'
-                          : 'bg-yellow-50 text-yellow-600'
-                      }`}
-                    >
-                      {listing.status === 'ACTIVE'
-                        ? 'AKTİF'
-                        : listing.status === 'SOLD'
-                        ? 'SATILDI'
-                        : 'BEKLEMEDE'}
-                    </span>
-                    <span className="text-xs font-semibold text-gray-400 bg-gray-50 px-2.5 py-1 rounded-full">
-                      {listing.listingType}
-                    </span>
-                  </div>
+                    {/* Title */}
+                    <Link href={`/listing/${listing.id}`}>
+                      <h3 className="font-bold text-gray-900 text-base leading-snug line-clamp-2 mb-2 group-hover:text-[#00C49F] transition-colors">
+                        {listing.title}
+                      </h3>
+                    </Link>
 
-                  {/* Title */}
-                  <h3 className="font-bold text-gray-900 text-base leading-snug line-clamp-2 mb-2 group-hover:text-[#00C49F] transition-colors">
-                    {listing.title}
-                  </h3>
+                    {/* Location */}
+                    {locationParts.length > 0 && (
+                      <p className="text-gray-400 text-xs font-medium flex items-center gap-1 mb-3">
+                        <MapPin className="w-3 h-3 flex-shrink-0" />
+                        {locationParts.join(', ')}
+                      </p>
+                    )}
 
-                  {/* Location */}
-                  {(listing.city || listing.district) && (
-                    <p className="text-gray-400 text-xs font-medium flex items-center gap-1 mb-3">
-                      <MapPin className="w-3 h-3 flex-shrink-0" />
-                      {[listing.district, listing.city].filter(Boolean).join(', ')}
-                    </p>
-                  )}
-
-                  {/* Price + Meta */}
-                  <div className="flex items-end justify-between pt-3 border-t border-gray-50">
-                    <p className="text-[#00C49F] font-bold text-xl leading-none">
-                      {listing.price.toLocaleString('tr-TR')}
-                      <span className="text-base ml-0.5">₺</span>
-                    </p>
-                    <div className="flex gap-3 text-xs text-gray-400 font-medium">
+                    {/* Specs */}
+                    <div className="flex gap-2 flex-wrap mb-3">
                       {listing.rooms != null && (
-                        <span className="bg-gray-50 px-2 py-0.5 rounded-md">{listing.rooms} oda</span>
+                        <span className="text-xs text-gray-500 bg-gray-50 px-2 py-0.5 rounded-md font-medium">{listing.rooms} oda</span>
                       )}
                       {listing.area != null && (
-                        <span className="bg-gray-50 px-2 py-0.5 rounded-md">{listing.area} m²</span>
+                        <span className="text-xs text-gray-500 bg-gray-50 px-2 py-0.5 rounded-md font-medium">{listing.area} m²</span>
                       )}
+                    </div>
+
+                    {/* Price + actions */}
+                    <div className="flex items-center justify-between pt-3 border-t border-gray-50 mt-auto">
+                      <Link href={`/listing/${listing.id}`}>
+                        <p className="text-[#00C49F] font-bold text-xl leading-none">
+                          {listing.price.toLocaleString('tr-TR')}
+                          <span className="text-base ml-0.5">₺</span>
+                        </p>
+                        {listing.area && listing.area > 0 && (
+                          <p className="text-[10px] text-gray-400 font-medium mt-0.5">
+                            {Math.round(listing.price / listing.area).toLocaleString('tr-TR')} ₺/m²
+                          </p>
+                        )}
+                      </Link>
+                      <CompareButton listingId={listing.id} />
                     </div>
                   </div>
                 </div>
-              </Link>
-            ))}
+              );
+            })}
           </div>
         )}
       </section>
