@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
-import { Building2, CheckCircle, Users, Clock, ArrowUpRight, Plus, MessageSquare } from 'lucide-react';
+import { Building2, CheckCircle, Users, Clock, ArrowUpRight, Plus, MessageSquare, Activity } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,6 +16,7 @@ export default async function AdminDashboardPage() {
     pendingOffers,
     pendingListings,
     inquiryCount,
+    dealCount,
   ] = await Promise.all([
     prisma.listing.count(),
     prisma.user.count(),
@@ -41,6 +42,7 @@ export default async function AdminDashboardPage() {
     prisma.offer.count({ where: { status: 'PENDING' } }),
     prisma.listing.count({ where: { status: 'PENDING' } }),
     prisma.inquiry.count(),
+    prisma.dealRoom.count(),
   ]);
 
   const today = new Date().toLocaleDateString('tr-TR', {
@@ -193,11 +195,39 @@ export default async function AdminDashboardPage() {
             </div>
             <ArrowUpRight size={13} className="text-gray-300 ml-auto" />
           </Link>
+          <Link href="/admin/deals" className="flex items-center gap-3 bg-white rounded-2xl px-4 py-3 border border-gray-100 hover:border-[#00C49F]/30 hover:shadow-sm transition-all">
+            <Activity size={16} className="text-blue-500" />
+            <div>
+              <p className="text-xs font-bold text-gray-700">Anlaşma Odaları</p>
+              <p className="text-[10px] text-gray-400">{dealCount} oda</p>
+            </div>
+            <ArrowUpRight size={13} className="text-gray-300 ml-auto" />
+          </Link>
+        </div>
+
+        {/* Third row quick links */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
           <Link href="/market-radar" className="flex items-center gap-3 bg-white rounded-2xl px-4 py-3 border border-gray-100 hover:border-[#00C49F]/30 hover:shadow-sm transition-all">
             <Users size={16} className="text-purple-500" />
             <div>
               <p className="text-xs font-bold text-gray-700">Piyasa Radar</p>
               <p className="text-[10px] text-gray-400">Analiz & İstatistik</p>
+            </div>
+            <ArrowUpRight size={13} className="text-gray-300 ml-auto" />
+          </Link>
+          <Link href="/admin/inquiries" className="flex items-center gap-3 bg-white rounded-2xl px-4 py-3 border border-gray-100 hover:border-[#00C49F]/30 hover:shadow-sm transition-all">
+            <MessageSquare size={16} className="text-amber-500" />
+            <div>
+              <p className="text-xs font-bold text-gray-700">Başvurular</p>
+              <p className="text-[10px] text-gray-400">{inquiryCount} başvuru</p>
+            </div>
+            <ArrowUpRight size={13} className="text-gray-300 ml-auto" />
+          </Link>
+          <Link href="/concierge" className="flex items-center gap-3 bg-white rounded-2xl px-4 py-3 border border-gray-100 hover:border-[#00C49F]/30 hover:shadow-sm transition-all">
+            <CheckCircle size={16} className="text-green-500" />
+            <div>
+              <p className="text-xs font-bold text-gray-700">Danışma</p>
+              <p className="text-[10px] text-gray-400">Concierge vakalar</p>
             </div>
             <ArrowUpRight size={13} className="text-gray-300 ml-auto" />
           </Link>

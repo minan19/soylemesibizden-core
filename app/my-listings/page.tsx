@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { redirect } from 'next/navigation';
-import { Plus, MapPin, ArrowRight, Edit, TrendingUp } from 'lucide-react';
+import { Plus, MapPin, ArrowRight, Edit, TrendingUp, BarChart2 } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -109,6 +109,12 @@ export default async function MyListingsPage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
+                    <Link
+                      href={`/my-listings/${listing.id}/analytics`}
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-[#F0FDF8] rounded-lg text-xs font-semibold text-[#00C49F] hover:bg-[#00C49F] hover:text-white transition-all"
+                    >
+                      <BarChart2 size={12} /> Analiz
+                    </Link>
                     <Link
                       href={user.role === 'ADMIN' ? `/admin/edit-listing/${listing.id}` : `/edit-listing/${listing.id}`}
                       className="flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 rounded-lg text-xs font-semibold text-gray-500 hover:text-gray-900 hover:border-gray-300 transition-all"

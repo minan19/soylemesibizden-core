@@ -1,7 +1,8 @@
 import prisma from '@/lib/prisma';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ArrowLeft, Users, Building2, Calendar, Activity, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Users, Building2, Calendar, Activity, CheckCircle, Clock } from 'lucide-react';
+import DealStatusButton from '@/components/DealStatusButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -162,7 +163,14 @@ export default async function BoardroomDetailPage({ params }: { params: { id: st
               )}
             </div>
 
-            <Link href="/boardroom" className="flex items-center justify-center gap-2 py-3 border border-gray-200 text-gray-600 text-sm font-semibold rounded-xl hover:bg-gray-50 transition-colors">
+            {room.status !== 'CLOSED' && (
+              <div className="bg-white rounded-2xl border border-gray-100 p-5">
+                <p className="text-[10px] font-bold tracking-widest text-gray-400 uppercase mb-3">Durum Güncelle</p>
+                <DealStatusButton dealId={room.id} currentStatus={room.status} />
+              </div>
+            )}
+
+            <Link href="/deals" className="flex items-center justify-center gap-2 py-3 border border-gray-200 text-gray-600 text-sm font-semibold rounded-xl hover:bg-gray-50 transition-colors">
               <ArrowLeft size={14} /> Tüm Odalar
             </Link>
           </div>
