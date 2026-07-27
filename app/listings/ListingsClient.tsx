@@ -45,6 +45,7 @@ export interface FilterParams {
   currentMaxPrice?: string;
   currentMinRooms?: string;
   currentCity?: string;
+  currentNeighborhood?: string;
   currentHasElevator?: string;
   currentHasParking?: string;
   currentHasGarden?: string;
@@ -117,6 +118,7 @@ export default function ListingsClient({
   currentMaxPrice,
   currentMinRooms,
   currentCity,
+  currentNeighborhood,
   currentHasElevator,
   currentHasParking,
   currentHasGarden,
@@ -148,6 +150,7 @@ export default function ListingsClient({
       maxPrice: priceMax || undefined,
       minRooms: activeMinRooms || undefined,
       city: currentCity || undefined,
+      neighborhood: currentNeighborhood || undefined,
       hasElevator: currentHasElevator || undefined,
       hasParking: currentHasParking || undefined,
       hasGarden: currentHasGarden || undefined,
@@ -313,6 +316,30 @@ export default function ListingsClient({
               </span>
             )}
           </div>
+
+          {/* Row 3b — neighborhood filter (visible only when a city is selected) */}
+          {currentCity && (
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-gray-400 font-medium shrink-0">Mahalle:</span>
+              <input
+                type="text"
+                defaultValue={currentNeighborhood ?? ''}
+                placeholder="Mahalle adı…"
+                className="w-44 px-3 py-2 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#00C49F] transition-colors"
+                onKeyDown={e => {
+                  if (e.key === 'Enter') push({ neighborhood: (e.currentTarget.value || undefined) });
+                }}
+              />
+              {currentNeighborhood && (
+                <button
+                  onClick={() => push({ neighborhood: undefined })}
+                  className="text-xs text-gray-400 hover:text-red-500 transition-colors"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+          )}
 
           {/* Row 4 — price range */}
           <div className="flex flex-wrap items-center gap-2">

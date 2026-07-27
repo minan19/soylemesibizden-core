@@ -178,6 +178,13 @@ export default function Navbar() {
                     İlanlarım
                   </Link>
                   <Link
+                    href="/saved-searches"
+                    onClick={() => setDropdownOpen(false)}
+                    className="block px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    Kayıtlı Aramalar
+                  </Link>
+                  <Link
                     href="/notifications"
                     onClick={() => setDropdownOpen(false)}
                     className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"

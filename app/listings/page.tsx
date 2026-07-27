@@ -2,6 +2,7 @@ import prisma from '@/lib/prisma';
 import Link from 'next/link';
 import { Metadata } from 'next';
 import ListingsClient from './ListingsClient';
+import SaveSearchButton from '@/components/SaveSearchButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -32,6 +33,7 @@ type SearchParams = {
   maxPrice?: string;
   minRooms?: string;
   city?: string;
+  neighborhood?: string;
   page?: string;
   hasElevator?: string;
   hasParking?: string;
@@ -53,6 +55,7 @@ export default async function ListingsPage({
     maxPrice,
     minRooms,
     city,
+    neighborhood,
     page,
     hasElevator,
     hasParking,
@@ -84,6 +87,7 @@ export default async function ListingsPage({
     ...(hasPriceFilter ? { price: priceFilter } : {}),
     ...(minRooms ? { rooms: { gte: Number(minRooms) } } : {}),
     ...(city ? { city: { contains: city, mode: 'insensitive' as const } } : {}),
+    ...(neighborhood ? { neighborhood: { contains: neighborhood, mode: 'insensitive' as const } } : {}),
     ...(hasElevator === '1' ? { hasElevator: true } : {}),
     ...(hasParking === '1' ? { hasParking: true } : {}),
     ...(hasGarden === '1' ? { hasGarden: true } : {}),
@@ -128,6 +132,7 @@ export default async function ListingsPage({
     if (maxPrice) sp.set('maxPrice', maxPrice);
     if (minRooms) sp.set('minRooms', minRooms);
     if (city) sp.set('city', city);
+    if (neighborhood) sp.set('neighborhood', neighborhood);
     if (hasElevator) sp.set('hasElevator', hasElevator);
     if (hasParking) sp.set('hasParking', hasParking);
     if (hasGarden) sp.set('hasGarden', hasGarden);
@@ -149,7 +154,7 @@ export default async function ListingsPage({
               {totalPages > 1 && ` · Sayfa ${currentPage} / ${totalPages}`}
             </p>
           </div>
-          <div className="flex gap-2 flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap">
             {counts.map(c => (
               <span
                 key={c.status}
@@ -159,6 +164,21 @@ export default async function ListingsPage({
                 <span className="text-[#00C49F]">{c._count}</span>
               </span>
             ))}
+            <SaveSearchButton filters={{
+              ...(q ? { q } : {}),
+              ...(status && status !== 'ALL' ? { status } : {}),
+              ...(sort && sort !== 'newest' ? { sort } : {}),
+              ...(propertyType && propertyType !== 'ALL' ? { propertyType } : {}),
+              ...(listingType && listingType !== 'ALL' ? { listingType } : {}),
+              ...(minPrice ? { minPrice } : {}),
+              ...(maxPrice ? { maxPrice } : {}),
+              ...(minRooms ? { minRooms } : {}),
+              ...(city ? { city } : {}),
+              ...(neighborhood ? { neighborhood } : {}),
+              ...(hasElevator ? { hasElevator } : {}),
+              ...(hasParking ? { hasParking } : {}),
+              ...(hasGarden ? { hasGarden } : {}),
+            }} />
           </div>
         </header>
 
@@ -173,6 +193,7 @@ export default async function ListingsPage({
           currentMaxPrice={maxPrice}
           currentMinRooms={minRooms}
           currentCity={city}
+          currentNeighborhood={neighborhood}
           currentHasElevator={hasElevator}
           currentHasParking={hasParking}
           currentHasGarden={hasGarden}
