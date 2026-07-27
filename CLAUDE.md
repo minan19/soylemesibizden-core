@@ -75,7 +75,9 @@ soylemesibizden-core/
 │   │   └── [id]/analytics/page.tsx # ✅ İlan KPI analitik
 │   ├── boardroom/[id]/page.tsx     # ✅ Anlaşma odası + DealStatusButton
 │   ├── market-radar/page.tsx       # ✅ Piyasa analitik
-│   ├── sitemap.ts                  # ✅ Dinamik sitemap
+│   ├── user/[id]/page.tsx          # ✅ Satıcı profil sayfası (FAZ-59)
+│   ├── sehir/[slug]/page.tsx       # ✅ Şehir özet sayfası (FAZ-60)
+│   ├── sitemap.ts                  # ✅ Dinamik sitemap (şehir sayfaları dahil)
 │   └── robots.ts                  # ✅ Crawler kuralları
 ├── components/
 │   ├── Navbar.tsx                  # ✅ Auth-aware, mobile hamburger, admin badge, bildirimler
@@ -89,7 +91,12 @@ soylemesibizden-core/
 │   ├── ChangeRoleButton.tsx        # ✅ Admin kullanıcı rol değiştirme
 │   ├── CreateDealButton.tsx        # ✅ Listing'den anlaşma odası açma
 │   ├── DeleteListingButton.tsx     # ✅ İlan silme
-│   └── ChangeStatusButton.tsx      # ✅ İlan durum değiştirme (ACTIVE/PENDING/SOLD)
+│   ├── ChangeStatusButton.tsx      # ✅ İlan durum değiştirme (ACTIVE/PENDING/SOLD)
+│   ├── PhotoGallery.tsx            # ✅ Lightbox galeri (FAZ-55)
+│   ├── RecentlyViewed.tsx          # ✅ Son görüntülenen ilanlar localStorage (FAZ-54)
+│   ├── RecordView.tsx              # ✅ View kaydetme client bileşeni (FAZ-54)
+│   ├── MobileBottomNav.tsx         # ✅ Mobil alt navigasyon (FAZ-58)
+│   └── ViewingRequestForm.tsx      # ✅ Görüntüleme randevusu formu (FAZ-62)
 ├── prisma/
 │   └── schema.prisma               # ✅ 8 model: User, Listing, Offer, DealRoom, AdvisoryCase, Asset, Favorite, Inquiry
 ├── middleware.ts                   # ✅ RBAC — admin/profile/favorites koruması
@@ -199,6 +206,29 @@ Migration SQL kullanıcı tarafından Neon SQL Editor'da çalıştırılmalı.
 - [x] **FAZ-17:** API güvenlik: /api/listings/[id] ve /api/offers/[id] PUT/DELETE kimlik doğrulama
 - [x] **FAZ-18:** listings generateMetadata SEO, loading skeleton (my-listings, notifications, deals, offers), /api/listings geliştirilmiş GET (filtreli, sayfalı) + POST auth
 
+### Oturum 5 (FAZ 53-62) — Tamamlananlar
+- [x] **FAZ-53:** Ana sayfa ilan kartları iyileştirme — YENİ badge, propertyType chip, ₺/m², neighbourhood, CompareButton
+- [x] **FAZ-54:** Son görüntülenen ilanlar — RecentlyViewed + RecordView (localStorage)
+- [x] **FAZ-55:** Fotoğraf galerisi lightbox — klavye navigasyonu (←→Esc), thumbnail strip, tam ekran, PhotoGallery bileşeni
+- [x] **FAZ-56:** Hızlı Görüntüle modal — listing grid'de hover overlay + quick view popup
+- [x] **FAZ-57:** Arama sayfasına SaveSearchButton eklendi
+- [x] **FAZ-58:** Mobil alt navigasyon barı (MobileBottomNav) — 5 link, aktif durum gösterimi
+- [x] **FAZ-59:** Satıcı/danışman profil sayfası /user/[id] — istatistikler, ilanlar, WhatsApp, SEO
+- [x] **FAZ-60:** Şehir özet sayfaları /sehir/[slug] — fiyat analizi, ilçe dağılımı, mülk türleri, hızlı filtreler
+- [x] **FAZ-61:** Ana sayfa şehir chip'lerine ilan sayısı badge, /sehir/ linklerine geçiş, sitemap güncellendi
+- [x] **FAZ-62:** Görüntüleme randevusu formu (ViewingRequestForm) — tarih/saat seçimi, collapsible, inquiry API
+
+### Yeni Bileşenler (Oturum 5)
+- [x] **PhotoGallery** — Lightbox, thumbnail strip, zoom hover, klavye navigasyonu
+- [x] **RecentlyViewed** — localStorage bazlı son görüntülenen ilanlar horizontal scroll
+- [x] **RecordView** — Client component, listing detayda view kaydeder
+- [x] **MobileBottomNav** — Mobil sticky alt nav, pathname bazlı aktif durum
+- [x] **ViewingRequestForm** — Görüntüleme randevusu, collapsible accordion
+
+### Yeni Sayfalar (Oturum 5)
+- [x] **/user/[id]** — Satıcı/danışman profil sayfası
+- [x] **/sehir/[slug]** — Şehir özet ve analiz sayfası
+
 ### Oturum 4 (FAZ 19-34) — Tamamlananlar
 - [x] **FAZ-19:** /api/listings GET geliştirilmiş, CLAUDE.md güncellendi
 - [x] **FAZ-20:** ShareButton — Web Share API + clipboard fallback
@@ -253,12 +283,12 @@ Migration SQL kullanıcı tarafından Neon SQL Editor'da çalıştırılmalı.
 ### 🔵 İyileştirme
 | # | İş |
 |---|-----|
-| 7 | Mobile responsive iyileştirme — tüm sayfalar |
-| 8 | i18n gerçek içerik (TR/EN/AR/RU) |
-| 9 | Unit/integration test altyapısı |
-| 10 | Lighthouse skoru >95 |
-| 11 | Fiyat geçmişi grafiği (listing detayda) |
-| 12 | Kayıtlı aramalar (saved searches) özelliği |
+| 7 | i18n gerçek içerik (TR/EN/AR/RU) |
+| 8 | Unit/integration test altyapısı |
+| 9 | Lighthouse skoru >95 |
+| 10 | Fiyat geçmişi grafiği (listing detayda) |
+| 11 | PDF listing raporu (jsPDF) |
+| 12 | Real-time güncellemeler (Server-Sent Events) |
 
 ---
 
@@ -363,4 +393,4 @@ git push https://minan19:<GITHUB_TOKEN>@github.com/minan19/soylemesibizden-core.
 
 ---
 
-*Son güncelleme: 2026-07-27 — Oturum 4: FAZ 19-34 tamamlandı. Autocomplete arama, yazdırma, WhatsApp, bildirim rozeti, admin sayfalama+arama, admin kullanıcı detay, OfferForm fiyat karşılaştırma, loading skeleton'lar, benzer ilanlar iyileştirmesi.*
+*Son güncelleme: 2026-07-27 — Oturum 5: FAZ 53-62 tamamlandı. Fotoğraf lightbox, recently viewed, quick view modal, mobil alt nav, satıcı profil sayfası, şehir özet sayfaları (/sehir/[slug]), görüntüleme randevusu formu, SaveSearchButton search sayfasında.*
