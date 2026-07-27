@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import prisma from '@/lib/prisma';
 import Link from 'next/link';
 import { ArrowLeft, ShieldCheck, Save } from 'lucide-react';
+import PhotoUrlInput from '@/components/PhotoUrlInput';
 
 async function createListing(formData: FormData) {
   'use server';
@@ -207,13 +208,8 @@ export default async function CreateListingPage() {
             <h2 className="text-[10px] font-bold tracking-widest text-[#00C49F] uppercase">Fotoğraflar</h2>
             <div className="space-y-1.5">
               <label className={labelCls}>Fotoğraf URL&apos;leri</label>
-              <p className="text-xs text-gray-400">Fotoğraf URL&apos;lerini virgülle ayırarak girin</p>
-              <textarea
-                name="photos"
-                rows={3}
-                placeholder="https://..., https://..., https://..."
-                className={`${inputCls} resize-none`}
-              />
+              <p className="text-xs text-gray-400">Her fotoğraf için URL girin. Önizleme otomatik görünür.</p>
+              <PhotoUrlInput name="photos" />
             </div>
           </div>
 
