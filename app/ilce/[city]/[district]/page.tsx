@@ -9,54 +9,61 @@ import {
 
 export const dynamic = 'force-dynamic';
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const city = decodeURIComponent(params.slug);
-  const count = await prisma.listing.count({ where: { city: { equals: city, mode: 'insensitive' }, status: 'ACTIVE' } });
-  if (count === 0) return { title: 'Şehir Bulunamadı' };
+export async function generateMetadata({ params }: { params: { city: string; district: string } }): Promise<Metadata> {
+  const city = decodeURIComponent(params.city);
+  const district = decodeURIComponent(params.district);
+  const count = await prisma.listing.count({
+    where: {
+      city: { equals: city, mode: 'insensitive' },
+      district: { equals: district, mode: 'insensitive' },
+      status: 'ACTIVE',
+    },
+  });
+  if (count === 0) return { title: 'İlçe Bulunamadı' };
   return {
-    title: `${city} İlanları | Söylemesi Bizden`,
-    description: `${city} şehrinde ${count} aktif gayrimenkul ilanı. Satılık, kiralık konut, ticari alan, arazi ilanları.`,
-    openGraph: { title: `${city} İlanları`, description: `${city} şehrinde ${count} ilan`, type: 'website' },
+    title: `${district} / ${city} İlanları | Söylemesi Bizden`,
+    description: `${city} ${district} ilçesinde ${count} aktif gayrimenkul ilanı. Satılık ve kiralık konut, ticari alan, arazi.`,
+    openGraph: { title: `${district}, ${city} İlanları`, description: `${district} ilçesinde ${count} ilan`, type: 'website' },
   };
 }
 
-export default async function CityPage({ params }: { params: { slug: string } }) {
-  const city = decodeURIComponent(params.slug);
+export default async function DistrictPage({ params }: { params: { city: string; district: string } }) {
+  const city = decodeURIComponent(params.city);
+  const district = decodeURIComponent(params.district);
 
-  const [totalActive, stats, byType, byListingType, topDistricts, recentListings] = await Promise.all([
-    prisma.listing.count({ where: { city: { equals: city, mode: 'insensitive' }, status: 'ACTIVE' } }),
+  const where = {
+    city: { equals: city, mode: 'insensitive' as const },
+    district: { equals: district, mode: 'insensitive' as const },
+    status: 'ACTIVE' as const,
+  };
+
+  const [totalActive, stats, byType, byListingType, recentListings] = await Promise.all([
+    prisma.listing.count({ where }),
     prisma.listing.aggregate({
-      where: { city: { equals: city, mode: 'insensitive' }, status: 'ACTIVE' },
+      where,
       _avg: { price: true, area: true },
       _min: { price: true },
       _max: { price: true },
     }),
     prisma.listing.groupBy({
       by: ['propertyType'],
-      where: { city: { equals: city, mode: 'insensitive' }, status: 'ACTIVE' },
+      where,
       _count: true,
       _avg: { price: true },
       orderBy: { _count: { propertyType: 'desc' } },
     }),
     prisma.listing.groupBy({
       by: ['listingType'],
-      where: { city: { equals: city, mode: 'insensitive' }, status: 'ACTIVE' },
+      where,
       _count: true,
       orderBy: { _count: { listingType: 'desc' } },
     }),
-    prisma.listing.groupBy({
-      by: ['district'],
-      where: { city: { equals: city, mode: 'insensitive' }, status: 'ACTIVE', district: { not: null } },
-      _count: true,
-      orderBy: { _count: { district: 'desc' } },
-      take: 8,
-    }),
     prisma.listing.findMany({
-      where: { city: { equals: city, mode: 'insensitive' }, status: 'ACTIVE' },
+      where,
       orderBy: { createdAt: 'desc' },
       take: 9,
       select: {
-        id: true, title: true, price: true, city: true, district: true, neighborhood: true,
+        id: true, title: true, price: true, city: true, district: true,
         rooms: true, area: true, listingType: true, propertyType: true,
         isVerified: true, photos: true, views: true, createdAt: true,
       },
@@ -67,19 +74,20 @@ export default async function CityPage({ params }: { params: { slug: string } })
 
   const avgPrice = stats._avg.price;
   const avgArea = stats._avg.area;
-  const maxDistrict = Math.max(...topDistricts.map(d => d._count), 1);
 
   return (
     <main className="min-h-screen bg-[#F8FAFC]">
       <div className="max-w-7xl mx-auto px-6 py-10 space-y-10">
 
         {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-xs text-gray-400">
+        <nav className="flex items-center gap-2 text-xs text-gray-400 flex-wrap">
           <Link href="/" className="hover:text-[#00C49F] transition-colors">Ana Sayfa</Link>
           <span>/</span>
           <Link href="/listings" className="hover:text-[#00C49F] transition-colors">İlanlar</Link>
           <span>/</span>
-          <span className="text-gray-600 font-medium">{city}</span>
+          <Link href={`/sehir/${encodeURIComponent(city)}`} className="hover:text-[#00C49F] transition-colors">{city}</Link>
+          <span>/</span>
+          <span className="text-gray-600 font-medium">{district}</span>
         </nav>
 
         {/* Header */}
@@ -89,12 +97,12 @@ export default async function CityPage({ params }: { params: { slug: string } })
               <MapPin className="w-6 h-6 text-[#00C49F]" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">{city} İlanları</h1>
-              <p className="text-sm text-gray-500 mt-0.5">{totalActive} aktif ilan bulunuyor</p>
+              <h1 className="text-3xl font-bold text-gray-900">{district} İlanları</h1>
+              <p className="text-sm text-gray-500 mt-0.5">{city} · {totalActive} aktif ilan</p>
             </div>
           </div>
           <Link
-            href={`/listings?city=${encodeURIComponent(city)}`}
+            href={`/listings?city=${encodeURIComponent(city)}&q=${encodeURIComponent(district)}`}
             className="inline-flex items-center gap-2 mt-4 px-5 py-2.5 bg-[#00C49F] hover:bg-[#00a882] text-white text-sm font-bold rounded-xl transition-colors"
           >
             Tüm İlanları Listele <ArrowRight size={14} />
@@ -135,9 +143,8 @@ export default async function CityPage({ params }: { params: { slug: string } })
           ))}
         </div>
 
-        {/* 3 columns: property types, listing types, top districts */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-
+        {/* Type breakdown */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Property Types */}
           <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
             <h3 className="text-sm font-bold text-gray-900 mb-4">Mülk Türleri</h3>
@@ -145,7 +152,7 @@ export default async function CityPage({ params }: { params: { slug: string } })
               {byType.map(t => (
                 <Link
                   key={t.propertyType}
-                  href={`/listings?city=${encodeURIComponent(city)}&propertyType=${encodeURIComponent(t.propertyType)}`}
+                  href={`/listings?city=${encodeURIComponent(city)}&q=${encodeURIComponent(district)}&propertyType=${encodeURIComponent(t.propertyType)}`}
                   className="flex items-center justify-between group"
                 >
                   <span className="text-sm text-gray-700 group-hover:text-[#00C49F] transition-colors font-medium">
@@ -171,7 +178,7 @@ export default async function CityPage({ params }: { params: { slug: string } })
               {byListingType.map(lt => (
                 <Link
                   key={lt.listingType}
-                  href={`/listings?city=${encodeURIComponent(city)}&listingType=${encodeURIComponent(lt.listingType)}`}
+                  href={`/listings?city=${encodeURIComponent(city)}&q=${encodeURIComponent(district)}&listingType=${encodeURIComponent(lt.listingType)}`}
                   className="flex items-center justify-between group"
                 >
                   <div className="flex-1">
@@ -183,7 +190,7 @@ export default async function CityPage({ params }: { params: { slug: string } })
                     </div>
                     <div className="w-full bg-gray-100 rounded-full h-1.5">
                       <div
-                        className="bg-[#00C49F] h-1.5 rounded-full transition-all"
+                        className="bg-[#00C49F] h-1.5 rounded-full"
                         style={{ width: `${Math.round((lt._count / totalActive) * 100)}%` }}
                       />
                     </div>
@@ -195,43 +202,14 @@ export default async function CityPage({ params }: { params: { slug: string } })
               ))}
             </div>
           </div>
-
-          {/* Top Districts */}
-          <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-            <h3 className="text-sm font-bold text-gray-900 mb-4">Popüler İlçeler</h3>
-            <div className="space-y-2.5">
-              {topDistricts.map(d => d.district && (
-                <Link
-                  key={d.district}
-                  href={`/ilce/${encodeURIComponent(city)}/${encodeURIComponent(d.district)}`}
-                  className="flex items-center gap-3 group"
-                >
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm text-gray-700 group-hover:text-[#00C49F] transition-colors font-medium">
-                        {d.district}
-                      </span>
-                      <span className="text-xs font-semibold text-gray-500">{d._count}</span>
-                    </div>
-                    <div className="w-full bg-gray-100 rounded-full h-1">
-                      <div
-                        className="bg-[#00C49F]/60 h-1 rounded-full"
-                        style={{ width: `${Math.round((d._count / maxDistrict) * 100)}%` }}
-                      />
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
         </div>
 
-        {/* Recent Listings */}
+        {/* Recent listings */}
         <div>
           <div className="flex items-center justify-between mb-5">
             <h2 className="text-xl font-bold text-gray-900">Son Eklenen İlanlar</h2>
             <Link
-              href={`/listings?city=${encodeURIComponent(city)}`}
+              href={`/listings?city=${encodeURIComponent(city)}&q=${encodeURIComponent(district)}`}
               className="text-sm font-semibold text-[#00C49F] hover:underline flex items-center gap-1"
             >
               Tümünü Gör <ArrowRight size={14} />
@@ -260,7 +238,6 @@ export default async function CityPage({ params }: { params: { slug: string } })
                     </span>
                   )}
                 </div>
-
                 <div className="p-4">
                   <div className="flex items-center gap-1.5 mb-2">
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${listing.listingType === 'KİRALIK' ? 'bg-violet-50 text-violet-600' : 'bg-[#F0FDF8] text-[#00C49F]'}`}>
@@ -273,11 +250,6 @@ export default async function CityPage({ params }: { params: { slug: string } })
                   <h3 className="font-semibold text-sm text-gray-900 line-clamp-2 mb-2 group-hover:text-[#00C49F] transition-colors">
                     {listing.title}
                   </h3>
-                  {listing.district && (
-                    <p className="flex items-center gap-1 text-xs text-gray-400 mb-2">
-                      <MapPin size={10} /> {listing.district}
-                    </p>
-                  )}
                   <div className="flex gap-2 mb-3">
                     {listing.rooms != null && <span className="text-xs text-gray-500 bg-gray-50 px-2 py-0.5 rounded-md">{listing.rooms} oda</span>}
                     {listing.area != null && <span className="text-xs text-gray-500 bg-gray-50 px-2 py-0.5 rounded-md">{listing.area} m²</span>}
@@ -294,15 +266,15 @@ export default async function CityPage({ params }: { params: { slug: string } })
           </div>
         </div>
 
-        {/* Quick filters for this city */}
+        {/* Quick filters */}
         <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-          <h3 className="text-sm font-bold text-gray-900 mb-4">{city} İçin Hızlı Filtreler</h3>
+          <h3 className="text-sm font-bold text-gray-900 mb-4">{district} İçin Hızlı Filtreler</h3>
           <div className="flex flex-wrap gap-2">
             {['SATILIK', 'KİRALIK'].flatMap(lt =>
               ['KONUT', 'TİCARİ', 'ARAZI', 'OFİS'].map(pt => (
                 <Link
                   key={`${lt}-${pt}`}
-                  href={`/listings?city=${encodeURIComponent(city)}&listingType=${encodeURIComponent(lt)}&propertyType=${encodeURIComponent(pt)}`}
+                  href={`/listings?city=${encodeURIComponent(city)}&q=${encodeURIComponent(district)}&listingType=${encodeURIComponent(lt)}&propertyType=${encodeURIComponent(pt)}`}
                   className="px-3 py-1.5 bg-gray-50 hover:bg-[#F0FDF8] border border-gray-200 hover:border-[#00C49F] rounded-xl text-xs font-semibold text-gray-600 hover:text-[#00C49F] transition-all"
                 >
                   {lt} {pt}
@@ -311,7 +283,6 @@ export default async function CityPage({ params }: { params: { slug: string } })
             )}
           </div>
         </div>
-
       </div>
 
       {/* JSON-LD */}
@@ -321,8 +292,8 @@ export default async function CityPage({ params }: { params: { slug: string } })
           __html: JSON.stringify({
             '@context': 'https://schema.org',
             '@type': 'ItemList',
-            name: `${city} Gayrimenkul İlanları`,
-            description: `${city} şehrinde ${totalActive} aktif gayrimenkul ilanı`,
+            name: `${district}, ${city} Gayrimenkul İlanları`,
+            description: `${district} ilçesinde ${totalActive} aktif gayrimenkul ilanı`,
             numberOfItems: totalActive,
             itemListElement: recentListings.slice(0, 5).map((l, i) => ({
               '@type': 'ListItem',
