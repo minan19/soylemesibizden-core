@@ -86,12 +86,15 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
   const [similarListings] = await Promise.all([
     prisma.listing.findMany({
       where: {
-        propertyType: listing.propertyType,
         id: { not: listing.id },
         status: 'ACTIVE',
+        propertyType: listing.propertyType,
+        ...(listing.city ? { city: listing.city } : {}),
+        price: { gte: listing.price * 0.7, lte: listing.price * 1.3 },
       },
       take: 3,
-      orderBy: { createdAt: 'desc' },
+      orderBy: { views: 'desc' },
+      select: { id: true, title: true, price: true, city: true, district: true, neighborhood: true, location: true, photos: true, rooms: true, area: true, listingType: true },
     }),
     prisma.listing.update({
       where: { id: params.id },
