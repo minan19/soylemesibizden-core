@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
 import { Menu, X, ChevronDown, Shield, Bell } from 'lucide-react';
@@ -17,6 +17,22 @@ export default function Navbar() {
 
   const isAdmin = user?.role === 'ADMIN';
   const avatarLetter = user?.name?.charAt(0)?.toUpperCase() ?? user?.email?.charAt(0)?.toUpperCase() ?? '?';
+  const [notifCount, setNotifCount] = useState(0);
+
+  const fetchNotifCount = useCallback(async () => {
+    if (!session) return;
+    try {
+      const res = await fetch('/api/notifications/count');
+      if (res.ok) {
+        const data = await res.json();
+        setNotifCount(data.count ?? 0);
+      }
+    } catch {}
+  }, [session]);
+
+  useEffect(() => {
+    fetchNotifCount();
+  }, [fetchNotifCount]);
 
   // Dropdown dışına tıklandığında kapat
   useEffect(() => {
@@ -81,10 +97,15 @@ export default function Navbar() {
                 {/* Notifications bell */}
                 <Link
                   href="/notifications"
-                  className="hidden sm:flex w-8 h-8 items-center justify-center rounded-xl text-gray-400 hover:text-[#00C49F] hover:bg-[#F0FDF8] transition-colors"
+                  className="relative hidden sm:flex w-8 h-8 items-center justify-center rounded-xl text-gray-400 hover:text-[#00C49F] hover:bg-[#F0FDF8] transition-colors"
                   aria-label="Bildirimler"
                 >
                   <Bell size={17} />
+                  {notifCount > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+                      {notifCount > 9 ? '9+' : notifCount}
+                    </span>
+                  )}
                 </Link>
 
                 {/* Admin badge */}
