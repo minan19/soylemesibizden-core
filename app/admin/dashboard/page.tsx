@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
-import { Building2, CheckCircle, Users, Clock, ArrowUpRight, Plus } from 'lucide-react';
+import { Building2, CheckCircle, Users, Clock, ArrowUpRight, Plus, MessageSquare } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,6 +15,7 @@ export default async function AdminDashboardPage() {
     activeListings,
     pendingOffers,
     pendingListings,
+    inquiryCount,
   ] = await Promise.all([
     prisma.listing.count(),
     prisma.user.count(),
@@ -39,6 +40,7 @@ export default async function AdminDashboardPage() {
     prisma.listing.count({ where: { status: 'ACTIVE' } }),
     prisma.offer.count({ where: { status: 'PENDING' } }),
     prisma.listing.count({ where: { status: 'PENDING' } }),
+    prisma.inquiry.count(),
   ]);
 
   const today = new Date().toLocaleDateString('tr-TR', {
@@ -143,6 +145,34 @@ export default async function AdminDashboardPage() {
             </div>
             <div className="text-3xl font-extrabold text-amber-500">{pendingOffers}</div>
           </div>
+        </div>
+
+        {/* Quick admin links */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
+          <Link href="/admin/users" className="flex items-center gap-3 bg-white rounded-2xl px-4 py-3 border border-gray-100 hover:border-[#00C49F]/30 hover:shadow-sm transition-all">
+            <Users size={16} className="text-[#00C49F]" />
+            <div>
+              <p className="text-xs font-bold text-gray-700">Kullanıcılar</p>
+              <p className="text-[10px] text-gray-400">{userCount} kayıtlı</p>
+            </div>
+            <ArrowUpRight size={13} className="text-gray-300 ml-auto" />
+          </Link>
+          <Link href="/admin/inquiries" className="flex items-center gap-3 bg-white rounded-2xl px-4 py-3 border border-gray-100 hover:border-[#00C49F]/30 hover:shadow-sm transition-all">
+            <MessageSquare size={16} className="text-blue-500" />
+            <div>
+              <p className="text-xs font-bold text-gray-700">Başvurular</p>
+              <p className="text-[10px] text-gray-400">{inquiryCount} mesaj</p>
+            </div>
+            <ArrowUpRight size={13} className="text-gray-300 ml-auto" />
+          </Link>
+          <Link href="/admin/listings?filter=pending" className="flex items-center gap-3 bg-white rounded-2xl px-4 py-3 border border-gray-100 hover:border-amber-300 hover:shadow-sm transition-all">
+            <Clock size={16} className="text-amber-500" />
+            <div>
+              <p className="text-xs font-bold text-gray-700">Bekleyen</p>
+              <p className="text-[10px] text-gray-400">{pendingListings} ilan</p>
+            </div>
+            <ArrowUpRight size={13} className="text-gray-300 ml-auto" />
+          </Link>
         </div>
 
         {/* Pending listings alert */}

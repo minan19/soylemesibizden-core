@@ -277,7 +277,30 @@ export default function ListingsClient({
             </div>
           </div>
 
-          {/* Row 3 — price range */}
+          {/* Row 3 — city quick filter */}
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs text-gray-400 font-medium shrink-0">Şehir:</span>
+            {['İstanbul', 'Ankara', 'İzmir', 'Antalya', 'Bursa'].map(c => (
+              <button
+                key={c}
+                onClick={() => push({ city: currentCity === c ? undefined : c })}
+                className={`text-xs font-semibold px-3 py-1.5 rounded-lg transition-all border ${
+                  currentCity === c
+                    ? 'bg-[#00C49F] text-white border-[#00C49F]'
+                    : 'bg-white text-gray-500 border-gray-200 hover:border-[#00C49F]/50'
+                }`}
+              >
+                {c}
+              </button>
+            ))}
+            {currentCity && !['İstanbul', 'Ankara', 'İzmir', 'Antalya', 'Bursa'].includes(currentCity) && (
+              <span className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-[#00C49F] text-white border border-[#00C49F]">
+                {currentCity}
+              </span>
+            )}
+          </div>
+
+          {/* Row 4 — price range */}
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-xs text-gray-400 font-medium shrink-0">Fiyat (₺):</span>
             <input

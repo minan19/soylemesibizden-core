@@ -331,8 +331,23 @@ export default function SearchFilterSidebar({
           value={city}
           onChange={e => setCity(e.target.value)}
           placeholder="Örn: İstanbul, Ankara..."
-          className="w-full px-3 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#00C49F] transition-colors"
+          className="w-full px-3 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#00C49F] transition-colors mb-2"
         />
+        <div className="flex flex-wrap gap-1">
+          {['İstanbul', 'Ankara', 'İzmir', 'Antalya', 'Bursa', 'Bodrum'].map(c => (
+            <button
+              key={c}
+              onClick={() => setCity(city === c ? '' : c)}
+              className={`text-[10px] font-semibold px-2.5 py-1 rounded-lg transition-all ${
+                city === c
+                  ? 'bg-[#00C49F] text-white'
+                  : 'bg-gray-50 text-gray-500 hover:bg-gray-100 border border-gray-200'
+              }`}
+            >
+              {c}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* ── Features ─────────────────────────────────── */}
