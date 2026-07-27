@@ -23,6 +23,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/listings?city=${encodeURIComponent('Ankara')}`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.75 },
     { url: `${baseUrl}/listings?city=${encodeURIComponent('İzmir')}`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.75 },
     { url: `${baseUrl}/listings?city=${encodeURIComponent('Antalya')}`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.7 },
+    { url: `${baseUrl}/sehir/${encodeURIComponent('İstanbul')}`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.85 },
+    { url: `${baseUrl}/sehir/${encodeURIComponent('Ankara')}`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.85 },
+    { url: `${baseUrl}/sehir/${encodeURIComponent('İzmir')}`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.85 },
+    { url: `${baseUrl}/sehir/${encodeURIComponent('Antalya')}`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.8 },
+    { url: `${baseUrl}/sehir/${encodeURIComponent('Bursa')}`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.75 },
+    { url: `${baseUrl}/sehir/${encodeURIComponent('Bodrum')}`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.75 },
     { url: `${baseUrl}/login`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.5 },
   ];
 

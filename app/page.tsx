@@ -491,7 +491,7 @@ export default async function HomePage() {
             ].map(({ city, icon }) => (
               <Link
                 key={city}
-                href={`/listings?city=${encodeURIComponent(city)}`}
+                href={`/sehir/${encodeURIComponent(city)}`}
                 className="flex items-center gap-2 px-5 py-2.5 bg-white border border-gray-200 rounded-full text-sm font-semibold text-gray-700 hover:border-[#00C49F] hover:text-[#00C49F] hover:shadow-sm transition-all"
               >
                 <span>{icon}</span>
