@@ -14,6 +14,7 @@ export default async function AdminDashboardPage() {
     recentOffers,
     activeListings,
     pendingOffers,
+    pendingListings,
   ] = await Promise.all([
     prisma.listing.count(),
     prisma.user.count(),
@@ -37,6 +38,7 @@ export default async function AdminDashboardPage() {
     }),
     prisma.listing.count({ where: { status: 'ACTIVE' } }),
     prisma.offer.count({ where: { status: 'PENDING' } }),
+    prisma.listing.count({ where: { status: 'PENDING' } }),
   ]);
 
   const today = new Date().toLocaleDateString('tr-TR', {
@@ -133,6 +135,18 @@ export default async function AdminDashboardPage() {
             <div className="text-3xl font-extrabold text-amber-500">{pendingOffers}</div>
           </div>
         </div>
+
+        {/* Pending listings alert */}
+        {pendingListings > 0 && (
+          <Link href="/admin/listings" className="flex items-center gap-4 bg-amber-50 border border-amber-200 rounded-2xl px-6 py-4 mb-6 hover:bg-amber-100 transition-colors">
+            <Clock size={18} className="text-amber-600 shrink-0" />
+            <div className="flex-1">
+              <p className="text-sm font-bold text-amber-800">Onay Bekleyen {pendingListings} İlan</p>
+              <p className="text-xs text-amber-600">Kullanıcılar tarafından gönderilen ilanlar admin onayı bekliyor.</p>
+            </div>
+            <ArrowUpRight size={16} className="text-amber-600" />
+          </Link>
+        )}
 
         {/* Bottom section */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

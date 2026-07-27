@@ -66,7 +66,7 @@ export default async function ProfilePage() {
               <h2 className="text-sm font-bold tracking-widest text-gray-400 uppercase flex items-center gap-2">
                 <TrendingUp size={14} /> İlanlarım
               </h2>
-              <Link href="/admin/create-listing" className="text-xs text-[#00C49F] font-semibold hover:underline">
+              <Link href={user.role === 'ADMIN' ? '/admin/create-listing' : '/create-listing'} className="text-xs text-[#00C49F] font-semibold hover:underline">
                 + Yeni İlan
               </Link>
             </div>
