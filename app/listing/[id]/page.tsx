@@ -454,19 +454,19 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
               <p className="text-[10px] font-bold tracking-widest text-gray-400 uppercase mb-4">
                 İlan Sahibi
               </p>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-[#00C49F]/10 flex items-center justify-center flex-shrink-0">
+              <Link href={`/user/${listing.ownerId}`} className="flex items-center gap-3 mb-4 group">
+                <div className="w-10 h-10 rounded-full bg-[#00C49F]/10 flex items-center justify-center flex-shrink-0 group-hover:bg-[#00C49F]/20 transition-colors">
                   <User size={18} className="text-[#00C49F]" />
                 </div>
                 <div className="min-w-0">
-                  <p className="font-semibold text-gray-900 text-sm truncate">
+                  <p className="font-semibold text-gray-900 text-sm truncate group-hover:text-[#00C49F] transition-colors">
                     {listing.owner.name ?? 'İsimsiz'}
                   </p>
                   <p className="text-[10px] font-bold tracking-widest text-[#00C49F] uppercase mt-0.5">
                     {listing.owner.role}
                   </p>
                 </div>
-              </div>
+              </Link>
               <div className="space-y-2.5 border-t border-gray-50 pt-3.5">
                 {listing.owner.email && (
                   <a
