@@ -1,7 +1,10 @@
 import prisma from '@/lib/prisma';
+import Link from 'next/link';
 import ListingsClient from './ListingsClient';
 
 export const dynamic = 'force-dynamic';
+
+const PAGE_SIZE = 24;
 
 type SearchParams = {
   q?: string;
@@ -13,6 +16,7 @@ type SearchParams = {
   maxPrice?: string;
   minRooms?: string;
   city?: string;
+  page?: string;
 };
 
 export default async function ListingsPage({
@@ -30,7 +34,11 @@ export default async function ListingsPage({
     maxPrice,
     minRooms,
     city,
+    page,
   } = searchParams;
+
+  const currentPage = Math.max(1, parseInt(page ?? '1') || 1);
+  const skip = (currentPage - 1) * PAGE_SIZE;
 
   // Build the price range filter once so we can combine gte + lte cleanly
   const priceFilter: { gte?: number; lte?: number } = {};
@@ -38,43 +46,66 @@ export default async function ListingsPage({
   if (maxPrice) priceFilter.lte = Number(maxPrice);
   const hasPriceFilter = Object.keys(priceFilter).length > 0;
 
-  const listings = await prisma.listing.findMany({
-    where: {
-      ...(q
-        ? {
-            OR: [
-              { title: { contains: q, mode: 'insensitive' } },
-              { description: { contains: q, mode: 'insensitive' } },
-              { location: { contains: q, mode: 'insensitive' } },
-            ],
-          }
-        : {}),
-      ...(status && status !== 'ALL' ? { status } : {}),
-      ...(propertyType && propertyType !== 'ALL' ? { propertyType } : {}),
-      ...(listingType && listingType !== 'ALL' ? { listingType } : {}),
-      ...(hasPriceFilter ? { price: priceFilter } : {}),
-      ...(minRooms ? { rooms: { gte: Number(minRooms) } } : {}),
-      ...(city ? { city: { contains: city, mode: 'insensitive' } } : {}),
-    },
-    orderBy:
-      sort === 'price_asc'
-        ? { price: 'asc' }
-        : sort === 'price_desc'
-        ? { price: 'desc' }
-        : sort === 'area_asc'
-        ? { area: 'asc' }
-        : sort === 'views'
-        ? { views: 'desc' }
-        : { createdAt: 'desc' },
-    include: {
-      owner: { select: { name: true, email: true } },
-    },
-  });
+  const where = {
+    ...(q
+      ? {
+          OR: [
+            { title: { contains: q, mode: 'insensitive' as const } },
+            { description: { contains: q, mode: 'insensitive' as const } },
+            { location: { contains: q, mode: 'insensitive' as const } },
+          ],
+        }
+      : {}),
+    ...(status && status !== 'ALL' ? { status } : {}),
+    ...(propertyType && propertyType !== 'ALL' ? { propertyType } : {}),
+    ...(listingType && listingType !== 'ALL' ? { listingType } : {}),
+    ...(hasPriceFilter ? { price: priceFilter } : {}),
+    ...(minRooms ? { rooms: { gte: Number(minRooms) } } : {}),
+    ...(city ? { city: { contains: city, mode: 'insensitive' as const } } : {}),
+  };
 
-  const counts = await prisma.listing.groupBy({
-    by: ['status'],
-    _count: true,
-  });
+  const orderBy =
+    sort === 'price_asc'
+      ? { price: 'asc' as const }
+      : sort === 'price_desc'
+      ? { price: 'desc' as const }
+      : sort === 'area_asc'
+      ? { area: 'asc' as const }
+      : sort === 'views'
+      ? { views: 'desc' as const }
+      : { createdAt: 'desc' as const };
+
+  const [listings, totalCount, counts] = await Promise.all([
+    prisma.listing.findMany({
+      where,
+      orderBy,
+      skip,
+      take: PAGE_SIZE,
+      include: {
+        owner: { select: { name: true, email: true } },
+      },
+    }),
+    prisma.listing.count({ where }),
+    prisma.listing.groupBy({ by: ['status'], _count: true }),
+  ]);
+
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE);
+
+  const buildPageUrl = (p: number) => {
+    const sp = new URLSearchParams();
+    if (q) sp.set('q', q);
+    if (status && status !== 'ALL') sp.set('status', status);
+    if (sort && sort !== 'newest') sp.set('sort', sort);
+    if (propertyType && propertyType !== 'ALL') sp.set('propertyType', propertyType);
+    if (listingType && listingType !== 'ALL') sp.set('listingType', listingType);
+    if (minPrice) sp.set('minPrice', minPrice);
+    if (maxPrice) sp.set('maxPrice', maxPrice);
+    if (minRooms) sp.set('minRooms', minRooms);
+    if (city) sp.set('city', city);
+    if (p > 1) sp.set('page', String(p));
+    const qs = sp.toString();
+    return `/listings${qs ? '?' + qs : ''}`;
+  };
 
   return (
     <main className="min-h-screen bg-[#F8FAFC] text-gray-900">
@@ -85,7 +116,8 @@ export default async function ListingsPage({
               {q ? `"${q}" için sonuçlar` : city ? `${city} İlanları` : 'Tüm İlanlar'}
             </h1>
             <p className="text-sm text-gray-500 mt-1">
-              {listings.length} ilan bulundu
+              {totalCount} ilan bulundu
+              {totalPages > 1 && ` · Sayfa ${currentPage} / ${totalPages}`}
             </p>
           </div>
           <div className="flex gap-2 flex-wrap">
@@ -113,6 +145,53 @@ export default async function ListingsPage({
           currentMinRooms={minRooms}
           currentCity={city}
         />
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-2 pt-4">
+            {currentPage > 1 && (
+              <Link
+                href={buildPageUrl(currentPage - 1)}
+                className="px-4 py-2 text-sm font-semibold bg-white border border-gray-200 rounded-xl hover:border-[#00C49F] hover:text-[#00C49F] transition-colors"
+              >
+                ← Önceki
+              </Link>
+            )}
+            {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
+              let p: number;
+              if (totalPages <= 7) {
+                p = i + 1;
+              } else if (currentPage <= 4) {
+                p = i + 1;
+              } else if (currentPage >= totalPages - 3) {
+                p = totalPages - 6 + i;
+              } else {
+                p = currentPage - 3 + i;
+              }
+              return (
+                <Link
+                  key={p}
+                  href={buildPageUrl(p)}
+                  className={`w-10 h-10 flex items-center justify-center text-sm font-semibold rounded-xl transition-colors ${
+                    p === currentPage
+                      ? 'bg-[#00C49F] text-white'
+                      : 'bg-white border border-gray-200 text-gray-600 hover:border-[#00C49F] hover:text-[#00C49F]'
+                  }`}
+                >
+                  {p}
+                </Link>
+              );
+            })}
+            {currentPage < totalPages && (
+              <Link
+                href={buildPageUrl(currentPage + 1)}
+                className="px-4 py-2 text-sm font-semibold bg-white border border-gray-200 rounded-xl hover:border-[#00C49F] hover:text-[#00C49F] transition-colors"
+              >
+                Sonraki →
+              </Link>
+            )}
+          </div>
+        )}
       </div>
     </main>
   );

@@ -27,6 +27,10 @@ export default async function HomePage() {
         take: 6,
         where: { status: 'ACTIVE' },
         orderBy: { views: 'desc' },
+        select: {
+          id: true, title: true, price: true, status: true, listingType: true,
+          city: true, district: true, rooms: true, area: true, isVerified: true, photos: true,
+        },
       }),
     ]);
 
@@ -262,13 +266,29 @@ export default async function HomePage() {
                 href={`/listing/${listing.id}`}
                 className="group bg-white border border-gray-100 rounded-2xl overflow-hidden hover:shadow-xl transition-all hover:-translate-y-0.5"
               >
-                {/* Photo placeholder */}
-                <div className="w-full h-44 bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center relative">
-                  <Building2 className="w-10 h-10 text-slate-300" />
+                {/* Photo */}
+                <div className="w-full h-44 overflow-hidden relative bg-gradient-to-br from-slate-100 to-slate-200">
+                  {listing.photos && listing.photos.length > 0 ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      src={listing.photos[0]}
+                      alt={listing.title}
+                      className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-300"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <Building2 className="w-10 h-10 text-slate-300" />
+                    </div>
+                  )}
                   {listing.isVerified && (
                     <span className="absolute top-3 left-3 bg-white/90 text-[#00C49F] text-xs font-bold px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
                       <CheckCircle className="w-3 h-3" />
                       Doğrulandı
+                    </span>
+                  )}
+                  {listing.photos && listing.photos.length > 1 && (
+                    <span className="absolute bottom-3 right-3 bg-black/60 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                      +{listing.photos.length - 1} fotoğraf
                     </span>
                   )}
                 </div>

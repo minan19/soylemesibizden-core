@@ -12,6 +12,7 @@ import {
   CheckCircle2,
   Bed,
   Maximize2,
+  Building2,
 } from 'lucide-react';
 
 export interface Listing {
@@ -27,6 +28,7 @@ export interface Listing {
   rooms: number | null;
   area: number | null;
   isVerified: boolean;
+  photos: string[];
   owner: { name: string | null; email: string };
 }
 
@@ -343,8 +345,30 @@ export default function ListingsClient({
           <Link
             key={listing.id}
             href={`/listing/${listing.id}`}
-            className="group bg-white p-5 border border-gray-100 rounded-2xl hover:shadow-lg hover:border-[#00C49F]/20 transition-all"
+            className="group bg-white border border-gray-100 rounded-2xl hover:shadow-lg hover:border-[#00C49F]/20 transition-all overflow-hidden"
           >
+            {/* Photo thumbnail */}
+            <div className="w-full h-40 bg-gradient-to-br from-slate-100 to-slate-200 relative overflow-hidden">
+              {listing.photos.length > 0 ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
+                  src={listing.photos[0]}
+                  alt={listing.title}
+                  className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-300"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <Building2 size={28} className="text-slate-300" />
+                </div>
+              )}
+              {listing.isVerified && (
+                <span className="absolute top-2 left-2 bg-white/90 text-[#00C49F] text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-0.5 shadow-sm">
+                  <CheckCircle2 size={9} /> Onaylı
+                </span>
+              )}
+            </div>
+
+            <div className="p-5">
             {/* Badge row */}
             <div className="flex justify-between items-start mb-2.5">
               <div className="flex flex-wrap gap-1.5">
@@ -362,12 +386,6 @@ export default function ListingsClient({
                 >
                   {listing.listingType}
                 </span>
-                {listing.isVerified && (
-                  <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-[#F0FDF8] text-[#00C49F] flex items-center gap-1 tracking-wider">
-                    <CheckCircle2 size={10} />
-                    Onaylı
-                  </span>
-                )}
               </div>
               <ArrowRight
                 size={16}
@@ -417,6 +435,7 @@ export default function ListingsClient({
                 {listing.owner.name ?? listing.owner.email}
               </span>
             </div>
+            </div>{/* /p-5 */}
           </Link>
         ))}
 
