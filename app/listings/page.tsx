@@ -33,6 +33,9 @@ type SearchParams = {
   minRooms?: string;
   city?: string;
   page?: string;
+  hasElevator?: string;
+  hasParking?: string;
+  hasGarden?: string;
 };
 
 export default async function ListingsPage({
@@ -51,6 +54,9 @@ export default async function ListingsPage({
     minRooms,
     city,
     page,
+    hasElevator,
+    hasParking,
+    hasGarden,
   } = searchParams;
 
   const currentPage = Math.max(1, parseInt(page ?? '1') || 1);
@@ -78,6 +84,9 @@ export default async function ListingsPage({
     ...(hasPriceFilter ? { price: priceFilter } : {}),
     ...(minRooms ? { rooms: { gte: Number(minRooms) } } : {}),
     ...(city ? { city: { contains: city, mode: 'insensitive' as const } } : {}),
+    ...(hasElevator === '1' ? { hasElevator: true } : {}),
+    ...(hasParking === '1' ? { hasParking: true } : {}),
+    ...(hasGarden === '1' ? { hasGarden: true } : {}),
   };
 
   const orderBy =
@@ -118,6 +127,9 @@ export default async function ListingsPage({
     if (maxPrice) sp.set('maxPrice', maxPrice);
     if (minRooms) sp.set('minRooms', minRooms);
     if (city) sp.set('city', city);
+    if (hasElevator) sp.set('hasElevator', hasElevator);
+    if (hasParking) sp.set('hasParking', hasParking);
+    if (hasGarden) sp.set('hasGarden', hasGarden);
     if (p > 1) sp.set('page', String(p));
     const qs = sp.toString();
     return `/listings${qs ? '?' + qs : ''}`;
@@ -160,6 +172,9 @@ export default async function ListingsPage({
           currentMaxPrice={maxPrice}
           currentMinRooms={minRooms}
           currentCity={city}
+          currentHasElevator={hasElevator}
+          currentHasParking={hasParking}
+          currentHasGarden={hasGarden}
         />
 
         {/* Pagination */}

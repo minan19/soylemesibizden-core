@@ -43,6 +43,9 @@ export interface FilterParams {
   currentMaxPrice?: string;
   currentMinRooms?: string;
   currentCity?: string;
+  currentHasElevator?: string;
+  currentHasParking?: string;
+  currentHasGarden?: string;
 }
 
 interface Props extends FilterParams {
@@ -112,6 +115,9 @@ export default function ListingsClient({
   currentMaxPrice,
   currentMinRooms,
   currentCity,
+  currentHasElevator,
+  currentHasParking,
+  currentHasGarden,
   hideFilters = false,
 }: Props) {
   const router = useRouter();
@@ -140,6 +146,9 @@ export default function ListingsClient({
       maxPrice: priceMax || undefined,
       minRooms: activeMinRooms || undefined,
       city: currentCity || undefined,
+      hasElevator: currentHasElevator || undefined,
+      hasParking: currentHasParking || undefined,
+      hasGarden: currentHasGarden || undefined,
     };
     const merged = { ...state, ...overrides };
     const sp = new URLSearchParams();
@@ -330,6 +339,36 @@ export default function ListingsClient({
             {(priceMin || priceMax) && (
               <button onClick={clearPrice} className="text-gray-400 hover:text-gray-700">
                 <X size={14} />
+              </button>
+            )}
+          </div>
+
+          {/* Row 5 — amenities */}
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="text-xs text-gray-400 font-medium shrink-0">Özellik:</span>
+            {[
+              { key: 'hasElevator', label: 'Asansör', active: currentHasElevator === '1' },
+              { key: 'hasParking', label: 'Otopark', active: currentHasParking === '1' },
+              { key: 'hasGarden', label: 'Bahçe', active: currentHasGarden === '1' },
+            ].map(f => (
+              <button
+                key={f.key}
+                onClick={() => push({ [f.key]: f.active ? undefined : '1' })}
+                className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all ${
+                  f.active
+                    ? 'bg-[#00C49F] text-white border-[#00C49F]'
+                    : 'bg-white text-gray-500 border-gray-200 hover:border-[#00C49F]/50'
+                }`}
+              >
+                {f.label}
+              </button>
+            ))}
+            {(currentHasElevator || currentHasParking || currentHasGarden) && (
+              <button
+                onClick={() => push({ hasElevator: undefined, hasParking: undefined, hasGarden: undefined })}
+                className="text-xs text-gray-400 hover:text-gray-700 flex items-center gap-1"
+              >
+                <X size={12} /> Temizle
               </button>
             )}
           </div>

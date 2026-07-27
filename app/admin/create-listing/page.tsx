@@ -15,6 +15,7 @@ async function createListing(formData: FormData) {
   const location = formData.get('location') as string;
   const city = formData.get('city') as string;
   const district = formData.get('district') as string;
+  const neighborhood = formData.get('neighborhood') as string;
   const status = formData.get('status') as string;
   const propertyType = formData.get('propertyType') as string;
   const listingType = formData.get('listingType') as string;
@@ -47,6 +48,7 @@ async function createListing(formData: FormData) {
       location: location || null,
       city: city || null,
       district: district || null,
+      neighborhood: neighborhood || null,
       status: status || 'ACTIVE',
       propertyType: propertyType || 'KONUT',
       listingType: listingType || 'SATILIK',
@@ -140,7 +142,7 @@ export default async function CreateListingPage() {
               <label className={labelCls}>Tam Adres / Açıklama</label>
               <input name="location" placeholder="Örn: Sarıyer / Yeniköy, İstanbul" className={inputCls} />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               <div className="space-y-1.5">
                 <label className={labelCls}>Şehir</label>
                 <input name="city" placeholder="İstanbul" className={inputCls} />
@@ -148,6 +150,10 @@ export default async function CreateListingPage() {
               <div className="space-y-1.5">
                 <label className={labelCls}>İlçe</label>
                 <input name="district" placeholder="Sarıyer" className={inputCls} />
+              </div>
+              <div className="space-y-1.5">
+                <label className={labelCls}>Mahalle</label>
+                <input name="neighborhood" placeholder="Yeniköy" className={inputCls} />
               </div>
             </div>
           </div>

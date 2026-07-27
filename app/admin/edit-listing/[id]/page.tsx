@@ -22,6 +22,7 @@ export default async function EditListingPage({ params }: { params: { id: string
     const location = formData.get('location') as string;
     const city = formData.get('city') as string;
     const district = formData.get('district') as string;
+    const neighborhood = formData.get('neighborhood') as string;
     const status = formData.get('status') as string;
     const propertyType = formData.get('propertyType') as string;
     const listingType = formData.get('listingType') as string;
@@ -49,6 +50,7 @@ export default async function EditListingPage({ params }: { params: { id: string
         location: location || null,
         city: city || null,
         district: district || null,
+        neighborhood: neighborhood || null,
         status: status || 'ACTIVE',
         propertyType: propertyType || 'KONUT',
         listingType: listingType || 'SATILIK',
@@ -176,7 +178,7 @@ export default async function EditListingPage({ params }: { params: { id: string
                 className={inputCls}
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               <div className="space-y-1.5">
                 <label className={labelCls}>Şehir</label>
                 <input
@@ -192,6 +194,15 @@ export default async function EditListingPage({ params }: { params: { id: string
                   name="district"
                   placeholder="Sarıyer"
                   defaultValue={listing.district ?? ''}
+                  className={inputCls}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className={labelCls}>Mahalle</label>
+                <input
+                  name="neighborhood"
+                  placeholder="Yeniköy"
+                  defaultValue={listing.neighborhood ?? ''}
                   className={inputCls}
                 />
               </div>
