@@ -199,6 +199,21 @@ Migration SQL kullanıcı tarafından Neon SQL Editor'da çalıştırılmalı.
 - [x] **FAZ-17:** API güvenlik: /api/listings/[id] ve /api/offers/[id] PUT/DELETE kimlik doğrulama
 - [x] **FAZ-18:** listings generateMetadata SEO, loading skeleton (my-listings, notifications, deals, offers), /api/listings geliştirilmiş GET (filtreli, sayfalı) + POST auth
 
+### Oturum 4 (FAZ 19-34) — Tamamlananlar
+- [x] **FAZ-19:** /api/listings GET geliştirilmiş, CLAUDE.md güncellendi
+- [x] **FAZ-20:** ShareButton — Web Share API + clipboard fallback
+- [x] **FAZ-21:** PhotoUrlInput bileşeni — tüm form sayfalarında fotoğraf yönetimi iyileştirildi
+- [x] **FAZ-22/23/24:** Listings sayfa görüntülenme sayacı, hasElevator/hasParking/hasGarden filtre butonları, admin formlara mahalle alanı
+- [x] **FAZ-26:** Bildirim sayacı rozeti (Navbar) — /api/notifications/count endpoint
+- [x] **FAZ-27:** Listing detayda WhatsApp iletişim butonu (telefon varsa)
+- [x] **FAZ-28:** Admin kullanıcı detay sayfası (/admin/users/[id]) — ilanlar, teklifler, favoriler
+- [x] **FAZ-29:** Admin ilanlar tablosu — sayfalama (PAGE_SIZE=20) + arama
+- [x] **FAZ-30:** Yazdırılabilir ilan sayfası (/listing/[id]/print) — A4 format, print CSS
+- [x] **FAZ-31:** İlan kartlarında görüntülenme 👁 ve favori ♡ sayısı
+- [x] **FAZ-32:** Akıllı arama autocomplete — SearchAutocomplete bileşeni + /api/search endpoint
+- [x] **FAZ-33:** Admin loading skeleton (dashboard, listings, users), benzer ilanlar şehir+fiyat aralığı bazlı
+- [x] **FAZ-34:** Teklif formu — fiyat karşılaştırma gösterimi, hızlı seçim çipleri
+
 ### Yeni Bileşenler (Oturum 3)
 - [x] **DealStatusButton** — Anlaşma odası durum geçişi (OPEN→IN_PROGRESS→CLOSED)
 - [x] **ChangeRoleButton** — Admin kullanıcı rol değiştirme
@@ -233,18 +248,17 @@ Migration SQL kullanıcı tarafından Neon SQL Editor'da çalıştırılmalı.
 | 3 | Fotoğraf yükleme — Vercel Blob veya Cloudinary entegrasyonu |
 | 4 | E-posta bildirimleri — teklif geldiğinde Resend/SendGrid |
 | 5 | Harita entegrasyonu — MapLibre, ilan koordinat gösterimi |
-| 6 | PDF export — jsPDF ile ilan/rapor export |
-| 7 | Real-time güncellemeler (Server-Sent Events) |
+| 6 | Real-time güncellemeler (Server-Sent Events) |
 
 ### 🔵 İyileştirme
 | # | İş |
 |---|-----|
-| 8 | Mobile responsive iyileştirme — tüm sayfalar |
-| 9 | i18n gerçek içerik (TR/EN/AR/RU) |
-| 10 | Unit/integration test altyapısı |
-| 11 | Lighthouse skoru >95 |
-| 12 | Concierge/advisory dashboard tam CRUD |
-| 13 | Fiyat geçmişi grafiği (listing detayda) |
+| 7 | Mobile responsive iyileştirme — tüm sayfalar |
+| 8 | i18n gerçek içerik (TR/EN/AR/RU) |
+| 9 | Unit/integration test altyapısı |
+| 10 | Lighthouse skoru >95 |
+| 11 | Fiyat geçmişi grafiği (listing detayda) |
+| 12 | Kayıtlı aramalar (saved searches) özelliği |
 
 ---
 
@@ -349,4 +363,4 @@ git push https://minan19:<GITHUB_TOKEN>@github.com/minan19/soylemesibizden-core.
 
 ---
 
-*Son güncelleme: 2026-07-27 — Oturum 3: FAZ 8-18 tamamlandı. Platform kurumsal kaliteye ulaştı. TypeScript 0 hata, API güvenli, tüm CRUD tam, CompareButton her yerde, analitik sayfaları hazır.*
+*Son güncelleme: 2026-07-27 — Oturum 4: FAZ 19-34 tamamlandı. Autocomplete arama, yazdırma, WhatsApp, bildirim rozeti, admin sayfalama+arama, admin kullanıcı detay, OfferForm fiyat karşılaştırma, loading skeleton'lar, benzer ilanlar iyileştirmesi.*
