@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
-import { Menu, X, ChevronDown, Shield } from 'lucide-react';
+import { Menu, X, ChevronDown, Shield, Bell } from 'lucide-react';
 
 export default function Navbar() {
   const { data: session, status } = useSession();
@@ -35,6 +35,7 @@ export default function Navbar() {
     { href: '/favorites', label: 'Favoriler', authRequired: true },
     { href: '/my-listings', label: 'İlanlarım', authRequired: true },
     { href: '/dashboard', label: 'Dashboard', authRequired: true },
+    { href: '/notifications', label: 'Bildirimler', authRequired: true },
   ];
 
   return (
@@ -77,6 +78,15 @@ export default function Navbar() {
           ) : session ? (
             <div className="relative" ref={dropdownRef}>
               <div className="flex items-center gap-2">
+                {/* Notifications bell */}
+                <Link
+                  href="/notifications"
+                  className="hidden sm:flex w-8 h-8 items-center justify-center rounded-xl text-gray-400 hover:text-[#00C49F] hover:bg-[#F0FDF8] transition-colors"
+                  aria-label="Bildirimler"
+                >
+                  <Bell size={17} />
+                </Link>
+
                 {/* Admin badge */}
                 {isAdmin && (
                   <Link
@@ -145,6 +155,14 @@ export default function Navbar() {
                     className="block px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
                   >
                     İlanlarım
+                  </Link>
+                  <Link
+                    href="/notifications"
+                    onClick={() => setDropdownOpen(false)}
+                    className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    <Bell size={14} className="text-gray-400" />
+                    Bildirimler
                   </Link>
                   <button
                     onClick={() => {

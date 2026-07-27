@@ -25,7 +25,8 @@ export default async function HomePage() {
       prisma.offer.count(),
       prisma.listing.findMany({
         take: 6,
-        orderBy: { createdAt: 'desc' },
+        where: { status: 'ACTIVE' },
+        orderBy: { views: 'desc' },
       }),
     ]);
 
@@ -408,7 +409,7 @@ export default async function HomePage() {
             </p>
           </div>
           <Link
-            href="/admin/create-listing"
+            href="/create-listing"
             className="relative z-10 bg-[#00C49F] hover:bg-[#00a882] text-white font-bold px-8 py-4 rounded-2xl flex items-center gap-2 transition-colors whitespace-nowrap flex-shrink-0 shadow-lg shadow-[#00C49F]/30"
           >
             Ücretsiz İlan Ver

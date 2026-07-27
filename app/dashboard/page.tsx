@@ -9,18 +9,24 @@ export const dynamic = 'force-dynamic';
 export default async function SovereignDashboard() {
   const session = await getServerSession(authOptions);
 
-  const [listings, totalListings, totalOffers, totalDeals, totalAssets, recentOffers, openCases] = await Promise.all([
-    prisma.listing.findMany({ take: 3, orderBy: { createdAt: 'desc' } }),
-    prisma.listing.count(),
-    prisma.offer.count(),
-    prisma.dealRoom.count(),
-    prisma.asset.count(),
+  const sessionUser = session?.user as { name?: string | null; email?: string | null; role?: string } | undefined;
+  const isAdmin = sessionUser?.role === 'ADMIN';
+
+  const me = sessionUser?.email ? await prisma.user.findUnique({ where: { email: sessionUser.email } }) : null;
+
+  const [listings, totalListings, totalOffers, totalDeals, totalAssets, recentOffers, openCases, myPendingOffers] = await Promise.all([
+    prisma.listing.findMany({ take: 3, where: { status: 'ACTIVE' }, orderBy: { views: 'desc' } }),
+    prisma.listing.count({ where: { status: 'ACTIVE' } }),
+    me ? prisma.offer.count({ where: { userId: me.id } }) : prisma.offer.count(),
+    me ? prisma.dealRoom.count({ where: { OR: [{ buyerId: me.id }, { sellerId: me.id }] } }) : prisma.dealRoom.count(),
+    me ? prisma.asset.count({ where: { userId: me.id } }) : prisma.asset.count(),
     prisma.offer.findMany({
       take: 5,
       orderBy: { createdAt: 'desc' },
       include: { listing: { select: { title: true } }, user: { select: { name: true } } },
     }),
-    prisma.advisoryCase.count({ where: { status: 'OPEN' } }),
+    prisma.advisoryCase.count({ where: { status: 'OPEN', ...(me ? { userId: me.id } : {}) } }),
+    me ? prisma.offer.count({ where: { userId: me.id, status: 'PENDING' } }) : Promise.resolve(0),
   ]);
 
   return (
@@ -55,12 +61,14 @@ export default async function SovereignDashboard() {
           <Link href="/api-portal" className="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-gray-900 hover:bg-gray-50 rounded-xl text-sm font-medium tracking-wide transition-colors">
             <Zap size={18} /> API PORTAL
           </Link>
-          <Link href="/admin/create-listing" className="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-gray-900 hover:bg-gray-50 rounded-xl text-sm font-medium tracking-wide transition-colors">
+          <Link href={isAdmin ? '/admin/create-listing' : '/create-listing'} className="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-gray-900 hover:bg-gray-50 rounded-xl text-sm font-medium tracking-wide transition-colors">
             <Zap size={18} /> YENİ İLAN
           </Link>
-          <Link href="/admin/dashboard" className="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-gray-900 hover:bg-gray-50 rounded-xl text-sm font-medium tracking-wide transition-colors">
-            <ShieldCheck size={18} /> ADMİN
-          </Link>
+          {isAdmin && (
+            <Link href="/admin/dashboard" className="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-gray-900 hover:bg-gray-50 rounded-xl text-sm font-medium tracking-wide transition-colors">
+              <ShieldCheck size={18} /> ADMİN
+            </Link>
+          )}
         </nav>
       </aside>
 
@@ -77,7 +85,14 @@ export default async function SovereignDashboard() {
                 {session.user.name}
               </span>
             )}
-            <button className="text-gray-400 hover:text-gray-900 transition-colors"><Bell size={20} /></button>
+            <Link href="/notifications" className="relative text-gray-400 hover:text-[#00C49F] transition-colors">
+              <Bell size={20} />
+              {myPendingOffers > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-amber-500 text-white text-[8px] font-black rounded-full flex items-center justify-center">
+                  {myPendingOffers > 9 ? '9+' : myPendingOffers}
+                </span>
+              )}
+            </Link>
             <div className="flex items-center gap-3 px-4 py-1.5 border border-gray-200 rounded-full text-xs font-medium text-gray-500">
               <Globe size={14} />
               <span className="text-[#00C49F] font-semibold">TR</span>
@@ -95,10 +110,10 @@ export default async function SovereignDashboard() {
             {/* İstatistik Kartları */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               {[
-                { label: 'TOPLAM İLAN', value: totalListings, icon: <LayoutGrid size={16} />, href: '/listings' },
-                { label: 'AKTİF TEKLİF', value: totalOffers, icon: <TrendingUp size={16} />, href: '/offers' },
-                { label: 'ANLAŞMA ODASI', value: totalDeals, icon: <Activity size={16} />, href: '/deals' },
-                { label: 'VARLIK', value: totalAssets, icon: <Shield size={16} />, href: '/assets' },
+                { label: 'AKTİF İLAN', value: totalListings, icon: <LayoutGrid size={16} />, href: '/listings' },
+                { label: me ? 'TEKLİFLERİM' : 'TOPLAM TEKLİF', value: totalOffers, icon: <TrendingUp size={16} />, href: '/offers' },
+                { label: 'ANLAŞMALAR', value: totalDeals, icon: <Activity size={16} />, href: '/deals' },
+                { label: me ? 'VARLIKLARIM' : 'TOPLAM VARLIK', value: totalAssets, icon: <Shield size={16} />, href: '/assets' },
               ].map(stat => (
                 <Link key={stat.label} href={stat.href}
                   className="bg-white p-5 rounded-2xl border border-gray-100 hover:border-[#00C49F]/30 hover:shadow-md transition-all group">

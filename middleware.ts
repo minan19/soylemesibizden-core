@@ -40,5 +40,6 @@ export const config = {
     '/genealogy/:path*',
     '/authority/:path*',
     '/nexus/:path*',
+    '/notifications/:path*',
   ],
 };
