@@ -41,5 +41,7 @@ export const config = {
     '/authority/:path*',
     '/nexus/:path*',
     '/notifications/:path*',
+    '/create-listing/:path*',
+    '/edit-listing/:path*',
   ],
 };

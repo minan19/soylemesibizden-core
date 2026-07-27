@@ -1,5 +1,7 @@
 import prisma from '@/lib/prisma';
 import Link from 'next/link';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { ArrowLeft, Headphones, CheckCircle, Clock, MessageSquare, ArrowRight } from 'lucide-react';
 import ResolveCaseButton from '@/components/ResolveCaseButton';
 import NewCaseForm from '@/components/NewCaseForm';
@@ -7,7 +9,13 @@ import NewCaseForm from '@/components/NewCaseForm';
 export const dynamic = 'force-dynamic';
 
 export default async function ConciergePage() {
+  const session = await getServerSession(authOptions);
+  const sessionUser = session?.user as { email?: string | null; role?: string } | undefined;
+  const isPrivileged = sessionUser?.role === 'ADMIN' || sessionUser?.role === 'CONCIERGE';
+  const me = sessionUser?.email ? await prisma.user.findUnique({ where: { email: sessionUser.email } }) : null;
+
   const cases = await prisma.advisoryCase.findMany({
+    where: isPrivileged ? undefined : me ? { userId: me.id } : undefined,
     orderBy: { createdAt: 'desc' },
     include: { user: { select: { name: true, email: true } } },
   });
@@ -25,7 +33,9 @@ export default async function ConciergePage() {
               <ArrowLeft size={14} /> Dashboard
             </Link>
             <h1 className="text-3xl font-bold tracking-tight">Konsiyerj & Danışmanlık</h1>
-            <p className="text-sm text-gray-500 mt-1">{cases.length} vaka</p>
+            <p className="text-sm text-gray-500 mt-1">
+              {isPrivileged ? 'Tüm vakalar' : 'Taleplerim'} · {cases.length} vaka
+            </p>
           </div>
           <NewCaseForm />
         </div>

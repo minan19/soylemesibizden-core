@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { redirect } from 'next/navigation';
-import { User, MapPin, ArrowRight, TrendingUp, Heart, Activity, ShieldCheck } from 'lucide-react';
+import { User, MapPin, ArrowRight, TrendingUp, Heart, Activity, ShieldCheck, Settings } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -44,6 +44,9 @@ export default async function ProfilePage() {
             <p className="text-sm text-gray-500">{user.email}</p>
             {user.phone && <p className="text-sm text-gray-500 mt-0.5">{user.phone}</p>}
             <p className="text-[10px] text-gray-400 mt-2">Üyelik: {new Date(user.createdAt).toLocaleDateString('tr-TR')}</p>
+          <Link href="/profile/settings" className="inline-flex items-center gap-1 text-xs text-[#00C49F] font-semibold hover:underline mt-2">
+            <Settings size={11} /> Profili Düzenle
+          </Link>
           </div>
           <div className="grid grid-cols-3 gap-6 text-center">
             {[
