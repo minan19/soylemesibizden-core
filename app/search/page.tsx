@@ -96,6 +96,7 @@ export default async function SearchPage({
         : { createdAt: 'desc' },
     include: {
       owner: { select: { name: true, email: true } },
+      _count: { select: { favorites: true } },
     },
   });
 

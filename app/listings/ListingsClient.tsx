@@ -30,7 +30,9 @@ export interface Listing {
   area: number | null;
   isVerified: boolean;
   photos: string[];
+  views: number;
   owner: { name: string | null; email: string };
+  _count?: { favorites: number };
 }
 
 export interface FilterParams {
@@ -471,9 +473,14 @@ export default function ListingsClient({
               <span className="text-lg font-bold text-gray-900 font-mono">
                 ₺ {listing.price.toLocaleString('tr-TR')}
               </span>
-              <span className="text-xs text-gray-400 truncate max-w-[100px]">
-                {listing.owner.name ?? listing.owner.email}
-              </span>
+              <div className="flex items-center gap-2 text-xs text-gray-400">
+                {listing.views > 0 && (
+                  <span>{listing.views.toLocaleString('tr-TR')} 👁</span>
+                )}
+                {(listing._count?.favorites ?? 0) > 0 && (
+                  <span>{listing._count!.favorites} ♡</span>
+                )}
+              </div>
             </div>
             </div>{/* /p-5 */}
           </Link>

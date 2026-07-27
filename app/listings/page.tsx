@@ -108,6 +108,7 @@ export default async function ListingsPage({
       take: PAGE_SIZE,
       include: {
         owner: { select: { name: true, email: true } },
+        _count: { select: { favorites: true } },
       },
     }),
     prisma.listing.count({ where }),
