@@ -20,6 +20,7 @@ import {
 import SearchAutocomplete from '@/components/SearchAutocomplete';
 import CompareButton from '@/components/CompareButton';
 import RecentlyViewed from '@/components/RecentlyViewed';
+import ForYouSection from '@/components/ForYouSection';
 
 export const dynamic = 'force-dynamic';
 
@@ -354,6 +355,9 @@ export default async function HomePage() {
 
       {/* ─── RECENTLY VIEWED ──────────────────────────────────────── */}
       <RecentlyViewed />
+
+      {/* ─── FOR YOU ──────────────────────────────────────────────── */}
+      <ForYouSection />
 
       {/* ─── WHY US ────────────────────────────────────────────────── */}
       <section className="bg-white border-y border-gray-100">

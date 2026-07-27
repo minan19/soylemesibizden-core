@@ -15,6 +15,7 @@ export async function GET(req: NextRequest) {
     const maxPrice = searchParams.get('maxPrice');
     const limit = Math.min(parseInt(searchParams.get('limit') ?? '50'), 100);
     const page = Math.max(1, parseInt(searchParams.get('page') ?? '1'));
+    const sort = searchParams.get('sort');
 
     const where = {
       ...(q && { OR: [{ title: { contains: q, mode: 'insensitive' as const } }, { description: { contains: q, mode: 'insensitive' as const } }] }),
@@ -26,10 +27,16 @@ export async function GET(req: NextRequest) {
       ...(maxPrice && { price: { lte: parseFloat(maxPrice) } }),
     };
 
+    const orderBy =
+      sort === 'price_asc' ? { price: 'asc' as const } :
+      sort === 'price_desc' ? { price: 'desc' as const } :
+      sort === 'views' ? { views: 'desc' as const } :
+      { createdAt: 'desc' as const };
+
     const [listings, total] = await Promise.all([
       prisma.listing.findMany({
         where,
-        orderBy: { createdAt: 'desc' },
+        orderBy,
         take: limit,
         skip: (page - 1) * limit,
         include: { owner: { select: { name: true, email: true } } },
