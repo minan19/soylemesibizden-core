@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
-import { Menu, X, ChevronDown, Shield, Bell } from 'lucide-react';
+import { Menu, X, ChevronDown, Shield, Bell, Plus } from 'lucide-react';
 
 export default function Navbar() {
   const { data: session, status } = useSession();
@@ -130,6 +130,15 @@ export default function Navbar() {
                     ADMİN
                   </Link>
                 )}
+
+                {/* İlan Ver button */}
+                <Link
+                  href={isAdmin ? '/admin/create-listing' : '/create-listing'}
+                  className="hidden sm:flex items-center gap-1 px-3 py-1.5 rounded-xl bg-[#00C49F] hover:bg-[#00b08e] text-white text-xs font-bold transition-colors"
+                >
+                  <Plus size={12} />
+                  İlan Ver
+                </Link>
 
                 {/* Avatar button */}
                 <button
@@ -260,6 +269,15 @@ export default function Navbar() {
             >
               <Shield size={14} />
               Admin Paneli
+            </Link>
+          )}
+          {session && (
+            <Link
+              href={isAdmin ? '/admin/create-listing' : '/create-listing'}
+              onClick={() => setMobileOpen(false)}
+              className="mt-2 flex items-center justify-center gap-2 w-full text-center px-4 py-2.5 rounded-xl bg-[#00C49F] text-white text-sm font-semibold hover:bg-[#00B08E] transition-colors"
+            >
+              <Plus size={14} /> İlan Ver
             </Link>
           )}
           {!session && (
