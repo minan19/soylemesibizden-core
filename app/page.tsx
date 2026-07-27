@@ -25,7 +25,10 @@ import ForYouSection from '@/components/ForYouSection';
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
-  const [totalListings, activeListings, totalUsers, totalOffers, featuredListings, cityCounts] =
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const [totalListings, activeListings, totalUsers, totalOffers, featuredListings, cityCounts, todayCount, newListings] =
     await Promise.all([
       prisma.listing.count(),
       prisma.listing.count({ where: { status: 'ACTIVE' } }),
@@ -46,6 +49,13 @@ export default async function HomePage() {
         by: ['city'],
         where: { status: 'ACTIVE', city: { in: ['İstanbul', 'Ankara', 'İzmir', 'Antalya', 'Bursa', 'Bodrum', 'Mersin', 'Adana'] } },
         _count: true,
+      }),
+      prisma.listing.count({ where: { status: 'ACTIVE', createdAt: { gte: today } } }),
+      prisma.listing.findMany({
+        take: 3,
+        where: { status: 'ACTIVE', createdAt: { gte: today } },
+        orderBy: { createdAt: 'desc' },
+        select: { id: true, title: true, price: true, city: true, listingType: true, propertyType: true, photos: true, area: true, rooms: true },
       }),
     ]);
 
@@ -232,7 +242,14 @@ export default async function HomePage() {
       {/* ─── FEATURED LISTINGS ─────────────────────────────────────── */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-14">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">Güncel İlanlar</h2>
+          <div className="flex items-center gap-3">
+            <h2 className="text-2xl font-bold text-gray-900">Güncel İlanlar</h2>
+            {todayCount > 0 && (
+              <span className="inline-flex items-center gap-1 bg-amber-100 text-amber-700 text-xs font-bold px-2.5 py-1 rounded-full">
+                +{todayCount} bugün
+              </span>
+            )}
+          </div>
           <Link
             href="/listings"
             className="text-[#00C49F] font-semibold text-sm hover:underline flex items-center gap-1"
@@ -352,6 +369,49 @@ export default async function HomePage() {
           </div>
         )}
       </section>
+
+      {/* ─── NEW TODAY ────────────────────────────────────────────── */}
+      {newListings.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-10">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-[#00C49F] animate-pulse" />
+              <h2 className="text-lg font-bold text-gray-900">Bugün Eklendi</h2>
+              <span className="text-xs font-bold text-[#00C49F] bg-[#F0FDF8] px-2 py-0.5 rounded-full">{todayCount} yeni</span>
+            </div>
+            <Link href="/listings?sort=newest" className="text-sm text-[#00C49F] font-semibold hover:underline flex items-center gap-1">
+              Tümü <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {newListings.map(l => (
+              <Link key={l.id} href={`/listing/${l.id}`} className="group bg-white border border-gray-100 rounded-2xl overflow-hidden hover:shadow-lg hover:border-[#00C49F]/20 transition-all flex">
+                <div className="w-24 h-24 flex-shrink-0 bg-gradient-to-br from-slate-100 to-slate-200 relative overflow-hidden">
+                  {l.photos[0] ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={l.photos[0]} alt={l.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <Building2 className="w-6 h-6 text-slate-300" />
+                    </div>
+                  )}
+                </div>
+                <div className="flex-1 p-3 min-w-0">
+                  <div className="flex items-center gap-1 mb-1">
+                    <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${l.listingType === 'KİRALIK' ? 'bg-violet-50 text-violet-600' : 'bg-[#F0FDF8] text-[#00C49F]'}`}>
+                      {l.listingType}
+                    </span>
+                    <span className="text-[9px] text-gray-400">{l.propertyType}</span>
+                  </div>
+                  <p className="text-xs font-semibold text-gray-900 line-clamp-2 group-hover:text-[#00C49F] transition-colors leading-snug mb-1">{l.title}</p>
+                  {l.city && <p className="text-[10px] text-gray-400 flex items-center gap-0.5"><MapPin className="w-2.5 h-2.5" />{l.city}</p>}
+                  <p className="text-sm font-bold text-[#00C49F] mt-1">{l.price.toLocaleString('tr-TR')} ₺</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* ─── RECENTLY VIEWED ──────────────────────────────────────── */}
       <RecentlyViewed />
