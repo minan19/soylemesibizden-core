@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { redirect } from 'next/navigation';
-import { Heart, MapPin, ArrowRight, Home } from 'lucide-react';
+import { Heart, MapPin, ArrowRight, Home, Building2, Bed, Maximize2 } from 'lucide-react';
 import FavoriteButton from '@/components/FavoriteButton';
 
 export const dynamic = 'force-dynamic';
@@ -42,45 +42,69 @@ export default async function FavoritesPage() {
         {favorites.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {favorites.map(({ listing }) => (
-              <Link key={listing.id} href={`/listing/${listing.id}`}
-                className="group bg-white rounded-2xl border border-gray-100 p-6 hover:shadow-lg hover:border-[#00C49F]/20 transition-all">
-                <div className="flex justify-between items-start mb-3">
-                  <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full tracking-wider ${
-                    listing.status === 'ACTIVE' ? 'bg-[#F0FDF8] text-[#00C49F]' :
-                    listing.status === 'SOLD' ? 'bg-gray-100 text-gray-500' : 'bg-amber-50 text-amber-600'
-                  }`}>
-                    {listing.status === 'ACTIVE' ? 'AKTİF' : listing.status === 'SOLD' ? 'SATILDI' : 'BEKLEMEDE'}
-                  </span>
-                  <div className="flex items-center gap-1.5">
-                    {listing.listingType && (
-                      <span className="text-[10px] font-bold px-2 py-0.5 bg-gray-50 border border-gray-200 rounded-full text-gray-600">
-                        {listing.listingType}
-                      </span>
+              <div key={listing.id} className="group bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-lg hover:border-[#00C49F]/20 transition-all">
+                {/* Photo */}
+                <Link href={`/listing/${listing.id}`} className="block">
+                  <div className="w-full h-40 bg-gradient-to-br from-slate-100 to-slate-200 relative overflow-hidden">
+                    {listing.photos?.[0] ? (
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img src={listing.photos[0]} alt={listing.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Building2 size={28} className="text-slate-300" />
+                      </div>
                     )}
-                    <Heart size={14} className="text-[#00C49F] fill-[#00C49F]" />
                   </div>
-                </div>
-                <h2 className="text-base font-semibold text-gray-900 mb-1 line-clamp-1">{listing.title}</h2>
-                {listing.location && (
-                  <p className="text-xs text-gray-400 flex items-center gap-1 mb-2">
-                    <MapPin size={11} /> {listing.location}
-                  </p>
-                )}
-                {(listing.rooms || listing.area) && (
-                  <p className="text-xs text-gray-500 mb-3">
-                    {listing.rooms ? `${listing.rooms}+1` : ''}{listing.rooms && listing.area ? ' · ' : ''}{listing.area ? `${listing.area} m²` : ''}
-                  </p>
-                )}
-                <div className="flex justify-between items-center pt-3 border-t border-gray-50">
-                  <span className="text-lg font-bold text-gray-900 font-mono">
-                    ₺ {listing.price.toLocaleString('tr-TR')}
-                  </span>
-                  <div className="flex items-center gap-2">
+                </Link>
+                <div className="p-5">
+                  <div className="flex justify-between items-start mb-2.5">
+                    <div className="flex gap-1.5 flex-wrap">
+                      <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full tracking-wider ${
+                        listing.status === 'ACTIVE' ? 'bg-[#F0FDF8] text-[#00C49F]' :
+                        listing.status === 'SOLD' ? 'bg-gray-100 text-gray-500' : 'bg-amber-50 text-amber-600'
+                      }`}>
+                        {listing.status === 'ACTIVE' ? 'AKTİF' : listing.status === 'SOLD' ? 'SATILDI' : 'BEKLEMEDE'}
+                      </span>
+                      {listing.listingType && (
+                        <span className="text-[10px] font-bold px-2 py-0.5 bg-gray-50 border border-gray-200 rounded-full text-gray-600">
+                          {listing.listingType}
+                        </span>
+                      )}
+                    </div>
                     <FavoriteButton listingId={listing.id} initialFavorited={true} />
-                    <ArrowRight size={16} className="text-gray-300 group-hover:text-[#00C49F] transition-colors" />
+                  </div>
+                  <Link href={`/listing/${listing.id}`}>
+                    <h2 className="text-sm font-semibold text-gray-900 mb-1 line-clamp-1 hover:text-[#00C49F] transition-colors">{listing.title}</h2>
+                  </Link>
+                  {(listing.city || listing.location) && (
+                    <p className="text-xs text-gray-400 flex items-center gap-1 mb-2">
+                      <MapPin size={11} /> {listing.city ?? listing.location}
+                    </p>
+                  )}
+                  {(listing.rooms != null || listing.area != null) && (
+                    <div className="flex gap-3 mb-3">
+                      {listing.rooms != null && (
+                        <span className="flex items-center gap-1 text-xs text-gray-500">
+                          <Bed size={11} className="text-gray-400" />{listing.rooms} oda
+                        </span>
+                      )}
+                      {listing.area != null && (
+                        <span className="flex items-center gap-1 text-xs text-gray-500">
+                          <Maximize2 size={11} className="text-gray-400" />{listing.area} m²
+                        </span>
+                      )}
+                    </div>
+                  )}
+                  <div className="flex justify-between items-center pt-3 border-t border-gray-50">
+                    <span className="text-base font-bold text-gray-900 font-mono">
+                      ₺ {listing.price.toLocaleString('tr-TR')}
+                    </span>
+                    <Link href={`/listing/${listing.id}`}>
+                      <ArrowRight size={16} className="text-gray-300 group-hover:text-[#00C49F] transition-colors" />
+                    </Link>
                   </div>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
         ) : (
