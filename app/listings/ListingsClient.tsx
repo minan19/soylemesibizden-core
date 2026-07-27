@@ -13,6 +13,9 @@ import {
   Bed,
   Maximize2,
   Building2,
+  Eye,
+  Layers,
+  ExternalLink,
 } from 'lucide-react';
 import CompareButton from '@/components/CompareButton';
 
@@ -138,6 +141,7 @@ export default function ListingsClient({
   const [priceMax, setPriceMax] = useState(currentMaxPrice ?? '');
   const [areaMin, setAreaMin] = useState(currentMinArea ?? '');
   const [areaMax, setAreaMax] = useState(currentMaxArea ?? '');
+  const [quickView, setQuickView] = useState<Listing | null>(null);
 
   const activeStatus = currentStatus ?? 'ALL';
   const activeSort = currentSort ?? 'newest';
@@ -480,6 +484,15 @@ export default function ListingsClient({
                   YENİ
                 </span>
               )}
+              {/* Quick view hover button */}
+              <button
+                onClick={e => { e.preventDefault(); setQuickView(listing); }}
+                className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/10 transition-colors"
+              >
+                <span className="opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 text-gray-800 text-xs font-bold px-3 py-1.5 rounded-full shadow flex items-center gap-1.5">
+                  <Eye size={12} /> Hızlı Bak
+                </span>
+              </button>
             </div>
 
             <div className="p-5">
@@ -573,6 +586,101 @@ export default function ListingsClient({
           </div>
         )}
       </div>
+
+      {/* ── Quick View Modal ──────────────────────────────────────────── */}
+      {quickView && (
+        <div
+          className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4"
+          onClick={() => setQuickView(null)}
+        >
+          <div
+            className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden"
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Photo */}
+            <div className="relative w-full h-56 bg-gradient-to-br from-slate-100 to-slate-200">
+              {quickView.photos.length > 0 ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={quickView.photos[0]} alt={quickView.title} className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <Building2 size={40} className="text-slate-300" />
+                </div>
+              )}
+              <button
+                onClick={() => setQuickView(null)}
+                className="absolute top-3 right-3 bg-white/90 hover:bg-white rounded-full p-1.5 shadow text-gray-600 hover:text-gray-900 transition-colors"
+              >
+                <X size={16} />
+              </button>
+              <div className="absolute bottom-3 left-3 flex gap-1.5">
+                <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full ${STATUS_COLOR[quickView.status] ?? 'bg-gray-100 text-gray-500'}`}>
+                  {STATUS_LABEL[quickView.status] ?? quickView.status}
+                </span>
+                <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full ${LISTING_TYPE_COLOR[quickView.listingType] ?? 'bg-gray-100 text-gray-600'}`}>
+                  {quickView.listingType}
+                </span>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="p-6 space-y-4">
+              <div>
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">{quickView.propertyType}</p>
+                <h3 className="text-lg font-bold text-gray-900 leading-snug mb-1">{quickView.title}</h3>
+                {(quickView.location || quickView.city) && (
+                  <p className="text-xs text-gray-400 flex items-center gap-1">
+                    <MapPin size={11} />
+                    {quickView.location ?? quickView.city}
+                  </p>
+                )}
+              </div>
+
+              {/* Key specs */}
+              <div className="flex flex-wrap gap-3">
+                {quickView.rooms != null && (
+                  <span className="flex items-center gap-1.5 text-xs text-gray-600 bg-gray-50 px-3 py-1.5 rounded-xl font-medium">
+                    <Bed size={12} className="text-gray-400" /> {quickView.rooms} oda
+                  </span>
+                )}
+                {quickView.area != null && (
+                  <span className="flex items-center gap-1.5 text-xs text-gray-600 bg-gray-50 px-3 py-1.5 rounded-xl font-medium">
+                    <Maximize2 size={12} className="text-gray-400" /> {quickView.area} m²
+                  </span>
+                )}
+                {quickView.views > 0 && (
+                  <span className="flex items-center gap-1.5 text-xs text-gray-400 bg-gray-50 px-3 py-1.5 rounded-xl font-medium">
+                    <Eye size={12} /> {quickView.views.toLocaleString('tr-TR')}
+                  </span>
+                )}
+              </div>
+
+              {/* Description */}
+              <p className="text-sm text-gray-500 line-clamp-3 leading-relaxed">{quickView.description}</p>
+
+              {/* Price + CTA */}
+              <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                <div>
+                  <p className="text-2xl font-bold text-[#00C49F]">
+                    {quickView.price.toLocaleString('tr-TR')} ₺
+                  </p>
+                  {quickView.area && quickView.area > 0 && (
+                    <p className="text-xs text-gray-400 mt-0.5">
+                      {Math.round(quickView.price / quickView.area).toLocaleString('tr-TR')} ₺/m²
+                    </p>
+                  )}
+                </div>
+                <Link
+                  href={`/listing/${quickView.id}`}
+                  className="flex items-center gap-2 px-5 py-2.5 bg-[#00C49F] hover:bg-[#00a882] text-white text-sm font-bold rounded-xl transition-colors"
+                >
+                  <ExternalLink size={14} /> İlana Git
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
