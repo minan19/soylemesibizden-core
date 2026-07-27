@@ -17,6 +17,7 @@ import {
   Phone,
   Mail,
 } from 'lucide-react';
+import SearchAutocomplete from '@/components/SearchAutocomplete';
 
 export const dynamic = 'force-dynamic';
 
@@ -68,48 +69,21 @@ export default async function HomePage() {
             </p>
           </div>
 
-          {/* Search Form */}
-          <form
-            action="/listings"
-            method="GET"
-            className="max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl p-3 flex flex-col sm:flex-row gap-3"
-          >
-            <div className="flex flex-1 items-center gap-2 bg-gray-50 rounded-xl px-4 py-3">
-              <MapPin className="w-5 h-5 text-[#00C49F] flex-shrink-0" />
-              <input
-                type="text"
-                name="q"
-                placeholder="Şehir, ilçe veya anahtar kelime..."
-                className="w-full bg-transparent text-gray-800 placeholder-gray-400 text-sm font-medium outline-none"
-              />
+          {/* Search Form with Autocomplete */}
+          <div className="max-w-2xl mx-auto">
+            <SearchAutocomplete />
+            <div className="flex items-center justify-center gap-4 mt-3">
+              {['SATILIK', 'KİRALIK', 'KONUT', 'TİCARİ'].map(t => (
+                <a
+                  key={t}
+                  href={t === 'SATILIK' || t === 'KİRALIK' ? `/listings?listingType=${encodeURIComponent(t)}` : `/listings?propertyType=${encodeURIComponent(t)}`}
+                  className="text-xs font-semibold text-white/70 hover:text-white border border-white/20 hover:border-white/40 px-3 py-1.5 rounded-full transition-colors"
+                >
+                  {t}
+                </a>
+              ))}
             </div>
-            <div className="flex flex-wrap sm:flex-nowrap gap-3">
-              <select
-                name="listingType"
-                className="flex-1 sm:flex-none bg-gray-50 rounded-xl px-4 py-3 text-sm font-semibold text-gray-700 outline-none cursor-pointer border-0"
-              >
-                <option value="">Tümü</option>
-                <option value="SATILIK">SATILIK</option>
-                <option value="KİRALIK">KİRALIK</option>
-              </select>
-              <select
-                name="propertyType"
-                className="flex-1 sm:flex-none bg-gray-50 rounded-xl px-4 py-3 text-sm font-semibold text-gray-700 outline-none cursor-pointer border-0"
-              >
-                <option value="">Mülk Tipi</option>
-                <option value="KONUT">KONUT</option>
-                <option value="TİCARİ">TİCARİ</option>
-                <option value="ARAZI">ARAZI</option>
-              </select>
-              <button
-                type="submit"
-                className="bg-[#00C49F] hover:bg-[#00a882] text-white font-bold px-6 py-3 rounded-xl flex items-center gap-2 transition-colors whitespace-nowrap"
-              >
-                <Search className="w-4 h-4" />
-                Ara
-              </button>
-            </div>
-          </form>
+          </div>
 
           {/* Trust Badges */}
           <div className="flex flex-wrap items-center justify-center gap-6 mt-8">
