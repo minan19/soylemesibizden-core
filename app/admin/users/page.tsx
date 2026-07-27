@@ -115,10 +115,10 @@ export default async function AdminUsersPage() {
                       </td>
                       <td className="px-5 py-4 text-right">
                         <Link
-                          href={`/profile`}
-                          className="text-xs text-gray-400 hover:text-gray-700 transition-colors"
+                          href={`/admin/users/${user.id}`}
+                          className="text-xs text-[#00C49F] hover:text-[#00a882] font-semibold transition-colors"
                         >
-                          Profil
+                          Detay →
                         </Link>
                       </td>
                     </tr>
