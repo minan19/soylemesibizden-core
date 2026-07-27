@@ -1,6 +1,6 @@
 import prisma from '@/lib/prisma';
 import Link from 'next/link';
-import { ArrowLeft, CheckCircle2, XCircle, MapPin, Bed, Bath, Maximize2, Layers, Building2, CalendarDays, ArrowRight } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, XCircle, MapPin, Bed, Bath, Maximize2, Layers, Building2, CalendarDays, ArrowRight, Star, Eye } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -169,12 +169,29 @@ export default async function ComparePage({
         ),
     },
     {
+      label: 'Görüntülenme',
+      render: l => (
+        <span className="flex items-center gap-1 text-xs text-gray-500">
+          <Eye size={12} className="text-gray-300" /> {l.views.toLocaleString('tr-TR')}
+        </span>
+      ),
+    },
+    {
       label: 'İlan Sahibi',
       render: l => (
-        <span className="text-xs text-gray-500">{l.owner.name ?? l.owner.email}</span>
+        <Link href={`/user/${l.ownerId}`} className="text-xs text-[#00C49F] hover:underline">
+          {l.owner.name ?? l.owner.email}
+        </Link>
       ),
     },
   ];
+
+  // Best deal by price per m²
+  const withPpm2 = listings.filter(l => l.area && l.area > 0).map(l => ({ ...l, ppm2: l.price / (l.area!) }));
+  const bestDealId = withPpm2.length > 0 ? withPpm2.reduce((a, b) => a.ppm2 < b.ppm2 ? a : b).id : null;
+
+  // Lowest price
+  const lowestPriceId = listings.length > 0 ? listings.reduce((a, b) => a.price < b.price ? a : b).id : null;
 
   return (
     <main className="min-h-screen bg-[#F8FAFC]">
@@ -225,7 +242,30 @@ export default async function ComparePage({
                 <p className="text-xs font-bold tracking-widest text-gray-400 uppercase">Özellik</p>
               </div>
               {listings.map(l => (
-                <div key={l.id} className="p-5 border-r last:border-r-0 border-gray-100">
+                <div key={l.id} className={`p-5 border-r last:border-r-0 border-gray-100 ${l.id === bestDealId ? 'bg-[#F0FDF8]' : ''}`}>
+                  {/* Photo */}
+                  <Link href={`/listing/${l.id}`} className="block mb-3">
+                    <div className="w-full h-28 rounded-xl overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 relative">
+                      {l.photos[0] ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={l.photos[0]} alt={l.title} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <Building2 size={24} className="text-slate-300" />
+                        </div>
+                      )}
+                      {l.id === bestDealId && (
+                        <span className="absolute top-2 left-2 bg-[#00C49F] text-white text-[9px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                          <Star size={9} fill="currentColor" /> EN İYİ DEĞER
+                        </span>
+                      )}
+                      {l.id === lowestPriceId && l.id !== bestDealId && (
+                        <span className="absolute top-2 left-2 bg-amber-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full">
+                          EN UCUZ
+                        </span>
+                      )}
+                    </div>
+                  </Link>
                   <Link href={`/listing/${l.id}`} className="group">
                     <h2 className="text-sm font-bold text-gray-900 line-clamp-2 group-hover:text-[#00C49F] transition-colors mb-1">
                       {l.title}
@@ -235,6 +275,9 @@ export default async function ComparePage({
                         <MapPin size={10} /> {l.location ?? l.city}
                       </p>
                     )}
+                    <p className="text-lg font-bold text-[#00C49F] mt-2">
+                      {l.price.toLocaleString('tr-TR')} ₺
+                    </p>
                   </Link>
                 </div>
               ))}
