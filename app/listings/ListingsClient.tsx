@@ -448,6 +448,48 @@ export default function ListingsClient({
         </div>
       )}
 
+      {/* ── Active filter chips ───────────────────────────────────────── */}
+      {(() => {
+        const chips: Array<{ label: string; clearKey: Record<string, undefined> }> = [];
+        if (currentQ) chips.push({ label: `"${currentQ}"`, clearKey: { q: undefined } });
+        if (currentCity) chips.push({ label: currentCity, clearKey: { city: undefined } });
+        if (currentNeighborhood) chips.push({ label: currentNeighborhood, clearKey: { neighborhood: undefined } });
+        if (activeListingType !== 'ALL') chips.push({ label: activeListingType, clearKey: { listingType: undefined } });
+        if (activePropertyType !== 'ALL') chips.push({ label: activePropertyType, clearKey: { propertyType: undefined } });
+        if (activeMinRooms) chips.push({ label: `${activeMinRooms}+ oda`, clearKey: { minRooms: undefined } });
+        if (priceMin || priceMax) chips.push({ label: `${priceMin || '0'} – ${priceMax || '∞'} ₺`, clearKey: { minPrice: undefined, maxPrice: undefined } });
+        if (areaMin || areaMax) chips.push({ label: `${areaMin || '0'} – ${areaMax || '∞'} m²`, clearKey: { minArea: undefined, maxArea: undefined } });
+        if (currentHasElevator === '1') chips.push({ label: 'Asansör', clearKey: { hasElevator: undefined } });
+        if (currentHasParking === '1') chips.push({ label: 'Otopark', clearKey: { hasParking: undefined } });
+        if (currentHasGarden === '1') chips.push({ label: 'Bahçe', clearKey: { hasGarden: undefined } });
+        if (chips.length === 0) return null;
+        return (
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs text-gray-400 font-medium">Aktif filtreler:</span>
+            {chips.map((chip, i) => (
+              <button
+                key={i}
+                onClick={() => push(chip.clearKey as Record<string, string | undefined>)}
+                className="flex items-center gap-1.5 px-3 py-1 bg-[#00C49F]/10 text-[#00C49F] text-xs font-semibold rounded-full border border-[#00C49F]/30 hover:bg-red-50 hover:text-red-500 hover:border-red-200 transition-colors"
+              >
+                {chip.label} <X size={11} />
+              </button>
+            ))}
+            <button
+              onClick={() => push({
+                q: undefined, city: undefined, neighborhood: undefined,
+                listingType: undefined, propertyType: undefined, minRooms: undefined,
+                minPrice: undefined, maxPrice: undefined, minArea: undefined, maxArea: undefined,
+                hasElevator: undefined, hasParking: undefined, hasGarden: undefined,
+              })}
+              className="text-xs text-gray-400 hover:text-gray-700 font-semibold underline transition-colors"
+            >
+              Tümünü temizle
+            </button>
+          </div>
+        );
+      })()}
+
       {/* ── Listing grid ──────────────────────────────────────────────── */}
       <div
         className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 transition-opacity duration-200 ${
