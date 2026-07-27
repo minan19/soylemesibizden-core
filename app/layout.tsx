@@ -5,6 +5,7 @@ import { SovereignProvider } from '../providers/SovereignProvider';
 import AuthSessionProvider from '../providers/SessionProvider';
 import Navbar from '@/components/Navbar';
 import { CompareBar } from '@/components/CompareButton';
+import MobileBottomNav from '@/components/MobileBottomNav';
 
 const montserrat = Montserrat({ 
   subsets: ['latin'], 
@@ -29,7 +30,10 @@ export default function RootLayout({
         <AuthSessionProvider>
           <SovereignProvider>
             <Navbar />
-            {children}
+            <div className="pb-16 md:pb-0">
+              {children}
+            </div>
+            <MobileBottomNav />
             <CompareBar />
           </SovereignProvider>
         </AuthSessionProvider>
