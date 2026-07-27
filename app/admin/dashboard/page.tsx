@@ -175,6 +175,34 @@ export default async function AdminDashboardPage() {
           </Link>
         </div>
 
+        {/* Second row quick links */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
+          <Link href="/admin/offers" className="flex items-center gap-3 bg-white rounded-2xl px-4 py-3 border border-gray-100 hover:border-[#00C49F]/30 hover:shadow-sm transition-all">
+            <CheckCircle size={16} className="text-[#00C49F]" />
+            <div>
+              <p className="text-xs font-bold text-gray-700">Teklifler</p>
+              <p className="text-[10px] text-gray-400">{offerCount} toplam</p>
+            </div>
+            <ArrowUpRight size={13} className="text-gray-300 ml-auto" />
+          </Link>
+          <Link href="/admin/listings" className="flex items-center gap-3 bg-white rounded-2xl px-4 py-3 border border-gray-100 hover:border-[#00C49F]/30 hover:shadow-sm transition-all">
+            <Building2 size={16} className="text-[#00C49F]" />
+            <div>
+              <p className="text-xs font-bold text-gray-700">Tüm İlanlar</p>
+              <p className="text-[10px] text-gray-400">{listingCount} kayıt</p>
+            </div>
+            <ArrowUpRight size={13} className="text-gray-300 ml-auto" />
+          </Link>
+          <Link href="/market-radar" className="flex items-center gap-3 bg-white rounded-2xl px-4 py-3 border border-gray-100 hover:border-[#00C49F]/30 hover:shadow-sm transition-all">
+            <Users size={16} className="text-purple-500" />
+            <div>
+              <p className="text-xs font-bold text-gray-700">Piyasa Radar</p>
+              <p className="text-[10px] text-gray-400">Analiz & İstatistik</p>
+            </div>
+            <ArrowUpRight size={13} className="text-gray-300 ml-auto" />
+          </Link>
+        </div>
+
         {/* Pending listings alert */}
         {pendingListings > 0 && (
           <Link href="/admin/listings" className="flex items-center gap-4 bg-amber-50 border border-amber-200 rounded-2xl px-6 py-4 mb-6 hover:bg-amber-100 transition-colors">
