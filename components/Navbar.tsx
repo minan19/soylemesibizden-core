@@ -48,8 +48,20 @@ export default function Navbar() {
   const navLinks = [
     { href: '/listings', label: 'İlanlar', authRequired: false },
     { href: '/search', label: 'Arama', authRequired: false },
+    { href: '/valuation', label: 'Değerleme', authRequired: false },
+    { href: '/my-listings', label: 'İlanlarım', authRequired: true },
+    { href: '/dashboard', label: 'Dashboard', authRequired: true },
+  ];
+
+  const mobileLinks = [
+    { href: '/listings', label: 'İlanlar', authRequired: false },
+    { href: '/search', label: 'Gelişmiş Arama', authRequired: false },
+    { href: '/valuation', label: 'Değerleme Aracı', authRequired: false },
+    { href: '/market-radar', label: 'Piyasa Radarı', authRequired: false },
     { href: '/favorites', label: 'Favoriler', authRequired: true },
     { href: '/my-listings', label: 'İlanlarım', authRequired: true },
+    { href: '/offers', label: 'Teklifler', authRequired: true },
+    { href: '/saved-searches', label: 'Kayıtlı Aramalar', authRequired: true },
     { href: '/dashboard', label: 'Dashboard', authRequired: true },
     { href: '/notifications', label: 'Bildirimler', authRequired: true },
   ];
@@ -227,7 +239,7 @@ export default function Navbar() {
       {/* Mobil menü */}
       {mobileOpen && (
         <div className="md:hidden border-t border-gray-100 bg-white px-6 py-4 flex flex-col gap-1">
-          {navLinks.map((link) => {
+          {mobileLinks.map((link) => {
             if (link.authRequired && !session) return null;
             return (
               <Link
