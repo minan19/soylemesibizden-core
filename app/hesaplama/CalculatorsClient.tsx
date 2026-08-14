@@ -194,10 +194,85 @@ function RentalYieldCalc() {
   );
 }
 
+/* ── Tapu & Vergi Hesaplayıcısı ─────────────────────────────── */
+function TapuCalc() {
+  const [price, setPrice] = useState('');
+  const [isNewBuild, setIsNewBuild] = useState(false);
+
+  const p = parseFloat(price) || 0;
+
+  // Tapu harcı: %4 (alıcı+satıcı paylaşımı, pratikte alıcı öder)
+  const tapuHarci = p * 0.04;
+  // Döner sermaye bedeli (2024 tahmini sabit bedel ~1000 TL)
+  const donerSermaye = 1500;
+  // DASK (deprem sigortası) tahmini yıllık
+  const dask = 1200;
+  // Emlak vergisi yıllık: konut için %1.5‰ büyükşehirde, %0.75‰ diğer
+  const emlakVergisi = p * 0.002;
+  // KDV: yeni binalarda net alanına göre %1 veya %20
+  const kdv = isNewBuild ? p * 0.2 : 0;
+
+  const toplam = tapuHarci + donerSermaye + dask + kdv;
+
+  const Row = ({ label, value, note }: { label: string; value: number; note?: string }) => (
+    <div className="flex items-center justify-between py-2.5 border-b border-gray-50 last:border-0">
+      <div>
+        <p className="text-sm text-gray-700 font-medium">{label}</p>
+        {note && <p className="text-xs text-gray-400">{note}</p>}
+      </div>
+      <p className="font-bold font-mono text-gray-900">{fmt(value)}</p>
+    </div>
+  );
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <label className="block text-xs font-semibold text-gray-600 mb-1">Tapu Değeri / Satış Fiyatı (₺)</label>
+        <input
+          type="number"
+          value={price}
+          onChange={e => setPrice(e.target.value)}
+          placeholder="3.000.000"
+          className="w-full px-3 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#00C49F] transition-colors"
+        />
+      </div>
+      <label className="flex items-center gap-2 cursor-pointer">
+        <input
+          type="checkbox"
+          checked={isNewBuild}
+          onChange={e => setIsNewBuild(e.target.checked)}
+          className="accent-[#00C49F] w-4 h-4"
+        />
+        <span className="text-sm text-gray-600">Sıfır yapı / Müteahhitten alım (%20 KDV uygulanır)</span>
+      </label>
+
+      {p > 0 && (
+        <div className="bg-[#F8FAFC] border border-gray-100 rounded-2xl p-5 space-y-0">
+          <p className="text-[10px] font-bold tracking-widest text-gray-400 uppercase mb-3">Tahmini Maliyetler</p>
+          <Row label="Tapu Harcı (%4)" value={tapuHarci} note="Alıcı payı — fiyatın %4'ü" />
+          <Row label="Döner Sermaye Bedeli" value={donerSermaye} note="2024 tahmini sabit bedel" />
+          <Row label="DASK (Deprem Sig.)" value={dask} note="Yıllık tahmini, değere göre değişir" />
+          {isNewBuild && <Row label="KDV (%20)" value={kdv} note="Yeni yapı — müteahhitten satın alım" />}
+          <div className="mt-3 pt-3 border-t border-gray-200 flex items-center justify-between">
+            <p className="text-sm font-bold text-gray-900">Tahmini Toplam Ek Maliyet</p>
+            <p className="text-lg font-extrabold text-red-500 font-mono">{fmt(toplam)}</p>
+          </div>
+          <div className="flex items-center justify-between mt-1">
+            <p className="text-xs text-gray-400">Mülk fiyatının</p>
+            <p className="text-xs font-bold text-gray-600">{p > 0 ? ((toplam / p) * 100).toFixed(1) : 0}%'si</p>
+          </div>
+          <p className="text-[10px] text-gray-300 mt-3">* Tahmini değerlerdir. Kesin rakamlar için notere danışın.</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 const TABS = [
   { id: 'mortgage', label: 'Konut Kredisi', icon: Home, component: MortgageCalc },
   { id: 'rentvsbuy', label: 'Kira vs Satın Al', icon: Calculator, component: RentVsBuyCalc },
   { id: 'yield', label: 'Kira Getirisi', icon: TrendingUp, component: RentalYieldCalc },
+  { id: 'tapu', label: 'Tapu & Vergiler', icon: DollarSign, component: TapuCalc },
 ];
 
 export default function CalculatorsClient() {

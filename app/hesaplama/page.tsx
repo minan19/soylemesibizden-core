@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Metadata } from 'next';
-import { ArrowLeft, Calculator, Home, TrendingUp, Info } from 'lucide-react';
+import { ArrowLeft, Calculator, Home, TrendingUp, Info, DollarSign } from 'lucide-react';
 import CalculatorsClient from './CalculatorsClient';
 
 export const metadata: Metadata = {
@@ -30,7 +30,7 @@ export default function HesaplamaPage() {
         </div>
 
         {/* Feature cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
             {
               icon: Home,
@@ -52,6 +52,13 @@ export default function HesaplamaPage() {
               desc: 'Yatırım getirinizi ve geri ödeme süresini öğrenin',
               color: 'text-amber-600',
               bg: 'bg-amber-50',
+            },
+            {
+              icon: DollarSign,
+              title: 'Tapu & Vergiler',
+              desc: 'Tapu harcı, KDV ve ek maliyetleri hesaplayın',
+              color: 'text-red-500',
+              bg: 'bg-red-50',
             },
           ].map(card => (
             <div key={card.title} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
