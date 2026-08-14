@@ -981,6 +981,10 @@ export default async function HomePage() {
                   { href: '/karsilastir', label: 'Bölge Karşılaştır' },
                   { href: '/valuation', label: 'Değerleme Aracı' },
                   { href: '/hesaplama', label: 'Hesaplama Araçları' },
+                  { href: '/tapu-masrafi', label: 'Tapu Masrafı Hesabı' },
+                  { href: '/yatirim-analizi', label: 'Yatırım Analizi' },
+                  { href: '/fiyat-trendi', label: 'Fiyat Trendi' },
+                  { href: '/mahalle-analizi', label: 'Mahalle Analizi' },
                   { href: '/saved-searches', label: 'Kayıtlı Aramalar' },
                 ].map(l => (
                   <Link key={l.href} href={l.href} className="text-sm text-gray-400 hover:text-[#00C49F] transition-colors">{l.label}</Link>

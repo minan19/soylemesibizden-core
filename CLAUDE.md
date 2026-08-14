@@ -312,6 +312,21 @@ Migration SQL kullanıcı tarafından Neon SQL Editor'da çalıştırılmalı.
 - [x] **/kiralik** — Kiralık konut landing sayfası
 - [x] **/satilik** — Satılık konut landing sayfası
 
+### Oturum 8 (FAZ 143-147) — Tamamlananlar
+- [x] **FAZ-143:** Lüks Gayrimenkul sayfası (/luks) — dinamik eşik (top 10%), altın tema, premium koleksiyon
+- [x] **FAZ-144:** Tapu masrafı hesaplayıcı (/tapu-masrafi) — tapu harcı, döner sermaye, DASK, KDV, emlakçı komisyonu
+- [x] **FAZ-145:** Fiyat trendi sayfası (/fiyat-trendi) — aylık bar grafikler, şehir karşılaştırması, hacim analizi
+- [x] **FAZ-146:** Mahalle analizi sayfası (/mahalle-analizi) — aktivite skoru, ₺/m², yoğunluk sıralaması
+- [x] **FAZ-147:** Yatırım analizi sayfası (/yatirim-analizi) — ROI hesaplayıcı, al mı kirala mı, şehir kira getiri kıyaslaması
+- [x] **FAZ-148:** Footer + Navbar güncellemesi — yeni sayfalar linklendi
+
+### Yeni Sayfalar (Oturum 8)
+- [x] **/luks** — Lüks gayrimenkul premium koleksiyon sayfası
+- [x] **/tapu-masrafi** — Tapu ve alım masrafları interaktif hesaplayıcı
+- [x] **/fiyat-trendi** — Aylık fiyat trendi analizi (ISR: 1 saat)
+- [x] **/mahalle-analizi** — Mahalle bazlı aktivite skoru ve ₺/m² analizi
+- [x] **/yatirim-analizi** — Yatırım ROI hesaplayıcı + al/kirala karşılaştırması
+
 ---
 
 ## 5. Kalan Kritik İşler
@@ -443,7 +458,7 @@ git push https://minan19:<GITHUB_TOKEN>@github.com/minan19/soylemesibizden-core.
 
 ---
 
-*Son güncelleme: 2026-08-14 — Oturum 9: FAZ 133-141 tamamlandı. Listing filtreleri iyileştirme, Konut Rehberi (3 sayfa), Piyasa sayfası, Yeni Projeler, Kiralık/Satılık landing sayfaları, Featured Agents widget.*
+*Son güncelleme: 2026-08-14 — Oturum 8: FAZ 143-147 tamamlandı. Lüks sayfası, tapu masrafı hesaplayıcı, fiyat trendi, mahalle analizi, yatırım analizi (ROI + al/kirala), footer güncellemesi.*
 
 **Oturum 6 (FAZ 79-88) — Tamamlananlar:**
 - FAZ-79: İlan şikayet sistemi — /api/reports + ReportListingButton modal
