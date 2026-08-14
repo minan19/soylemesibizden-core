@@ -199,6 +199,50 @@ export default async function ListingAnalyticsPage({ params }: { params: { id: s
           </div>
         </div>
 
+        {/* Offer Amount Bar Chart */}
+        {listing.offers.length > 0 && (() => {
+          const maxAmount = Math.max(listing.price, ...listing.offers.map(o => o.amount));
+          const barItems = [
+            { label: 'İlan Fiyatı', amount: listing.price, color: 'bg-gray-400' },
+            ...listing.offers.slice(0, 6).map((o, i) => ({
+              label: o.user.name ? o.user.name.split(' ')[0] : `Teklif ${i + 1}`,
+              amount: o.amount,
+              color: o.status === 'ACCEPTED' ? 'bg-[#00C49F]' : o.status === 'REJECTED' ? 'bg-red-400' : 'bg-amber-400',
+            })),
+          ];
+          return (
+            <div className="bg-white rounded-2xl border border-gray-100 p-6">
+              <h2 className="text-[10px] font-bold tracking-widest text-[#00C49F] uppercase flex items-center gap-2 mb-5">
+                <BarChart2 size={12} /> Teklif Karşılaştırma Grafiği
+              </h2>
+              <div className="space-y-3">
+                {barItems.map((item, idx) => {
+                  const pct = Math.min(100, Math.round((item.amount / maxAmount) * 100));
+                  return (
+                    <div key={idx} className="flex items-center gap-3">
+                      <div className="w-24 shrink-0 text-right">
+                        <span className="text-xs font-semibold text-gray-600 truncate block">{item.label}</span>
+                      </div>
+                      <div className="flex-1 bg-gray-100 rounded-full h-5 relative overflow-hidden">
+                        <div
+                          className={`absolute inset-y-0 left-0 rounded-full ${item.color} transition-all duration-500`}
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                      <div className="w-28 shrink-0">
+                        <span className="text-xs font-mono font-bold text-gray-700">{formatPrice(item.amount)}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <p className="text-[10px] text-gray-300 mt-4 text-right">
+                Maksimum değere göre ölçeklendirilmiştir
+              </p>
+            </div>
+          );
+        })()}
+
         {/* Recent offers table */}
         {listing.offers.length > 0 && (
           <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
