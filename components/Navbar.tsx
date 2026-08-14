@@ -47,6 +47,7 @@ export default function Navbar() {
 
   const navLinks = [
     { href: '/listings', label: 'İlanlar', authRequired: false },
+    { href: '/harita', label: 'Harita', authRequired: false },
     { href: '/search', label: 'Arama', authRequired: false },
     { href: '/valuation', label: 'Değerleme', authRequired: false },
     { href: '/my-listings', label: 'İlanlarım', authRequired: true },
@@ -55,6 +56,7 @@ export default function Navbar() {
 
   const mobileLinks = [
     { href: '/listings', label: 'İlanlar', authRequired: false },
+    { href: '/harita', label: 'İlan Haritası', authRequired: false },
     { href: '/search', label: 'Gelişmiş Arama', authRequired: false },
     { href: '/valuation', label: 'Değerleme Aracı', authRequired: false },
     { href: '/hesaplama', label: 'Hesaplama Araçları', authRequired: false },

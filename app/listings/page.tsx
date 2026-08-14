@@ -1,6 +1,7 @@
 import prisma from '@/lib/prisma';
 import Link from 'next/link';
 import { Metadata } from 'next';
+import { Map } from 'lucide-react';
 import ListingsClient from './ListingsClient';
 import SaveSearchButton from '@/components/SaveSearchButton';
 
@@ -167,6 +168,12 @@ export default async function ListingsPage({
             </p>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
+            <Link
+              href="/harita"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold border border-gray-200 rounded-lg text-gray-500 hover:text-[#00C49F] hover:border-[#00C49F]/50 transition-colors"
+            >
+              <Map size={13} /> Haritada Gör
+            </Link>
             {counts.map(c => (
               <span
                 key={c.status}
