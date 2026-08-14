@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Calculator } from 'lucide-react';
+import { Calculator, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface Props {
   defaultPrice: number;
@@ -11,6 +11,7 @@ export default function MortgageCalculator({ defaultPrice }: Props) {
   const [principal, setPrincipal] = useState(Math.round(defaultPrice * 0.7));
   const [rate, setRate] = useState(2.5);
   const [months, setMonths] = useState(120);
+  const [showSchedule, setShowSchedule] = useState(false);
 
   const r = rate / 100;
   const n = months;
@@ -23,6 +24,19 @@ export default function MortgageCalculator({ defaultPrice }: Props) {
 
   const totalPayment = monthlyPayment * months;
   const totalInterest = totalPayment - P;
+
+  // Amortization schedule (first 24 months max for display)
+  const scheduleRows: { month: number; payment: number; principal: number; interest: number; balance: number }[] = [];
+  if (monthlyPayment > 0 && P > 0) {
+    let balance = P;
+    const displayMonths = Math.min(months, 24);
+    for (let i = 1; i <= displayMonths; i++) {
+      const interestPart = balance * r;
+      const principalPart = monthlyPayment - interestPart;
+      balance = Math.max(0, balance - principalPart);
+      scheduleRows.push({ month: i, payment: monthlyPayment, principal: principalPart, interest: interestPart, balance });
+    }
+  }
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
@@ -101,6 +115,48 @@ export default function MortgageCalculator({ defaultPrice }: Props) {
           </div>
         )}
       </div>
+
+      {/* Amortization schedule */}
+      {scheduleRows.length > 0 && (
+        <div className="mt-4">
+          <button
+            onClick={() => setShowSchedule(v => !v)}
+            className="flex items-center gap-2 text-xs font-semibold text-[#00C49F] hover:text-[#00a882] transition-colors"
+          >
+            {showSchedule ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+            Ödeme Planı {months > 24 ? '(İlk 24 Ay)' : `(${months} Ay)`}
+          </button>
+          {showSchedule && (
+            <div className="mt-3 rounded-xl border border-gray-100 overflow-hidden">
+              <table className="w-full text-xs">
+                <thead className="bg-gray-50">
+                  <tr>
+                    {['Ay', 'Taksit', 'Ana Para', 'Faiz', 'Kalan'].map(h => (
+                      <th key={h} className="px-3 py-2 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wide">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {scheduleRows.map(row => (
+                    <tr key={row.month} className="hover:bg-gray-50 transition-colors">
+                      <td className="px-3 py-2 font-semibold text-gray-500">{row.month}</td>
+                      <td className="px-3 py-2 font-mono text-gray-800">{Math.round(row.payment).toLocaleString('tr-TR')}</td>
+                      <td className="px-3 py-2 font-mono text-[#00C49F]">{Math.round(row.principal).toLocaleString('tr-TR')}</td>
+                      <td className="px-3 py-2 font-mono text-amber-600">{Math.round(row.interest).toLocaleString('tr-TR')}</td>
+                      <td className="px-3 py-2 font-mono text-gray-600">{Math.round(row.balance).toLocaleString('tr-TR')}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {months > 24 && (
+                <p className="px-3 py-2 text-[10px] text-gray-400 border-t border-gray-50">
+                  Yalnızca ilk 24 ay gösteriliyor. Toplam {months} ay.
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
