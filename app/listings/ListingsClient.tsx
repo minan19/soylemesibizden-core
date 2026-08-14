@@ -60,6 +60,8 @@ export interface FilterParams {
   currentHasElevator?: string;
   currentHasParking?: string;
   currentHasGarden?: string;
+  currentSince?: string;
+  currentMaxBuildingAge?: string;
 }
 
 interface Props extends FilterParams {
@@ -138,6 +140,8 @@ export default function ListingsClient({
   currentHasElevator,
   currentHasParking,
   currentHasGarden,
+  currentSince,
+  currentMaxBuildingAge,
   hideFilters = false,
 }: Props) {
   const router = useRouter();
@@ -177,6 +181,8 @@ export default function ListingsClient({
       hasElevator: currentHasElevator || undefined,
       hasParking: currentHasParking || undefined,
       hasGarden: currentHasGarden || undefined,
+      since: currentSince || undefined,
+      maxBuildingAge: currentMaxBuildingAge || undefined,
     };
     const merged = { ...state, ...overrides };
     const sp = new URLSearchParams();
@@ -529,6 +535,53 @@ export default function ListingsClient({
               </button>
             )}
           </div>
+
+          {/* Row 6 — recency + building age */}
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xs text-gray-400 font-medium shrink-0">Tarih:</span>
+              {[
+                { label: 'Son 24s', value: '24h' },
+                { label: 'Bu Hafta', value: '7d' },
+                { label: 'Bu Ay', value: '30d' },
+              ].map(r => (
+                <button
+                  key={r.value}
+                  onClick={() => push({ since: currentSince === r.value ? undefined : r.value })}
+                  className={`px-2.5 py-1.5 text-[11px] font-bold rounded-lg border transition-all ${
+                    currentSince === r.value
+                      ? 'bg-[#00C49F] text-white border-[#00C49F]'
+                      : 'bg-white text-gray-500 border-gray-200 hover:border-[#00C49F]/50'
+                  }`}
+                >
+                  {r.label}
+                </button>
+              ))}
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xs text-gray-400 font-medium shrink-0">Bina Yaşı:</span>
+              {[
+                { label: 'Sıfır (0-5)', value: '5' },
+                { label: 'Yeni (5-15)', value: '15' },
+                { label: 'Orta (15-30)', value: '30' },
+              ].map(r => (
+                <button
+                  key={r.value}
+                  onClick={() => push({ maxBuildingAge: currentMaxBuildingAge === r.value ? undefined : r.value })}
+                  className={`px-2.5 py-1.5 text-[11px] font-bold rounded-lg border transition-all ${
+                    currentMaxBuildingAge === r.value
+                      ? 'bg-[#00C49F] text-white border-[#00C49F]'
+                      : 'bg-white text-gray-500 border-gray-200 hover:border-[#00C49F]/50'
+                  }`}
+                >
+                  {r.label}
+                </button>
+              ))}
+              {currentMaxBuildingAge && (
+                <button onClick={() => push({ maxBuildingAge: undefined })} className="text-gray-400 hover:text-gray-700"><X size={12} /></button>
+              )}
+            </div>
+          </div>
         </div>
       )}
 
@@ -547,6 +600,10 @@ export default function ListingsClient({
         if (currentHasElevator === '1') chips.push({ label: 'Asansör', clearKey: { hasElevator: undefined } });
         if (currentHasParking === '1') chips.push({ label: 'Otopark', clearKey: { hasParking: undefined } });
         if (currentHasGarden === '1') chips.push({ label: 'Bahçe', clearKey: { hasGarden: undefined } });
+        if (currentSince === '24h') chips.push({ label: 'Son 24 saat', clearKey: { since: undefined } });
+        if (currentSince === '7d') chips.push({ label: 'Bu hafta', clearKey: { since: undefined } });
+        if (currentSince === '30d') chips.push({ label: 'Bu ay', clearKey: { since: undefined } });
+        if (currentMaxBuildingAge) chips.push({ label: `Bina ≤${currentMaxBuildingAge}y`, clearKey: { maxBuildingAge: undefined } });
         if (chips.length === 0) return null;
         return (
           <div className="flex flex-wrap items-center gap-2">
@@ -566,6 +623,7 @@ export default function ListingsClient({
                 listingType: undefined, propertyType: undefined, minRooms: undefined,
                 minPrice: undefined, maxPrice: undefined, minArea: undefined, maxArea: undefined,
                 hasElevator: undefined, hasParking: undefined, hasGarden: undefined,
+                since: undefined, maxBuildingAge: undefined,
               })}
               className="text-xs text-gray-400 hover:text-gray-700 font-semibold underline transition-colors"
             >

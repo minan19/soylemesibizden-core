@@ -43,6 +43,8 @@ type SearchParams = {
   hasElevator?: string;
   hasParking?: string;
   hasGarden?: string;
+  since?: string;
+  maxBuildingAge?: string;
 };
 
 export default async function ListingsPage({
@@ -68,6 +70,8 @@ export default async function ListingsPage({
     hasElevator,
     hasParking,
     hasGarden,
+    since,
+    maxBuildingAge,
   } = searchParams;
 
   const currentPage = Math.max(1, parseInt(page ?? '1') || 1);
@@ -78,6 +82,15 @@ export default async function ListingsPage({
   if (minPrice) priceFilter.gte = Number(minPrice);
   if (maxPrice) priceFilter.lte = Number(maxPrice);
   const hasPriceFilter = Object.keys(priceFilter).length > 0;
+
+  // Recency filter
+  const sinceDate = since === '24h'
+    ? new Date(Date.now() - 24 * 60 * 60 * 1000)
+    : since === '7d'
+    ? new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+    : since === '30d'
+    ? new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+    : null;
 
   const where = {
     ...(q
@@ -101,6 +114,8 @@ export default async function ListingsPage({
     ...(hasElevator === '1' ? { hasElevator: true } : {}),
     ...(hasParking === '1' ? { hasParking: true } : {}),
     ...(hasGarden === '1' ? { hasGarden: true } : {}),
+    ...(sinceDate ? { createdAt: { gte: sinceDate } } : {}),
+    ...(maxBuildingAge ? { buildingAge: { lte: Number(maxBuildingAge) } } : {}),
   };
 
   const orderBy =
@@ -154,6 +169,8 @@ export default async function ListingsPage({
     if (hasElevator) sp.set('hasElevator', hasElevator);
     if (hasParking) sp.set('hasParking', hasParking);
     if (hasGarden) sp.set('hasGarden', hasGarden);
+    if (since) sp.set('since', since);
+    if (maxBuildingAge) sp.set('maxBuildingAge', maxBuildingAge);
     if (p > 1) sp.set('page', String(p));
     const qs = sp.toString();
     return `/listings${qs ? '?' + qs : ''}`;
@@ -281,6 +298,8 @@ export default async function ListingsPage({
           currentHasElevator={hasElevator}
           currentHasParking={hasParking}
           currentHasGarden={hasGarden}
+          currentSince={since}
+          currentMaxBuildingAge={maxBuildingAge}
         />
 
         {/* Pagination */}
