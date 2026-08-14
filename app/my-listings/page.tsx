@@ -3,12 +3,39 @@ import Link from 'next/link';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { redirect } from 'next/navigation';
-import { Plus, MapPin, ArrowRight, Edit, TrendingUp, BarChart2 } from 'lucide-react';
+import { Plus, MapPin, ArrowRight, Edit, TrendingUp, BarChart2, CheckCircle2, AlertCircle } from 'lucide-react';
 import DeleteListingButton from '@/components/DeleteListingButton';
 import ChangeStatusButton from '@/components/ChangeStatusButton';
 import ListingNoteIndicator from '@/components/ListingNoteIndicator';
 
 export const dynamic = 'force-dynamic';
+
+type ListingForScore = {
+  description?: string | null;
+  photos: string[];
+  area?: number | null;
+  rooms?: number | null;
+  city?: string | null;
+  district?: string | null;
+  floor?: number | null;
+  location?: string | null;
+};
+
+function completenessScore(l: ListingForScore): { score: number; tips: string[] } {
+  const checks = [
+    { ok: !!(l.description && l.description.trim().length > 10), weight: 20, tip: 'Açıklama ekleyin' },
+    { ok: l.photos.length > 0, weight: 20, tip: 'En az 1 fotoğraf ekleyin' },
+    { ok: l.photos.length >= 3, weight: 10, tip: '3+ fotoğraf ekleyin' },
+    { ok: !!l.area, weight: 15, tip: 'Alan (m²) girin' },
+    { ok: !!l.rooms, weight: 10, tip: 'Oda sayısı girin' },
+    { ok: !!(l.city || l.location), weight: 10, tip: 'Şehir bilgisi girin' },
+    { ok: !!l.district, weight: 10, tip: 'İlçe bilgisi girin' },
+    { ok: l.floor != null, weight: 5, tip: 'Kat bilgisi girin' },
+  ];
+  const score = checks.filter(c => c.ok).reduce((s, c) => s + c.weight, 0);
+  const tips = checks.filter(c => !c.ok).map(c => c.tip);
+  return { score, tips };
+}
 
 export default async function MyListingsPage() {
   const session = await getServerSession(authOptions);
@@ -88,7 +115,9 @@ export default async function MyListingsPage() {
           </div>
         ) : (
           <div className="space-y-3">
-            {listings.map(listing => (
+            {listings.map(listing => {
+              const { score, tips } = completenessScore(listing);
+              return (
               <div key={listing.id} className="bg-white rounded-2xl border border-gray-100 p-5 hover:shadow-md transition-all">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
@@ -143,8 +172,37 @@ export default async function MyListingsPage() {
                     <DeleteListingButton listingId={listing.id} listingTitle={listing.title} />
                   </div>
                 </div>
+
+                {/* Completeness score */}
+                <div className="mt-4 pt-3 border-t border-gray-50">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <div className="flex items-center gap-1.5">
+                      {score >= 80 ? (
+                        <CheckCircle2 size={12} className="text-[#00C49F]" />
+                      ) : (
+                        <AlertCircle size={12} className="text-amber-500" />
+                      )}
+                      <span className="text-[10px] font-bold tracking-wider text-gray-400 uppercase">İlan Tamamlama</span>
+                    </div>
+                    <span className={`text-[10px] font-bold ${score >= 80 ? 'text-[#00C49F]' : score >= 50 ? 'text-amber-600' : 'text-red-500'}`}>
+                      %{score}
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-100 rounded-full h-1.5">
+                    <div
+                      className={`h-1.5 rounded-full transition-all ${score >= 80 ? 'bg-[#00C49F]' : score >= 50 ? 'bg-amber-400' : 'bg-red-400'}`}
+                      style={{ width: `${score}%` }}
+                    />
+                  </div>
+                  {tips.length > 0 && (
+                    <p className="mt-1.5 text-[10px] text-gray-400">
+                      Öneri: {tips.slice(0, 2).join(', ')}
+                    </p>
+                  )}
+                </div>
               </div>
-            ))}
+            );
+            })}
           </div>
         )}
       </div>
