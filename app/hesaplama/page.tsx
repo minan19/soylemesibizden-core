@@ -94,6 +94,30 @@ export default function HesaplamaPage() {
           </p>
         </div>
 
+        {/* Specialized calculators */}
+        <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+          <h3 className="text-sm font-bold text-gray-900 mb-4">Uzman Hesaplama Araçları</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {[
+              { href: '/tapu-masrafi', label: 'Tapu Masrafı', desc: 'Tüm alım maliyetleri' },
+              { href: '/emlak-vergisi', label: 'Emlak Vergisi', desc: 'Konut/işyeri/arsa' },
+              { href: '/kira-artis-hesaplama', label: 'Kira Artış', desc: 'TÜİK TÜFE + %25 tavan' },
+              { href: '/yatirim-analizi', label: 'Yatırım ROI', desc: 'Getiri analizi + al/kirala' },
+              { href: '/portfoy', label: 'Portföy Takibi', desc: 'Gayrimenkul portföyüm' },
+              { href: '/valuation', label: 'Değerleme Aracı', desc: 'Bölge fiyat analizi' },
+            ].map(l => (
+              <Link
+                key={l.href}
+                href={l.href}
+                className="group p-4 bg-gray-50 hover:bg-[#F0FDF8] border border-gray-100 hover:border-[#00C49F]/40 rounded-xl transition-all"
+              >
+                <p className="text-sm font-bold text-gray-800 group-hover:text-[#00C49F] transition-colors">{l.label}</p>
+                <p className="text-xs text-gray-400 mt-0.5">{l.desc}</p>
+              </Link>
+            ))}
+          </div>
+        </div>
+
         {/* Related links */}
         <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
           <h3 className="text-sm font-bold text-gray-900 mb-4">İlgili Araçlar</h3>
@@ -103,6 +127,8 @@ export default function HesaplamaPage() {
               { href: '/market-radar', label: 'Piyasa Radarı' },
               { href: '/listings?sort=price_asc', label: 'Uygun Fiyatlı İlanlar' },
               { href: '/listings?listingType=KİRALIK', label: 'Kiralık İlanlar' },
+              { href: '/fiyat-trendi', label: 'Fiyat Trendi' },
+              { href: '/mahalle-analizi', label: 'Mahalle Analizi' },
             ].map(l => (
               <Link
                 key={l.href}
