@@ -74,6 +74,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/kira-mi-satin-mi`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.75 },
     { url: `${baseUrl}/pesinat-plani`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 },
     { url: `${baseUrl}/imar-durumu`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.65 },
+    { url: `${baseUrl}/kentsel-donusum`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.65 },
   ];
 
   const listingPages: MetadataRoute.Sitemap = listings.map(l => ({
