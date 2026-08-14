@@ -16,6 +16,7 @@ import {
   Handshake,
   Phone,
   Mail,
+  Flame,
 } from 'lucide-react';
 import SearchAutocomplete from '@/components/SearchAutocomplete';
 import CompareButton from '@/components/CompareButton';
@@ -28,7 +29,7 @@ export default async function HomePage() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const [totalListings, activeListings, totalUsers, totalOffers, featuredListings, cityCounts, todayCount, newListings] =
+  const [totalListings, activeListings, totalUsers, totalOffers, featuredListings, cityCounts, todayCount, newListings, hotListings] =
     await Promise.all([
       prisma.listing.count(),
       prisma.listing.count({ where: { status: 'ACTIVE' } }),
@@ -56,6 +57,16 @@ export default async function HomePage() {
         where: { status: 'ACTIVE', createdAt: { gte: today } },
         orderBy: { createdAt: 'desc' },
         select: { id: true, title: true, price: true, city: true, listingType: true, propertyType: true, photos: true, area: true, rooms: true },
+      }),
+      prisma.listing.findMany({
+        take: 4,
+        where: { status: 'ACTIVE', offers: { some: {} } },
+        orderBy: { offers: { _count: 'desc' } },
+        select: {
+          id: true, title: true, price: true, city: true, district: true,
+          listingType: true, propertyType: true, photos: true, area: true, rooms: true,
+          _count: { select: { offers: true } },
+        },
       }),
     ]);
 
@@ -406,6 +417,69 @@ export default async function HomePage() {
                   <p className="text-xs font-semibold text-gray-900 line-clamp-2 group-hover:text-[#00C49F] transition-colors leading-snug mb-1">{l.title}</p>
                   {l.city && <p className="text-[10px] text-gray-400 flex items-center gap-0.5"><MapPin className="w-2.5 h-2.5" />{l.city}</p>}
                   <p className="text-sm font-bold text-[#00C49F] mt-1">{l.price.toLocaleString('tr-TR')} ₺</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* ─── HOT LISTINGS (En Çok Teklif Alan) ───────────────────── */}
+      {hotListings.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-10">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Flame className="w-5 h-5 text-orange-500" />
+              <h2 className="text-lg font-bold text-gray-900">En Çok Teklif Alan</h2>
+              <span className="text-xs font-bold text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full">Popüler</span>
+            </div>
+            <Link href="/listings?sort=views" className="text-sm text-[#00C49F] font-semibold hover:underline flex items-center gap-1">
+              Tümü <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {hotListings.map((l, idx) => (
+              <Link
+                key={l.id}
+                href={`/listing/${l.id}`}
+                className="group bg-white border border-gray-100 rounded-2xl overflow-hidden hover:shadow-lg hover:border-orange-200 transition-all flex flex-col"
+              >
+                <div className="relative w-full h-36 bg-gradient-to-br from-slate-100 to-slate-200 overflow-hidden flex-shrink-0">
+                  {l.photos[0] ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={l.photos[0]} alt={l.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <Building2 className="w-8 h-8 text-slate-300" />
+                    </div>
+                  )}
+                  <span className="absolute top-2 left-2 flex items-center gap-1 bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
+                    <Flame className="w-2.5 h-2.5" />
+                    {l._count.offers} teklif
+                  </span>
+                  <span className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center bg-black/50 text-white text-[10px] font-black rounded-full">
+                    #{idx + 1}
+                  </span>
+                </div>
+                <div className="p-3 flex flex-col flex-1">
+                  <div className="flex items-center gap-1 mb-1">
+                    <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${l.listingType === 'KİRALIK' ? 'bg-violet-50 text-violet-600' : 'bg-[#F0FDF8] text-[#00C49F]'}`}>
+                      {l.listingType}
+                    </span>
+                    <span className="text-[9px] text-gray-400">{l.propertyType}</span>
+                  </div>
+                  <p className="text-xs font-semibold text-gray-900 line-clamp-2 group-hover:text-[#00C49F] transition-colors leading-snug mb-1">{l.title}</p>
+                  {(l.district || l.city) && (
+                    <p className="text-[10px] text-gray-400 flex items-center gap-0.5 mb-1">
+                      <MapPin className="w-2.5 h-2.5 flex-shrink-0" />
+                      {[l.district, l.city].filter(Boolean).join(', ')}
+                    </p>
+                  )}
+                  <div className="flex items-center gap-2 mt-auto">
+                    {l.rooms != null && <span className="text-[10px] text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded">{l.rooms}+1</span>}
+                    {l.area != null && <span className="text-[10px] text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded">{l.area} m²</span>}
+                  </div>
+                  <p className="text-sm font-bold text-[#00C49F] mt-2">{l.price.toLocaleString('tr-TR')} ₺</p>
                 </div>
               </Link>
             ))}
