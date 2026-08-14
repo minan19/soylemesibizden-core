@@ -12,11 +12,12 @@ export default function Navbar() {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const user = session?.user as
-    | { name?: string | null; email?: string | null; role?: string }
+    | { name?: string | null; email?: string | null; role?: string; avatar?: string | null }
     | undefined;
 
   const isAdmin = user?.role === 'ADMIN';
   const avatarLetter = user?.name?.charAt(0)?.toUpperCase() ?? user?.email?.charAt(0)?.toUpperCase() ?? '?';
+  const avatarUrl = user?.avatar ?? null;
   const [notifCount, setNotifCount] = useState(0);
 
   const fetchNotifCount = useCallback(async () => {
@@ -161,8 +162,13 @@ export default function Navbar() {
                   className="flex items-center gap-1.5 focus:outline-none group"
                   aria-label="Kullanıcı menüsü"
                 >
-                  <div className="w-8 h-8 rounded-full bg-[#F0FDF8] text-[#00C49F] flex items-center justify-center text-sm font-bold border border-[#00C49F]/20 group-hover:border-[#00C49F]/50 transition-colors">
-                    {avatarLetter}
+                  <div className="w-8 h-8 rounded-full overflow-hidden bg-[#F0FDF8] text-[#00C49F] flex items-center justify-center text-sm font-bold border border-[#00C49F]/20 group-hover:border-[#00C49F]/50 transition-colors">
+                    {avatarUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={avatarUrl} alt={user?.name ?? 'Avatar'} className="w-full h-full object-cover" />
+                    ) : (
+                      avatarLetter
+                    )}
                   </div>
                   <ChevronDown
                     size={14}
