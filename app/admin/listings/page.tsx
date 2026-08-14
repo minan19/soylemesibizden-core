@@ -95,13 +95,23 @@ export default async function AdminListingsPage({
               <span className="ml-2 text-base font-semibold text-gray-400">({totalCount} adet)</span>
             </h1>
           </div>
-          <Link
-            href="/admin/create-listing"
-            className="inline-flex items-center gap-2 bg-[#00C49F] hover:bg-[#00b38e] text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors"
-          >
-            <Plus size={16} />
-            + Yeni İlan
-          </Link>
+          <div className="flex items-center gap-2">
+            <a
+              href="/api/admin/export"
+              className="inline-flex items-center gap-2 bg-white border border-gray-200 hover:border-[#00C49F] text-gray-600 hover:text-[#00C49F] text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors"
+              title="CSV olarak indir"
+            >
+              <ArrowUpRight size={15} />
+              CSV
+            </a>
+            <Link
+              href="/admin/create-listing"
+              className="inline-flex items-center gap-2 bg-[#00C49F] hover:bg-[#00b38e] text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors"
+            >
+              <Plus size={16} />
+              + Yeni İlan
+            </Link>
+          </div>
         </div>
 
         {/* Filter & Search bar */}
