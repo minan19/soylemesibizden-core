@@ -99,8 +99,8 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
     (sessionUser.id === listing.ownerId || sessionUser.role === 'ADMIN')
   );
 
-  // Increment views, fetch similar listings, market context, and neighboring listings concurrently
-  const [similarListings, , marketContext, neighborListings] = await Promise.all([
+  // Increment views, fetch similar listings, market context, neighboring listings, and rental comps
+  const [similarListings, , marketContext, neighborListings, rentalContext] = await Promise.all([
     prisma.listing.findMany({
       where: {
         id: { not: listing.id },
@@ -143,6 +143,21 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
           select: { id: true, title: true, price: true, photos: true, rooms: true, area: true, listingType: true },
         })
       : Promise.resolve([]),
+    // Rental comps: only fetch for SATILIK listings to compute yield
+    listing.listingType === 'SATILIK' && listing.city
+      ? prisma.listing.aggregate({
+          where: {
+            status: 'ACTIVE',
+            listingType: 'KİRALIK',
+            propertyType: listing.propertyType,
+            city: listing.city,
+            ...(listing.area ? { area: { gte: listing.area * 0.6, lte: listing.area * 1.4 } } : {}),
+            ...(listing.rooms != null ? { rooms: { gte: listing.rooms - 1, lte: listing.rooms + 1 } } : {}),
+          },
+          _avg: { price: true },
+          _count: { id: true },
+        })
+      : Promise.resolve(null),
   ]);
 
   /* ── Derived values ───────────────────────────────────────────── */
@@ -625,6 +640,47 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
                 )}
               </div>
             </div>
+
+            {/* Investment Yield (only for SATILIK) */}
+            {listing.listingType === 'SATILIK' && rentalContext && rentalContext._count.id >= 2 && rentalContext._avg.price && (
+              (() => {
+                const monthlyRent = Math.round(rentalContext._avg.price!);
+                const annualRent = monthlyRent * 12;
+                const yieldPct = ((annualRent / listing.price) * 100).toFixed(1);
+                const breakEvenYears = Math.round(listing.price / annualRent);
+                return (
+                  <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+                    <p className="text-[10px] font-bold tracking-widest text-gray-400 uppercase mb-4">
+                      Yatırım Getirisi
+                    </p>
+                    <div className="space-y-3">
+                      <div>
+                        <p className="text-[10px] text-gray-400 mb-0.5">Tahmini Kira (Ort.)</p>
+                        <p className="text-base font-bold font-mono text-gray-900">
+                          ₺ {monthlyRent.toLocaleString('tr-TR')} / ay
+                        </p>
+                        <p className="text-[10px] text-gray-400">
+                          {rentalContext._count.id} benzer kiralık ilan
+                        </p>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 pt-2 border-t border-gray-50">
+                        <div className="bg-[#F0FDF8] rounded-xl p-3 text-center">
+                          <p className="text-lg font-bold text-[#00C49F]">{yieldPct}%</p>
+                          <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">Yıllık Getiri</p>
+                        </div>
+                        <div className="bg-gray-50 rounded-xl p-3 text-center">
+                          <p className="text-lg font-bold text-gray-800">{breakEvenYears}</p>
+                          <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">Geri Dönüş (Yıl)</p>
+                        </div>
+                      </div>
+                    </div>
+                    <p className="text-[9px] text-gray-300 mt-3">
+                      * Tahmini değerdir, gerçek kira garantisi değildir.
+                    </p>
+                  </div>
+                );
+              })()
+            )}
 
             {/* Offer Form */}
             <OfferForm listingId={listing.id} listingPrice={listing.price} />
