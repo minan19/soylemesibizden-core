@@ -26,6 +26,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="tr">
+      <head>
+        <link rel="alternate" type="application/rss+xml" title="Söylemesi Bizden — Son İlanlar" href="/feed.xml" />
+      </head>
       <body className={montserrat.className}>
         {/* Tüm Ekosistem Veri Çekirdeği Tarafından Sarmalandı */}
         <AuthSessionProvider>
