@@ -21,6 +21,7 @@ interface Props {
   currentMinArea?: string;
   currentMaxArea?: string;
   currentCity?: string;
+  currentDistrict?: string;
   currentSort?: string;
   currentHasElevator?: string;
   currentHasParking?: string;
@@ -61,6 +62,7 @@ export default function SearchFilterSidebar({
   currentMinArea,
   currentMaxArea,
   currentCity,
+  currentDistrict,
   currentSort,
   currentHasElevator,
   currentHasParking,
@@ -85,6 +87,7 @@ export default function SearchFilterSidebar({
   const [areaMin, setAreaMin] = useState(currentMinArea ?? '');
   const [areaMax, setAreaMax] = useState(currentMaxArea ?? '');
   const [city, setCity] = useState(currentCity ?? '');
+  const [district, setDistrict] = useState(currentDistrict ?? '');
   const [sort, setSort] = useState(currentSort ?? 'newest');
   const [hasElevator, setHasElevator] = useState(currentHasElevator === 'true');
   const [hasParking, setHasParking] = useState(currentHasParking === 'true');
@@ -108,6 +111,7 @@ export default function SearchFilterSidebar({
     if (areaMin) sp.set('minArea', areaMin);
     if (areaMax) sp.set('maxArea', areaMax);
     if (city) sp.set('city', city);
+    if (district) sp.set('district', district);
     if (sort !== 'newest') sp.set('sort', sort);
     if (hasElevator) sp.set('hasElevator', 'true');
     if (hasParking) sp.set('hasParking', 'true');
@@ -127,6 +131,7 @@ export default function SearchFilterSidebar({
     setAreaMin('');
     setAreaMax('');
     setCity('');
+    setDistrict('');
     setSort('newest');
     setHasElevator(false);
     setHasParking(false);
@@ -146,6 +151,7 @@ export default function SearchFilterSidebar({
     areaMin ||
     areaMax ||
     city ||
+    district ||
     sort !== 'newest' ||
     hasElevator ||
     hasParking ||
@@ -349,6 +355,22 @@ export default function SearchFilterSidebar({
           ))}
         </div>
       </div>
+
+      {/* ── District ─────────────────────────────────── */}
+      {city && (
+        <div>
+          <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">
+            İlçe
+          </p>
+          <input
+            type="text"
+            value={district}
+            onChange={e => setDistrict(e.target.value)}
+            placeholder="İlçe adı (ör: Kadıköy)..."
+            className="w-full px-3 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#00C49F] transition-colors"
+          />
+        </div>
+      )}
 
       {/* ── Features ─────────────────────────────────── */}
       <div>

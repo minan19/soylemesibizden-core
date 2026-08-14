@@ -19,6 +19,7 @@ type SearchParams = {
   minArea?: string;
   maxArea?: string;
   city?: string;
+  district?: string;
   hasElevator?: string;
   hasParking?: string;
   hasGarden?: string;
@@ -41,6 +42,7 @@ export default async function SearchPage({
     minArea,
     maxArea,
     city,
+    district,
     hasElevator,
     hasParking,
     hasGarden,
@@ -83,6 +85,7 @@ export default async function SearchPage({
       ...(hasAreaFilter ? { area: areaFilter } : {}),
       ...(minRooms ? { rooms: { gte: Number(minRooms) } } : {}),
       ...(city ? { city: { contains: city, mode: 'insensitive' } } : {}),
+      ...(district ? { district: { contains: district, mode: 'insensitive' } } : {}),
       ...(hasElevator === 'true' ? { hasElevator: true } : {}),
       ...(hasParking === 'true' ? { hasParking: true } : {}),
       ...(hasGarden === 'true' ? { hasGarden: true } : {}),
@@ -142,6 +145,7 @@ export default async function SearchPage({
                 ...(minArea ? { minArea } : {}),
                 ...(maxArea ? { maxArea } : {}),
                 ...(city ? { city } : {}),
+                ...(district ? { district } : {}),
                 ...(hasElevator ? { hasElevator } : {}),
                 ...(hasParking ? { hasParking } : {}),
                 ...(hasGarden ? { hasGarden } : {}),
@@ -165,6 +169,7 @@ export default async function SearchPage({
             currentMinArea={minArea}
             currentMaxArea={maxArea}
             currentCity={city}
+            currentDistrict={district}
             currentSort={sort}
             currentHasElevator={hasElevator}
             currentHasParking={hasParking}
@@ -198,6 +203,7 @@ export default async function SearchPage({
                 currentMaxPrice={maxPrice}
                 currentMinRooms={minRooms}
                 currentCity={city}
+                currentDistrict={district}
                 hideFilters
               />
             )}
