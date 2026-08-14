@@ -63,6 +63,7 @@ export default function Navbar() {
     { href: '/my-listings', label: 'İlanlarım', authRequired: true },
     { href: '/offers', label: 'Teklifler', authRequired: true },
     { href: '/saved-searches', label: 'Kayıtlı Aramalar', authRequired: true },
+    { href: '/tracked-prices', label: 'Fiyat Takibim', authRequired: true },
     { href: '/dashboard', label: 'Dashboard', authRequired: true },
     { href: '/notifications', label: 'Bildirimler', authRequired: true },
   ];
