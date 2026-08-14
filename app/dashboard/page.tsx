@@ -205,6 +205,7 @@ export default async function SovereignDashboard() {
                     { label: 'Yeni İlan Ekle', href: '/create-listing', icon: <Crosshair size={14} /> },
                     { label: 'Favorilerimi Gör', href: '/favorites', icon: <Globe size={14} /> },
                     { label: 'Tekliflerimi İncele', href: '/offers', icon: <TrendingUp size={14} /> },
+                    { label: 'Başvurularım', href: '/my-inquiries', icon: <MessageSquare size={14} /> },
                     { label: 'Güvenlik Merkezi', href: '/security', icon: <ShieldCheck size={14} /> },
                   ].map(item => (
                     <Link key={item.href} href={item.href}
