@@ -1,6 +1,6 @@
 import prisma from '@/lib/prisma';
 import Link from 'next/link';
-import { ArrowLeft, Activity, Eye, BarChart2, TrendingUp, MapPin } from 'lucide-react';
+import { ArrowLeft, Activity, Eye, BarChart2, TrendingUp, MapPin, ArrowRight } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,12 +9,15 @@ function formatPrice(price: number) {
 }
 
 export default async function MarketRadarPage() {
-  const [activeCount, totalCount, allListings, recentListings, topViewedListings] = await Promise.all([
+  const sixMonthsAgo = new Date();
+  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+  const [activeCount, totalCount, allListings, recentListings, topViewedListings, recentMonthlyListings] = await Promise.all([
     prisma.listing.count({ where: { status: 'ACTIVE' } }),
     prisma.listing.count(),
     prisma.listing.findMany({
       where: { status: 'ACTIVE' },
-      select: { city: true, propertyType: true, price: true },
+      select: { city: true, propertyType: true, listingType: true, price: true, area: true },
     }),
     prisma.listing.findMany({
       orderBy: { createdAt: 'desc' },
@@ -26,35 +29,79 @@ export default async function MarketRadarPage() {
       take: 5,
       select: { id: true, title: true, price: true, views: true, city: true },
     }),
+    prisma.listing.findMany({
+      where: { createdAt: { gte: sixMonthsAgo } },
+      select: { createdAt: true, listingType: true },
+      orderBy: { createdAt: 'asc' },
+    }),
   ]);
 
   const activeRate = totalCount > 0 ? Math.round((activeCount / totalCount) * 100) : 0;
 
-  // City distribution
-  const cityMap = new Map<string, number>();
+  // City distribution + avg prices by listing type
+  type CityStats = { count: number; satilikPrices: number[]; kiralikPrices: number[] };
+  const cityMap = new Map<string, CityStats>();
   for (const l of allListings) {
-    if (l.city) cityMap.set(l.city, (cityMap.get(l.city) ?? 0) + 1);
+    if (!l.city) continue;
+    const entry = cityMap.get(l.city) ?? { count: 0, satilikPrices: [], kiralikPrices: [] };
+    entry.count++;
+    if (l.listingType === 'SATILIK') entry.satilikPrices.push(l.price);
+    else if (l.listingType === 'KİRALIK') entry.kiralikPrices.push(l.price);
+    cityMap.set(l.city, entry);
   }
+  const avg = (arr: number[]) => arr.length > 0 ? Math.round(arr.reduce((a, b) => a + b, 0) / arr.length) : null;
   const listingsByCity = Array.from(cityMap.entries())
-    .sort((a, b) => b[1] - a[1])
+    .sort((a, b) => b[1].count - a[1].count)
     .slice(0, 8)
-    .map(([city, count]) => ({ city, count }));
+    .map(([city, s]) => ({
+      city, count: s.count,
+      satilikAvg: avg(s.satilikPrices),
+      kiralikAvg: avg(s.kiralikPrices),
+      satilikCount: s.satilikPrices.length,
+      kiralikCount: s.kiralikPrices.length,
+    }));
   const maxCityCount = listingsByCity[0]?.count ?? 1;
 
   // Average price by property type
   const typeMap = new Map<string, number[]>();
+  const typeAreaMap = new Map<string, number[]>();
   for (const l of allListings) {
     const arr = typeMap.get(l.propertyType) ?? [];
     arr.push(l.price);
     typeMap.set(l.propertyType, arr);
+    if (l.area && l.area > 0) {
+      const areaArr = typeAreaMap.get(l.propertyType) ?? [];
+      areaArr.push(l.price / l.area);
+      typeAreaMap.set(l.propertyType, areaArr);
+    }
   }
   const avgPriceByType = Array.from(typeMap.entries())
     .map(([type, prices]) => ({
       propertyType: type,
       avgPrice: Math.round(prices.reduce((s, p) => s + p, 0) / prices.length),
+      avgPricePerM2: typeAreaMap.has(type) ? Math.round(typeAreaMap.get(type)!.reduce((a, b) => a + b, 0) / typeAreaMap.get(type)!.length) : null,
       count: prices.length,
     }))
     .sort((a, b) => b.avgPrice - a.avgPrice);
+
+  // Monthly trend — last 6 months
+  const MONTH_NAMES = ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'];
+  const monthlyMap = new Map<string, { satilik: number; kiralik: number }>();
+  for (const l of recentMonthlyListings) {
+    const d = new Date(l.createdAt);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    const entry = monthlyMap.get(key) ?? { satilik: 0, kiralik: 0 };
+    if (l.listingType === 'SATILIK') entry.satilik++;
+    else if (l.listingType === 'KİRALIK') entry.kiralik++;
+    monthlyMap.set(key, entry);
+  }
+  const monthlyTrend = Array.from(monthlyMap.entries())
+    .sort((a, b) => a[0].localeCompare(b[0]))
+    .map(([key, v]) => {
+      const [year, month] = key.split('-');
+      return { label: `${MONTH_NAMES[parseInt(month) - 1]} ${year.slice(2)}`, ...v, total: v.satilik + v.kiralik };
+    });
+  const maxMonthly = Math.max(...monthlyTrend.map(m => m.total), 1);
 
   return (
     <main className="min-h-screen bg-[#F8FAFC]">
@@ -102,8 +149,8 @@ export default async function MarketRadarPage() {
             ) : (
               <div className="space-y-4">
                 {listingsByCity.map(({ city, count }) => (
-                  <div key={city} className="flex items-center gap-3">
-                    <span className="text-xs font-semibold text-gray-600 w-24 shrink-0 truncate">{city}</span>
+                  <Link key={city} href={`/sehir/${encodeURIComponent(city)}`} className="flex items-center gap-3 group">
+                    <span className="text-xs font-semibold text-gray-600 w-24 shrink-0 truncate group-hover:text-[#00C49F] transition-colors">{city}</span>
                     <div className="flex-1 bg-gray-100 rounded-full h-2">
                       <div
                         className="bg-[#00C49F] h-2 rounded-full transition-all"
@@ -111,7 +158,7 @@ export default async function MarketRadarPage() {
                       />
                     </div>
                     <span className="text-xs font-bold text-gray-700 w-6 text-right">{count}</span>
-                  </div>
+                  </Link>
                 ))}
               </div>
             )}
@@ -126,11 +173,11 @@ export default async function MarketRadarPage() {
               <p className="text-gray-400 text-sm">Veri bulunamadı.</p>
             ) : (
               <div className="divide-y divide-gray-50">
-                {avgPriceByType.map(({ propertyType, avgPrice, count }) => (
+                {avgPriceByType.map(({ propertyType, avgPrice, avgPricePerM2, count }) => (
                   <div key={propertyType} className="flex items-center justify-between py-3 first:pt-0 last:pb-0">
                     <div>
                       <p className="text-sm font-semibold text-gray-800">{propertyType}</p>
-                      <p className="text-xs text-gray-400 mt-0.5">{count} ilan</p>
+                      <p className="text-xs text-gray-400 mt-0.5">{count} ilan{avgPricePerM2 ? ` · ${avgPricePerM2.toLocaleString('tr-TR')} ₺/m²` : ''}</p>
                     </div>
                     <p className="text-sm font-bold text-[#00C49F]">{formatPrice(avgPrice)}</p>
                   </div>
@@ -139,6 +186,79 @@ export default async function MarketRadarPage() {
             )}
           </div>
         </div>
+
+        {/* City avg price table */}
+        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-50 flex items-center gap-2">
+            <TrendingUp size={14} className="text-[#00C49F]" />
+            <h2 className="text-[10px] font-bold tracking-widest text-[#00C49F] uppercase">
+              Şehir Bazlı Ortalama Fiyat Karşılaştırması
+            </h2>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="bg-gray-50">
+                  <th className="px-6 py-3 text-left text-[9px] font-bold text-gray-400 uppercase tracking-widest">Şehir</th>
+                  <th className="px-6 py-3 text-right text-[9px] font-bold text-gray-400 uppercase tracking-widest">Satılık Ort.</th>
+                  <th className="px-6 py-3 text-right text-[9px] font-bold text-gray-400 uppercase tracking-widest">Kiralık Ort.</th>
+                  <th className="px-6 py-3 text-right text-[9px] font-bold text-gray-400 uppercase tracking-widest">Toplam</th>
+                  <th className="px-6 py-3 text-right text-[9px] font-bold text-gray-400 uppercase tracking-widest"></th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {listingsByCity.map(r => (
+                  <tr key={r.city} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-3.5 text-sm font-semibold text-gray-800">{r.city}</td>
+                    <td className="px-6 py-3.5 text-sm text-right">
+                      {r.satilikAvg ? (
+                        <span className="font-bold text-blue-600">{formatPrice(r.satilikAvg)}</span>
+                      ) : <span className="text-gray-300">—</span>}
+                      {r.satilikCount > 0 && <span className="text-[10px] text-gray-400 ml-1">({r.satilikCount})</span>}
+                    </td>
+                    <td className="px-6 py-3.5 text-sm text-right">
+                      {r.kiralikAvg ? (
+                        <span className="font-bold text-violet-600">{formatPrice(r.kiralikAvg)}</span>
+                      ) : <span className="text-gray-300">—</span>}
+                      {r.kiralikCount > 0 && <span className="text-[10px] text-gray-400 ml-1">({r.kiralikCount})</span>}
+                    </td>
+                    <td className="px-6 py-3.5 text-sm text-right font-semibold text-gray-700">{r.count}</td>
+                    <td className="px-6 py-3.5 text-right">
+                      <Link href={`/sehir/${encodeURIComponent(r.city)}`} className="text-[#00C49F] hover:text-[#00a882] transition-colors">
+                        <ArrowRight size={13} />
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Monthly trend */}
+        {monthlyTrend.length > 0 && (
+          <div className="bg-white rounded-2xl border border-gray-100 p-6">
+            <h2 className="text-[10px] font-bold tracking-widest text-[#00C49F] uppercase mb-5 flex items-center gap-2">
+              <Activity size={12} /> Son 6 Ay — Aylık İlan Trendi
+            </h2>
+            <div className="flex items-end gap-2 h-32">
+              {monthlyTrend.map(m => (
+                <div key={m.label} className="flex-1 flex flex-col items-center gap-1">
+                  <span className="text-[9px] text-gray-500 font-bold">{m.total}</span>
+                  <div className="w-full flex flex-col gap-0.5" style={{ height: `${Math.round((m.total / maxMonthly) * 96)}px` }}>
+                    <div className="flex-none bg-blue-400 rounded-t" style={{ height: `${m.total > 0 ? Math.round((m.satilik / m.total) * 100) : 50}%` }} />
+                    <div className="flex-1 bg-violet-400 rounded-b" />
+                  </div>
+                  <span className="text-[9px] text-gray-400 font-medium">{m.label}</span>
+                </div>
+              ))}
+            </div>
+            <div className="flex items-center gap-4 mt-3 pt-3 border-t border-gray-50">
+              <span className="flex items-center gap-1.5 text-[10px] text-gray-500"><span className="w-3 h-3 rounded-sm bg-blue-400 inline-block" /> Satılık</span>
+              <span className="flex items-center gap-1.5 text-[10px] text-gray-500"><span className="w-3 h-3 rounded-sm bg-violet-400 inline-block" /> Kiralık</span>
+            </div>
+          </div>
+        )}
 
         {/* Recent listings */}
         <div>
