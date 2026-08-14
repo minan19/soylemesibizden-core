@@ -291,6 +291,27 @@ Migration SQL kullanıcı tarafından Neon SQL Editor'da çalıştırılmalı.
 ### Yeni API'ler (Oturum 6)
 - [x] **/api/admin/listings-bulk** — Toplu ilan işlemi (approve/delete/status)
 
+### Oturum 7 (FAZ 133-141) — Tamamlananlar
+- [x] **FAZ-133:** CLAUDE.md güncelleme — oturum 5-6 özeti
+- [x] **FAZ-134:** ListingsClient fiyat ve alan hızlı seçim filtreleri (1M/3M/5M/10M, 75/125/200 m²)
+- [x] **FAZ-135:** Listings "Son 24s/7g/30g" tarih filtresi + bina yaşı hızlı seçim
+- [x] **FAZ-136:** Konut Rehberi sayfaları (/rehber, /rehber/ev-satin-alma, /rehber/kiralama-rehberi, /rehber/yatirim-rehberi)
+- [x] **FAZ-137:** Homepage Öne Çıkan Danışmanlar bölümü + Navbar Konut Rehberi linki
+- [x] **FAZ-138:** Türkiye Gayrimenkul Piyasası sayfası (/piyasa) — şehir tablosu, trend grafik, kira getirisi
+- [x] **FAZ-139:** Yeni Projeler sayfası (/yeni-projeler) — sıfır bina ilanları, şehir gruplandırma
+- [x] **FAZ-140:** Kiralık landing sayfası (/kiralik) — şehir/oda filtreleri, fiyat tablosu
+- [x] **FAZ-141:** Satılık landing sayfası (/satilik) — bütçe/oda/tür filtreleri, şehir kartları
+
+### Yeni Sayfalar (Oturum 7)
+- [x] **/rehber** — Konut rehberi index sayfası
+- [x] **/rehber/ev-satin-alma** — Ev satın alma adım adım rehber
+- [x] **/rehber/kiralama-rehberi** — Kira sözleşmesi ve haklar rehberi
+- [x] **/rehber/yatirim-rehberi** — Gayrimenkul yatırım ve getiri rehberi
+- [x] **/piyasa** — Türkiye gayrimenkul piyasa verileri sayfası
+- [x] **/yeni-projeler** — Yeni inşaat ve sıfır bina ilanları
+- [x] **/kiralik** — Kiralık konut landing sayfası
+- [x] **/satilik** — Satılık konut landing sayfası
+
 ---
 
 ## 5. Kalan Kritik İşler
@@ -422,7 +443,7 @@ git push https://minan19:<GITHUB_TOKEN>@github.com/minan19/soylemesibizden-core.
 
 ---
 
-*Son güncelleme: 2026-08-14 — Oturum 8 (bağlam devamı): FAZ 118-132 tamamlandı. RSS feed, district filtresi, Günün Fırsatı, harita iyileştirme, avatar, toplu işlem, istatistikler, hakkımızda, MortgagePartners.*
+*Son güncelleme: 2026-08-14 — Oturum 9: FAZ 133-141 tamamlandı. Listing filtreleri iyileştirme, Konut Rehberi (3 sayfa), Piyasa sayfası, Yeni Projeler, Kiralık/Satılık landing sayfaları, Featured Agents widget.*
 
 **Oturum 6 (FAZ 79-88) — Tamamlananlar:**
 - FAZ-79: İlan şikayet sistemi — /api/reports + ReportListingButton modal
