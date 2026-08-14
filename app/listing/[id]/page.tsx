@@ -37,6 +37,7 @@ import PhotoGallery from '@/components/PhotoGallery';
 import ViewingRequestForm from '@/components/ViewingRequestForm';
 import ReportListingButton from '@/components/ReportListingButton';
 import ListingNotes from '@/components/ListingNotes';
+import EmbedCodeButton from '@/components/EmbedCodeButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -277,6 +278,7 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
                   <FavoriteButton listingId={listing.id} initialFavorited={isFavorited} />
                   <CompareButton listingId={listing.id} />
                   <ShareButton title={listing.title} />
+                  <EmbedCodeButton listingId={listing.id} />
                   <Link
                     href={`/listing/${listing.id}/print`}
                     target="_blank"
