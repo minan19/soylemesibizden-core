@@ -39,6 +39,7 @@ import ReportListingButton from '@/components/ReportListingButton';
 import ListingNotes from '@/components/ListingNotes';
 import EmbedCodeButton from '@/components/EmbedCodeButton';
 import PriceTracker from '@/components/PriceTracker';
+import ListingMapEmbed from '@/components/ListingMapEmbed';
 
 export const dynamic = 'force-dynamic';
 
@@ -630,6 +631,14 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
 
             {/* Deal Room */}
             <CreateDealButton listingId={listing.id} sellerId={listing.ownerId} />
+
+            {/* Map */}
+            <ListingMapEmbed
+              neighborhood={listing.neighborhood}
+              district={listing.district}
+              city={listing.city}
+              location={listing.location}
+            />
 
             {/* Viewing Request */}
             <ViewingRequestForm listingId={listing.id} listingTitle={listing.title} />
