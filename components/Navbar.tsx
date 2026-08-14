@@ -135,6 +135,7 @@ export default function Navbar() {
                   { href: '/yatirim-analizi', label: 'Yatırım Analizi' },
                   { href: '/banka-kredileri', label: 'Banka Faizleri' },
                   { href: '/portfoy', label: 'Portföy Takibi' },
+                  { href: '/dask-hesaplayici', label: 'DASK Hesaplayıcı' },
                   { href: '/gayrimenkul-sozlugu', label: 'Gayrimenkul Sözlüğü' },
                   { href: '/tum-araclar', label: 'Tüm Araçlar →' },
                 ].map(t => (
