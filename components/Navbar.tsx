@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
-import { Menu, X, ChevronDown, Shield, Bell, Plus } from 'lucide-react';
+import { Menu, X, ChevronDown, Shield, Bell, Plus, Search } from 'lucide-react';
 
 export default function Navbar() {
   const { data: session, status } = useSession();
@@ -103,6 +103,17 @@ export default function Navbar() {
 
         {/* Sağ: Auth */}
         <div className="flex items-center gap-3">
+          {/* Ctrl+K search hint */}
+          <button
+            onClick={() => {
+              const evt = new KeyboardEvent('keydown', { key: 'k', ctrlKey: true, bubbles: true });
+              window.dispatchEvent(evt);
+            }}
+            className="hidden lg:flex items-center gap-2 px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs text-gray-400 hover:border-[#00C49F]/50 hover:text-[#00C49F] transition-colors"
+          >
+            <Search size={12} /> Ara
+            <kbd className="bg-white border border-gray-200 rounded px-1 font-mono text-[10px]">⌘K</kbd>
+          </button>
           {status === 'loading' ? (
             <div className="w-8 h-8 rounded-full bg-gray-100 animate-pulse" />
           ) : session ? (
