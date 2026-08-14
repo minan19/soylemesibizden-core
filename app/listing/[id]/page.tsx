@@ -124,7 +124,7 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
         listingType: listing.listingType,
         ...(listing.city ? { city: listing.city } : {}),
       },
-      _avg: { price: true },
+      _avg: { price: true, views: true },
       _count: { id: true },
       _min: { price: true },
       _max: { price: true },
@@ -557,14 +557,32 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
                 Hızlı İstatistikler
               </p>
               <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <Eye size={14} className="text-gray-300" />
-                    Görüntülenme
+                <div>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <Eye size={14} className="text-gray-300" />
+                      Görüntülenme
+                    </div>
+                    <span className="font-bold text-gray-900 font-mono text-sm">
+                      {listing.views.toLocaleString('tr-TR')}
+                    </span>
                   </div>
-                  <span className="font-bold text-gray-900 font-mono text-sm">
-                    {listing.views.toLocaleString('tr-TR')}
-                  </span>
+                  {marketContext._avg.views != null && marketContext._avg.views > 0 && (
+                    <div>
+                      <div className="w-full bg-gray-100 rounded-full h-1.5">
+                        <div
+                          className={`h-1.5 rounded-full ${listing.views > marketContext._avg.views! ? 'bg-[#00C49F]' : 'bg-amber-400'}`}
+                          style={{ width: `${Math.min(100, Math.round((listing.views / Math.max(listing.views, marketContext._avg.views!)) * 100))}%` }}
+                        />
+                      </div>
+                      <p className="text-[10px] text-gray-400 mt-0.5">
+                        Piyasa ort: {Math.round(marketContext._avg.views!).toLocaleString('tr-TR')}
+                        {listing.views > marketContext._avg.views!
+                          ? <span className="text-[#00C49F] font-semibold"> · Üstünde</span>
+                          : <span className="text-amber-500 font-semibold"> · Altında</span>}
+                      </p>
+                    </div>
+                  )}
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-sm text-gray-600">
