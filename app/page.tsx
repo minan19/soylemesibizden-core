@@ -740,6 +740,7 @@ export default async function HomePage() {
                   { href: '/offers', label: 'Teklifler' },
                   { href: '/favorites', label: 'Favoriler' },
                   { href: '/market-radar', label: 'Piyasa Radarı' },
+                  { href: '/karsilastir', label: 'Bölge Karşılaştır' },
                   { href: '/valuation', label: 'Değerleme Aracı' },
                   { href: '/hesaplama', label: 'Hesaplama Araçları' },
                   { href: '/saved-searches', label: 'Kayıtlı Aramalar' },
