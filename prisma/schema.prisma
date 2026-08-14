@@ -275,7 +275,13 @@ model Medya {
   url  String
   sira Int    @default(0)
 
-  // Mükerrer görsel tespiti
+  // MÜKERRER GÖRSEL TESPİTİ — her ikisi de SUNUCUDA hesaplanır.
+  // İstemciden gelen hash'e güvenilmez; güven özelliği olmasının anlamı bu.
+  //
+  // icerikHash: SHA-256, birebir aynı dosya. Ucuz ve kesin.
+  // algiHash  : dHash, görsel olarak aynı. Yeniden boyutlandırma,
+  //             sıkıştırma ve hafif düzenlemeye dayanıklı.
+  icerikHash     String?
   algiHash       String?
   yapayZekaSuphe Int?
 
@@ -283,6 +289,7 @@ model Medya {
 
   @@index([ilanId, sira])
   @@index([algiHash])
+  @@index([icerikHash])
   @@map("medya")
 }
 
