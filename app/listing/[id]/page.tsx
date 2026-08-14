@@ -274,13 +274,19 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
           {listing.city && (
             <>
               <span>/</span>
-              <Link href={`/listings?city=${encodeURIComponent(listing.city)}`} className="hover:text-[#00C49F] transition-colors">{listing.city}</Link>
+              <Link href={`/sehir/${encodeURIComponent(listing.city)}`} className="hover:text-[#00C49F] transition-colors">{listing.city}</Link>
+            </>
+          )}
+          {listing.city && listing.district && (
+            <>
+              <span>/</span>
+              <Link href={`/ilce/${encodeURIComponent(listing.city)}/${encodeURIComponent(listing.district)}`} className="hover:text-[#00C49F] transition-colors">{listing.district}</Link>
             </>
           )}
           {listing.propertyType && (
             <>
               <span>/</span>
-              <Link href={`/listings?city=${encodeURIComponent(listing.city ?? '')}&propertyType=${listing.propertyType}`} className="hover:text-[#00C49F] transition-colors">{listing.propertyType}</Link>
+              <Link href={`/listings?city=${encodeURIComponent(listing.city ?? '')}${listing.district ? `&district=${encodeURIComponent(listing.district)}` : ''}&propertyType=${listing.propertyType}`} className="hover:text-[#00C49F] transition-colors">{listing.propertyType}</Link>
             </>
           )}
           <span>/</span>
