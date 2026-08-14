@@ -28,5 +28,7 @@
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules", "soylemesi-bizden-os"]
+  // _arsiv: v2 temiz kesiminde devre disi birakilan sovereign kodu.
+  // Silinmedi, tasindi — geri donus "git mv" ile ucuz.
+  "exclude": ["node_modules", "soylemesi-bizden-os", "_arsiv", "prisma/_arsiv"]
 }

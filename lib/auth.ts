@@ -14,13 +14,27 @@ export const authOptions: NextAuthOptions = {
         email: { label: 'E-posta', type: 'email' },
         password: { label: 'Şifre', type: 'password' },
       },
+      // v2: User -> Kullanici, password -> parolaHash, name -> adSoyad
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
-        const user = await prisma.user.findUnique({ where: { email: credentials.email } });
-        if (!user || !user.password) return null;
-        const isValid = await bcrypt.compare(credentials.password, user.password);
-        if (!isValid) return null;
-        return { id: user.id, email: user.email, name: user.name, role: user.role };
+
+        const kullanici = await prisma.kullanici.findUnique({
+          where: { eposta: credentials.email },
+        });
+        if (!kullanici?.parolaHash) return null;
+
+        const gecerli = await bcrypt.compare(
+          credentials.password,
+          kullanici.parolaHash
+        );
+        if (!gecerli) return null;
+
+        return {
+          id: kullanici.id,
+          email: kullanici.eposta,
+          name: kullanici.adSoyad,
+          role: kullanici.rol,
+        };
       },
     }),
   ],

@@ -1,3 +1,11 @@
+// SÖYLEMESİ BİZDEN — Veri Modeli v2.0 · 28.07.2026 (TRT)
+// Merkez varlık: TAŞINMAZ. İlan, taşınmaza bağlı bir kayıttır.
+// Para: tam sayı KURUŞ (BigInt). Kayan nokta kullanılmaz.
+
+// Tek istemci. v2 artik "ikinci sema" degil, YURURLUKTEKI semadir;
+// yan yana tasima yapilmadigi icin ayri client-v2 ciktisina gerek yok.
+// (Canli DB'de yalnizca 43 satir seed verisi vardi — gercek kullanici
+// ve gercek ilan yoktu; bu yuzden temiz kesim secildi.)
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,339 +15,380 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Recommendation {
-  AL
-  BEKLE
-  PAS
+enum KullaniciRol {
+  BIREYSEL
+  OFIS_YETKILISI
+  OFIS_PERSONELI
+  MODERATOR
+  ADMIN
 }
 
-enum DecisionType {
-  SATIN_AL
-  SAT
-  KIRALA
-  INVEST
-  BEKLE
+model Kullanici {
+  id         String       @id @default(uuid())
+  eposta     String       @unique
+  parolaHash String?
+  adSoyad    String?
+  telefon    String?
+  rol        KullaniciRol @default(BIREYSEL)
+
+  eidsKullaniciKodu String?   @unique
+  kimlikDogrulandi  Boolean   @default(false)
+  kimlikDogrulamaTs DateTime?
+
+  ofisId String?
+  ofis   EmlakOfisi? @relation(fields: [ofisId], references: [id])
+
+  eklendi     DateTime @default(now())
+  guncellendi DateTime @updatedAt
+
+  ilanlar            Ilan[]
+  favoriler          Favori[]
+  kayitliAramalar    KayitliArama[]
+  gonderilenMesajlar Mesaj[]        @relation("Gonderen")
+  alinanMesajlar     Mesaj[]        @relation("Alici")
+  randevular         Randevu[]
+  sikayetler         Sikayet[]
+
+  @@index([ofisId])
+  @@map("kullanici")
 }
 
-model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  name      String?
-  password  String?
-  role      String   @default("USER")        // USER | ADMIN | CONCIERGE
-  plan      String   @default("FREE")        // FREE | STANDART | KURUMSAL | SOVEREIGN
-  stripeCustomerId   String?  @unique
-  stripeSubscriptionId String? @unique
-  stripePriceId      String?
-  stripeCurrentPeriodEnd DateTime?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model EmlakOfisi {
+  id       String @id @default(uuid())
+  unvan    String
+  mersisNo String @unique
+  vergiNo  String
 
-  listings               Listing[]
-  offers                 Offer[]
-  dealRooms              DealRoom[]              @relation("BuyerDealRooms")
-  ownedDeals             DealRoom[]              @relation("SellerDealRooms")
-  advisoryCases          AdvisoryCase[]
-  assets                 Asset[]
-  documents              Document[]
-  darkPoolNda              DarkPoolNda?
-  apiKeys                  ApiKey[]
-  investmentOpportunities  InvestmentOpportunity[]
-  investmentParticipations InvestmentParticipant[]
-  franchisePartners        FranchisePartner[]
-  sovereignScore           SovereignScoreRecord?
-  decisionRecords          DecisionRecord[]
+  yetkiBelgeNo      String   @unique
+  yetkiBelgeBitis   DateTime
+  yetkiBelgeGecerli Boolean  @default(false)
+
+  ilTrafikKodu Int
+  adres        String?
+  telefon      String?
+
+  eklendi     DateTime @default(now())
+  guncellendi DateTime @updatedAt
+
+  personel Kullanici[]
+  ilanlar  Ilan[]
+
+  @@index([yetkiBelgeGecerli])
+  @@map("emlak_ofisi")
 }
 
-model Listing {
-  id           String   @id @default(uuid())
-  title        String
-  description  String?
-  propertyType String
-  priceAmount  Float
-  area         Float
-  location     String?
-  status       String   @default("ACTIVE")      // ACTIVE | PENDING | SOLD | WITHDRAWN
-  visibility   String   @default("PUBLIC")       // PUBLIC | MEMBERS | DARK_POOL
-  images       String[] @default([])             // Vercel Blob URL'leri
-  score        Json?                             // Sovereign Investment Score (hesaplanmış)
-  ownerId      String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+model Mahalle {
+  id        String @id @default(uuid())
+  ilKodu    Int
+  ilAd      String
+  ilceAd    String
+  mahalleAd String
 
-  owner            User              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  offers           Offer[]
-  dealRooms        DealRoom[]
-  documents        Document[]
-  tapuVerification TapuVerification?
-  esgScore         EsgScore?
-  decisionRecords  DecisionRecord[]
+  ortalamaM2Kurus BigInt?
+  endeksGuncelTs  DateTime?
+
+  tasinmazlar Tasinmaz[]
+
+  @@unique([ilKodu, ilceAd, mahalleAd])
+  @@index([ilKodu])
+  @@map("mahalle")
 }
 
-model Offer {
-  id        String   @id @default(uuid())
-  amount    Float
-  status    String   @default("PENDING") // PENDING | ACCEPTED | REJECTED
-  listingId String
-  userId    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+enum TasinmazTipi {
+  KONUT
+  ISYERI
+  ARSA
+  BINA
+  DEVREMULK
 }
 
-model DealRoom {
-  id        String   @id @default(uuid())
-  status    String   @default("OPEN") // OPEN | IN_PROGRESS | CLOSED
-  listingId String
-  buyerId   String
-  sellerId  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Tasinmaz {
+  id String @id @default(uuid())
 
-  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
-  buyer   User    @relation("BuyerDealRooms", fields: [buyerId], references: [id], onDelete: Cascade)
-  seller  User    @relation("SellerDealRooms", fields: [sellerId], references: [id], onDelete: Cascade)
+  // TAPU KİMLİĞİ — platformun omurgası.
+  // Bir taşınmaz numarası = bir kart. Mükerrer ilan yapısal olarak imkânsız.
+  tasinmazNo String       @unique
+  tipi       TasinmazTipi
+
+  ada             String?
+  parsel          String?
+  bagimsizBolumNo String?
+
+  mahalleId String
+  mahalle   Mahalle @relation(fields: [mahalleId], references: [id])
+
+  enlem  Decimal? @db.Decimal(10, 7)
+  boylam Decimal? @db.Decimal(10, 7)
+
+  brutM2 Int?
+  netM2  Int?
+
+  eklendi     DateTime @default(now())
+  guncellendi DateTime @updatedAt
+
+  ilanlar  Ilan[]
+  yetkiler EidsYetki[]
+
+  @@index([mahalleId])
+  @@index([tipi])
+  @@map("tasinmaz")
 }
 
-model AdvisoryCase {
-  id          String   @id @default(uuid())
-  subject     String
-  description String
-  status      String   @default("OPEN") // OPEN | RESOLVED
-  userId      String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+enum YetkiTuru {
+  MALIK
+  HISIM
+  YETKILI_ISLETME
 }
 
-model Asset {
-  id        String   @id @default(uuid())
-  type      String
-  value     Float
-  location  String?
-  userId    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+enum YetkiDurumu {
+  BEKLIYOR
+  GECERLI
+  SURESI_DOLDU
+  IPTAL
 }
 
-model Document {
-  id          String   @id @default(uuid())
-  userId      String
-  listingId   String?
-  name        String
-  type        String                // TAPU | SOZLESME | DEGERLEME | SIGORTA | DIGER
-  url         String                // Vercel Blob URL
-  size        Int       @default(0) // byte
-  mimeType    String    @default("application/pdf")
-  notes       String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  listing Listing? @relation(fields: [listingId], references: [id], onDelete: SetNull)
+enum YetkiKaynagi {
+  GERCEK
+  MOCK
 }
 
-// Dark Pool NDA kaydı
-model DarkPoolNda {
-  id          String   @id @default(uuid())
-  userId      String
-  acceptedAt  DateTime @default(now())
-  ipAddress   String?
+model EidsYetki {
+  id String @id @default(uuid())
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tasinmazId String
+  tasinmaz   Tasinmaz @relation(fields: [tasinmazId], references: [id], onDelete: Cascade)
 
-  @@unique([userId])
+  turu   YetkiTuru
+  durumu YetkiDurumu @default(BEKLIYOR)
+
+  eidsKullaniciKodu String
+  eidsReferansNo    String? @unique
+
+  baslangic DateTime
+  bitis     DateTime
+
+  // Production'da MOCK kaynaklı yetkiyle ilan YAYINLANAMAZ.
+  kaynak YetkiKaynagi @default(MOCK)
+
+  eklendi     DateTime @default(now())
+  guncellendi DateTime @updatedAt
+
+  ilanlar Ilan[]
+
+  @@index([tasinmazId, durumu])
+  @@index([bitis])
+  @@map("eids_yetki")
 }
 
-// B2B Sovereign Data API — API key yönetimi
-model ApiKey {
-  id          String   @id @default(uuid())
-  userId      String
-  key         String   @unique
-  name        String                          // "Ziraat Bankası Entegrasyonu"
-  plan        String   @default("STARTER")   // STARTER | GROWTH | ENTERPRISE
-  callsToday  Int      @default(0)
-  callsTotal  Int      @default(0)
-  lastUsedAt  DateTime?
-  active      Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+enum IlanDurumu {
+  TASLAK
+  YETKI_BEKLIYOR
+  MODERASYONDA
+  YAYINDA
+  TEYIT_BEKLIYOR
+  PASIF
+  ARSIVLENDI
+  REDDEDILDI
 }
 
-// Yatırımcı Ağı — fırsat ilanları
-model InvestmentOpportunity {
-  id              String   @id @default(uuid())
-  title           String
-  description     String
-  propertyType    String
-  location        String
-  targetAmount    Float                         // Aranılan toplam yatırım
-  minInvestment   Float                         // Minimum katılım miktarı
-  expectedReturn  Float                         // Tahmini yıllık getiri %
-  durationMonths  Int                           // Proje süresi (ay)
-  status          String   @default("OPEN")    // OPEN | FUNDED | CLOSED
-  ownerId         String
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  owner        User                    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  participants InvestmentParticipant[]
+enum IlanTuru {
+  SATILIK
+  KIRALIK
 }
 
-model InvestmentParticipant {
-  id             String   @id @default(uuid())
-  opportunityId  String
-  userId         String
-  amount         Float
-  status         String   @default("PENDING") // PENDING | CONFIRMED
-  createdAt      DateTime @default(now())
+model Ilan {
+  id String @id @default(uuid())
 
-  opportunity InvestmentOpportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
-  user        User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tasinmazId String
+  tasinmaz   Tasinmaz @relation(fields: [tasinmazId], references: [id], onDelete: Cascade)
+
+  yetkiId String
+  yetki   EidsYetki @relation(fields: [yetkiId], references: [id])
+
+  sahibiId String
+  sahibi   Kullanici @relation(fields: [sahibiId], references: [id])
+
+  ofisId String?
+  ofis   EmlakOfisi? @relation(fields: [ofisId], references: [id])
+
+  turu   IlanTuru
+  durumu IlanDurumu @default(TASLAK)
+
+  baslik   String
+  aciklama String? @db.Text
+
+  // PARA: tam sayı kuruş. Float ASLA kullanılmaz.
+  fiyatKurus BigInt
+  paraBirimi String @default("TRY")
+
+  odaSayisi  String?
+  binaYasi   Int?
+  kat        Int?
+  isitmaTipi String?
+  esyali     Boolean @default(false)
+  aidatKurus BigInt?
+
+  // CANLILIK TEYİDİ — hayalet ilan sorununun çözümü
+  sonTeyitTs      DateTime?
+  teyitSonTarih   DateTime?
+  otomatikPasifTs DateTime?
+
+  yayinTs      DateTime?
+  goruntulenme Int       @default(0)
+
+  eklendi     DateTime @default(now())
+  guncellendi DateTime @updatedAt
+
+  medyalar     Medya[]
+  fiyatGecmisi FiyatGecmisi[]
+  favoriler    Favori[]
+  mesajlar     Mesaj[]
+  randevular   Randevu[]
+  sikayetler   Sikayet[]
+
+  @@index([durumu, yayinTs])
+  @@index([tasinmazId])
+  @@index([sahibiId])
+  @@index([teyitSonTarih])
+  @@map("ilan")
 }
 
-// Franchise OS — white-label broker partnerleri
-model FranchisePartner {
-  id              String   @id @default(uuid())
-  ownerId         String
-  companyName     String
-  slug            String   @unique          // subdomain: slug.soylemesibizden.com
-  logoUrl         String?
-  primaryColor    String   @default("#00C49F")
-  accentColor     String   @default("#0F172A")
-  plan            String   @default("BASIC") // BASIC | PRO | ENTERPRISE
-  monthlyFee      Float    @default(50000)
-  agentCount      Int      @default(0)
-  listingCount    Int      @default(0)
-  status          String   @default("ACTIVE") // ACTIVE | SUSPENDED | TRIAL
-  customDomain    String?
-  contactEmail    String
-  contactPhone    String?
-  city            String
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+model FiyatGecmisi {
+  id     String @id @default(uuid())
+  ilanId String
+  ilan   Ilan   @relation(fields: [ilanId], references: [id], onDelete: Cascade)
 
-  owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  // Kalıcı ve herkese açık. Silinmez.
+  eskiFiyatKurus BigInt?
+  yeniFiyatKurus BigInt
+  degisimTs      DateTime @default(now())
+
+  @@index([ilanId, degisimTs])
+  @@map("fiyat_gecmisi")
 }
 
-// Construction Intelligence — onaylı inşaat projeleri
-model ConstructionProject {
-  id              String   @id @default(uuid())
-  name            String
-  developer       String
-  projectType     String                    // RESIDENTIAL | COMMERCIAL | MIXED | INFRASTRUCTURE
-  location        String
-  city            String
-  district        String?
-  status          String   @default("PLANNED") // PLANNED | UNDER_CONSTRUCTION | COMPLETED
-  startDate       DateTime?
-  completionDate  DateTime?
-  totalUnits      Int?
-  totalArea       Float?                    // m²
-  investmentAmount Float?                   // TL
-  description     String?
-  source          String?                   // Veri kaynağı
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+model Medya {
+  id     String @id @default(uuid())
+  ilanId String
+  ilan   Ilan   @relation(fields: [ilanId], references: [id], onDelete: Cascade)
+
+  url  String
+  sira Int    @default(0)
+
+  // Mükerrer görsel tespiti
+  algiHash       String?
+  yapayZekaSuphe Int?
+
+  eklendi DateTime @default(now())
+
+  @@index([ilanId, sira])
+  @@index([algiHash])
+  @@map("medya")
 }
 
-// Tapu Doğrulama — TKGM entegrasyon kaydı
-model TapuVerification {
-  id              String   @id @default(uuid())
-  listingId       String   @unique
-  parcelNo        String?                          // Tapu parsel numarası
-  blockNo         String?                          // Ada numarası
-  landRegNo       String?                          // Tapu sicil no
-  status          String   @default("PENDING")     // PENDING | VERIFIED | FAILED | MANUAL_REVIEW
-  verificationMethod String @default("MANUAL")     // MANUAL | TKGM_API | AI_ASSISTED
-  hasMortgage     Boolean?                         // İpotek var mı
-  hasLien         Boolean?                         // Haciz var mı
-  hasAnnotation   Boolean?                         // Şerh var mı
-  ownerMatches    Boolean?                         // Satıcı tapu sahibiyle eşleşiyor mu
-  rawData         Json?                            // TKGM API yanıtı (gelecekte)
-  notes           String?
-  verifiedAt      DateTime?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+model Favori {
+  id          String    @id @default(uuid())
+  kullaniciId String
+  kullanici   Kullanici @relation(fields: [kullaniciId], references: [id], onDelete: Cascade)
+  ilanId      String
+  ilan        Ilan      @relation(fields: [ilanId], references: [id], onDelete: Cascade)
+  eklendi     DateTime  @default(now())
 
-  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  @@unique([kullaniciId, ilanId])
+  @@map("favori")
 }
 
-// Sovereign Score — kullanıcı bazlı gayrimenkul kredi skoru
-model SovereignScoreRecord {
-  id              String   @id @default(uuid())
-  userId          String   @unique
-  score           Int      @default(0)            // 0-1000
-  transactionCount Int     @default(0)             // Tamamlanan işlem sayısı
-  onTimePayments  Int      @default(0)             // Zamanında ödeme
-  defaultCount    Int      @default(0)             // Temerrüt sayısı
-  portfolioValue  Float    @default(0)             // Toplam portföy değeri
-  verifiedIdentity Boolean @default(false)
-  ndaSigned       Boolean  @default(false)
-  memberSince     DateTime @default(now())
-  lastCalculated  DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+model KayitliArama {
+  id          String    @id @default(uuid())
+  kullaniciId String
+  kullanici   Kullanici @relation(fields: [kullaniciId], references: [id], onDelete: Cascade)
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ad            String
+  kriterler     Json
+  bildirimAcik  Boolean   @default(true)
+  sonBildirimTs DateTime?
+
+  eklendi DateTime @default(now())
+
+  @@index([kullaniciId])
+  @@map("kayitli_arama")
 }
 
-// ESG + Karbon Skoru
-model EsgScore {
-  id              String   @id @default(uuid())
-  listingId       String   @unique
-  energyClass     String   @default("E")           // A B C D E F G
-  carbonFootprint Float?                           // kg CO2/yıl
-  renewableEnergy Boolean  @default(false)
-  greenCertified  Boolean  @default(false)         // LEED, BREEAM vb.
-  insulationScore Int?                             // 0-100
-  heatingType     String?                          // DOGALGAZ | ELEKTRIK | JEOTERMAL | GUNES
-  esgTotal        Int      @default(50)            // 0-100 ESG toplam skor
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+model Mesaj {
+  id     String @id @default(uuid())
+  ilanId String
+  ilan   Ilan   @relation(fields: [ilanId], references: [id], onDelete: Cascade)
 
-  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  gonderenId String
+  gonderen   Kullanici @relation("Gonderen", fields: [gonderenId], references: [id])
+  aliciId    String
+  alici      Kullanici @relation("Alici", fields: [aliciId], references: [id])
+
+  icerik  String   @db.Text
+  okundu  Boolean  @default(false)
+  eklendi DateTime @default(now())
+
+  @@index([ilanId])
+  @@index([aliciId, okundu])
+  @@map("mesaj")
 }
 
-// Decision Engine — Karar analiz motoru
-model DecisionRecord {
-  id                String   @id @default(uuid())
-  userId            String
-  listingId         String?
+enum RandevuDurumu {
+  TALEP
+  ONAYLANDI
+  GERCEKLESTI
+  IPTAL
+  GELMEDI
+}
 
-  // Karar Türü
-  decisionType      DecisionType   @default(SATIN_AL)
+model Randevu {
+  id     String @id @default(uuid())
+  ilanId String
+  ilan   Ilan   @relation(fields: [ilanId], references: [id], onDelete: Cascade)
 
-  // Skorlar
-  score             Int            // 0-100
-  recommendation    Recommendation
-  confidence        Int      // 0-100
+  talepEdenId String
+  talepEden   Kullanici @relation(fields: [talepEdenId], references: [id])
 
-  // Bileşen Skorları (JSON)
-  scores            Json     // { financial_fit, market_value, location_quality, risk_management, trust, liquidity }
+  durumu RandevuDurumu @default(TALEP)
+  tarih  DateTime
 
-  // Riskler (JSON)
-  risks             Json     // [{ risk, impact, description }]
+  // Gösterim sonrası doğrulama — yem ilan tespiti
+  ilanGercekMi Boolean?
+  notlar       String?  @db.Text
 
-  // Nedenler (JSON)
-  reasons           Json     // [{ reason, weight, category }]
+  eklendi DateTime @default(now())
 
-  // Metadata
-  metadata          Json?    // İlave veriler
+  @@index([ilanId, tarih])
+  @@map("randevu")
+}
 
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+enum SikayetTuru {
+  SATILDI_HALA_YAYINDA
+  YANLIS_FIYAT
+  YANLIS_KONUM
+  YEM_ILAN
+  SAHTE_GORSEL
+  YETKISIZ_ILAN
+  DIGER
+}
 
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  listing           Listing? @relation(fields: [listingId], references: [id], onDelete: SetNull)
+model Sikayet {
+  id     String @id @default(uuid())
+  ilanId String
+  ilan   Ilan   @relation(fields: [ilanId], references: [id], onDelete: Cascade)
 
-  @@index([userId])
-  @@index([listingId])
-  @@index([createdAt])
+  bildirenId String
+  bildiren   Kullanici @relation(fields: [bildirenId], references: [id])
+
+  turu     SikayetTuru
+  aciklama String?     @db.Text
+
+  // SLA şeffaflığı — kaç saatte kapandığı ofis profilinde görünür
+  acilisTs  DateTime  @default(now())
+  kapanisTs DateTime?
+  sonuc     String?
+
+  @@index([ilanId])
+  @@index([kapanisTs])
+  @@map("sikayet")
 }

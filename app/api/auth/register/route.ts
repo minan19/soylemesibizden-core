@@ -29,15 +29,22 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { email, password, name } = registerSchema.parse(body);
 
-    const existing = await prisma.user.findUnique({ where: { email } });
-    if (existing) {
+    // v2: User -> Kullanici. Rol varsayilani BIREYSEL.
+    const mevcut = await prisma.kullanici.findUnique({
+      where: { eposta: email },
+    });
+    if (mevcut) {
       return NextResponse.json({ error: 'Bu e-posta zaten kayıtlı.' }, { status: 409 });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 12);
-    const user = await prisma.user.create({
-      data: { email, password: hashedPassword, name: name ?? null },
-      select: { id: true, email: true, name: true, role: true },
+    const parolaHash = await bcrypt.hash(password, 12);
+
+    // NOT: Kayit yalnizca hesap acar. Ilan verebilmek icin EIDS
+    // kimlik dogrulamasi (e-Devlet SSO) ayrica gerekir; kimlikDogrulandi
+    // varsayilan olarak false'tur ve buradan true yapilmaz.
+    const user = await prisma.kullanici.create({
+      data: { eposta: email, parolaHash, adSoyad: name ?? null },
+      select: { id: true, eposta: true, adSoyad: true, rol: true },
     });
 
     // Hoş geldin emaili — arka planda

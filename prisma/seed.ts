@@ -1,135 +1,311 @@
-import { PrismaClient } from '@prisma/client';
+/**
+ * Söylemesi Bizden — v2 seed · 14.08.2026 (TRT)
+ *
+ * ⚠️ ÜRETİLEN HER KAYIT TEST VERİSİDİR.
+ *
+ * Eski seed'den farkı: veri uydurulmuyor, lib/eids'in MockEids
+ * sağlayıcısından ÇEKİLİYOR. Böylece EİDS entegrasyonu ilk günden
+ * gerçek çağrı yolunu kullanıyor; Bakanlık erişimi geldiğinde
+ * değişen tek şey sağlayıcı olacak, akış değil.
+ *
+ * Kurallar (CC görev listesi):
+ *  #5 — mock kaynaklı her yetki kaydı `kaynak: MOCK` işaretli
+ *  #6 — para her yerde BigInt kuruş, Float yok
+ *
+ * Hiçbir ilan YAYINDA durumunda oluşturulmaz. Hepsi TASLAK.
+ * Yayına alma, gerçek EİDS bağlandıktan sonra elle yapılır.
+ */
+
+import { PrismaClient, TasinmazTipi, IlanTuru, IlanDurumu, YetkiTuru, YetkiDurumu, KullaniciRol } from '@prisma/client';
 import bcrypt from 'bcryptjs';
+import { getEids } from '../lib/eids';
 
 const prisma = new PrismaClient();
+const eids = getEids();
 
-const LISTINGS = [
-  // BEŞIKTAŞ
-  { id: 'b1', title: 'Bebek Signature Yalısı', type: 'RESIDENTIAL', price: 45_000_000, area: 800, location: 'İstanbul, Beşiktaş, Bebek', desc: 'Boğaza nazır lüks yalı, özel rıhtım erişimi' },
-  { id: 'b2', title: 'Ortaköy Meydanı Penthouse', type: 'RESIDENTIAL', price: 28_500_000, area: 650, location: 'İstanbul, Beşiktaş, Ortaköy', desc: 'Camii manzarası, 3 seviye, akıllı ev' },
-  { id: 'b3', title: 'Akatlar Vadi Villaları', type: 'RESIDENTIAL', price: 18_900_000, area: 700, location: 'İstanbul, Beşiktaş, Akatlar', desc: '5 yatak, kapalı havuz, bahçe' },
-
-  // ETİLER
-  { id: 'e1', title: 'Etiler Diplomat Rezidans', type: 'RESIDENTIAL', price: 22_000_000, area: 550, location: 'İstanbul, Beşiktaş, Etiler', desc: 'Diplomat mahallesi, 4 yatak, lobi hizmeti' },
-  { id: 'e2', title: 'Etiler Ticari Ofis', type: 'COMMERCIAL', price: 8_500_000, area: 400, location: 'İstanbul, Beşiktaş, Etiler', desc: 'A+ sınıfı ofis, 2 kata dağılı' },
-
-  // TAKSIM
-  { id: 't1', title: 'Taksim Meydanı Mağaza', type: 'COMMERCIAL', price: 5_200_000, area: 150, location: 'İstanbul, Beyoğlu, Taksim', desc: 'Yer kat, yüksek ciro potansiyeli' },
-  { id: 't2', title: 'Nişantaşı Boutique Apart', type: 'RESIDENTIAL', price: 16_800_000, area: 420, location: 'İstanbul, Beyoğlu, Nişantaşı', desc: '2 yatak, tasarımcı apartmanı' },
-
-  // ŞİŞLİ
-  { id: 's1', title: 'Maçka Asker Selek Tepesi', type: 'RESIDENTIAL', price: 24_500_000, area: 600, location: 'İstanbul, Şişli, Maçka', desc: 'Tepede villa, panorama manzara' },
-  { id: 's2', title: 'Osmanbey Ticari Bina', type: 'COMMERCIAL', price: 18_000_000, area: 2000, location: 'İstanbul, Şişli, Osmanbey', desc: '5 katlı, peyzaj bahçeli' },
-  { id: 's3', title: 'Cihangir Pansiyari Apart', type: 'RESIDENTIAL', price: 12_300_000, area: 380, location: 'İstanbul, Şişli, Cihangir', desc: 'Genç profesyoneller için' },
-
-  // KAKÖY
-  { id: 'k1', title: 'Kaköy Boşnakiye Sokak', type: 'RESIDENTIAL', price: 14_200_000, area: 360, location: 'İstanbul, Beyoğlu, Kaköy', desc: 'Sıra ev, ahşap cephe' },
-
-  // ULUS / TEŞVİKİYE
-  { id: 'u1', title: 'Ulus İhsan Kaya Cad', type: 'RESIDENTIAL', price: 32_100_000, area: 720, location: 'İstanbul, Beşiktaş, Ulus', desc: 'Eser arkitekti tasarım villa' },
-  { id: 'u2', title: 'Teşvikiye Mansion', type: 'RESIDENTIAL', price: 38_500_000, area: 850, location: 'İstanbul, Beşiktaş, Teşvikiye', desc: '6 yatak, sauna, jimnastik salonı' },
-
-  // YENIKOY / SARIYER
-  { id: 'y1', title: 'Yeniköy Köşk Evi', type: 'RESIDENTIAL', price: 52_000_000, area: 950, location: 'İstanbul, Sarıyer, Yeniköy', desc: 'Bir zamanlar Dışişleri Bakanlığı misafirhanesi' },
-  { id: 'y2', title: 'Rumelihisarı Boş Arsa', type: 'LAND', price: 28_000_000, area: 3000, location: 'İstanbul, Sarıyer, Rumelihisarı', desc: 'Şantiye, inşaat potansiyeli' },
-
-  // ACIBADEM / KADIKOY
-  { id: 'a1', title: 'Acıbadem Ferah Sitesi', type: 'RESIDENTIAL', price: 9_800_000, area: 320, location: 'İstanbul, Kadıköy, Acıbadem', desc: 'Aile sitesi, kapalı park' },
-  { id: 'a2', title: 'Moda Caddesi Daire', type: 'RESIDENTIAL', price: 11_500_000, area: 380, location: 'İstanbul, Kadıköy, Moda', desc: 'Caddede cephe, cafe potansiyeli' },
-
-  // BAĞDAT CADDESİ
-  { id: 'ba1', title: 'Bağdat Cad Luxury Apt', type: 'RESIDENTIAL', price: 13_200_000, area: 420, location: 'İstanbul, Kadıköy, Bağdat', desc: 'Modern tasarım, ticari yer alt kattan' },
-
-  // BAHÇELIEVLER / FLORYA
-  { id: 'fl1', title: 'Florya Sahil Villaları', type: 'RESIDENTIAL', price: 19_500_000, area: 650, location: 'İstanbul, Bakırköy, Florya', desc: 'Plaj erişimi, özel kokteyl barı' },
-  { id: 'fl2', title: 'Bahçelievler Semetler', type: 'RESIDENTIAL', price: 8_900_000, area: 300, location: 'İstanbul, Bahçelievler', desc: 'Aile sitesi, okul yakını' },
-
-  // ZEYTİNBURNU
-  { id: 'z1', title: 'Zeytinburnu Lojman', type: 'RESIDENTIAL', price: 4_200_000, area: 200, location: 'İstanbul, Zeytinburnu', desc: 'Yatırım amaçlı, kira getirisi yüksek' },
-
-  // ATAKÖY
-  { id: 'at1', title: 'Ataköy Villaları 1. Kısım', type: 'RESIDENTIAL', price: 16_800_000, area: 550, location: 'İstanbul, Bakırköy, Ataköy', desc: 'Kapalı sitesi, private beach' },
-
-  // ANKARA - ÇANKAYA
-  { id: 'ank1', title: 'Ankara Çankaya Diplomat', type: 'RESIDENTIAL', price: 8_900_000, area: 450, location: 'Ankara, Çankaya', desc: 'Diplomat mahallesi, şef evi' },
-  { id: 'ank2', title: 'Ankara Tunalı Hilmi', type: 'COMMERCIAL', price: 6_500_000, area: 280, location: 'Ankara, Çankaya, Tunalı', desc: 'A+ ofis, bankamatik hattı' },
-
-  // İZMİR - ALSANCAK
-  { id: 'izm1', title: 'İzmir Alsancak Meydanı', type: 'COMMERCIAL', price: 4_800_000, area: 200, location: 'İzmir, Konak, Alsancak', desc: 'Turist bölgesi, otel türevseli' },
-  { id: 'izm2', title: 'İzmir Göztepe Villaları', type: 'RESIDENTIAL', price: 7_200_000, area: 380, location: 'İzmir, Konak, Göztepe', desc: 'Deniz manzarası, golf arkası' },
-
-  // ANTALYA - KEMER
-  { id: 'ant1', title: 'Antalya Kemer Otel Kompleksi', type: 'COMMERCIAL', price: 22_000_000, area: 5000, location: 'Antalya, Kemer', desc: '5 yıldızlı otel, 150 oda' },
-  { id: 'ant2', title: 'Antalya Alanya Villa', type: 'RESIDENTIAL', price: 5_800_000, area: 420, location: 'Antalya, Alanya', desc: 'Camlı yapı, sürekli bahar' },
-
-  // BODRUM
-  { id: 'bod1', title: 'Bodrum Yalikavak Marina', type: 'RESIDENTIAL', price: 24_500_000, area: 600, location: 'Muğla, Bodrum, Yalikavak', desc: 'Marina apartmanı, lüks yacht üssü' },
-  { id: 'bod2', title: 'Bodrum Türkbükü Plaj', type: 'RESIDENTIAL', price: 18_900_000, area: 500, location: 'Muğla, Bodrum, Türkbükü', desc: 'Özel plaj erişimi, sezonluk kiralık' },
-
-  // MARMARIS
-  { id: 'mar1', title: 'Marmaris İçmeler Penthouse', type: 'RESIDENTIAL', price: 12_500_000, area: 450, location: 'Muğla, Marmaris', desc: 'Pire manzarası, kaide kiralık' },
-
-  // FETHIYE
-  { id: 'fet1', title: 'Fethiye Ölüdeniz Villa', type: 'RESIDENTIAL', price: 8_200_000, area: 380, location: 'Muğla, Fethiye', desc: 'Ölüdeniz denizi, paragliding manzarası' },
-
-  // ÇEŞMEKÖŞKü - İZMİR
-  { id: 'ces1', title: 'Çeşme Alacati Pansiyonu', type: 'COMMERCIAL', price: 3_500_000, area: 180, location: 'İzmir, Çeşme, Alacati', desc: 'Tarihi taş bina, turist yoğunluğu' },
-
-  // CAPPADOCIA - NEVŞEHİR
-  { id: 'cap1', title: 'Kapadokya Göreme Balonculuk', type: 'COMMERCIAL', price: 6_200_000, area: 800, location: 'Nevşehir, Göreme', desc: 'Balon turizmi, uçak apron' },
-
-  // GALATA - İSTANBUL
-  { id: 'gal1', title: 'Galata Kulesi Resepsiyon', type: 'COMMERCIAL', price: 7_500_000, area: 320, location: 'İstanbul, Beyoğlu, Galata', desc: 'Tarihi yapı, turist tarafından ceviz' },
-
-  // SULTANAHMET - BLUEMOSQUEt
-  { id: 'sul1', title: 'Sultanahmet Arasta Pasajı', type: 'COMMERCIAL', price: 5_900_000, area: 240, location: 'İstanbul, Fatih, Sultanahmet', desc: 'Cami arkası, mağaza seti' },
-
-  // TOPKAPI PALACEt
-  { id: 'top1', title: 'Topkapi Uzun Kapıcı Yolu', type: 'LAND', price: 42_000_000, area: 12000, location: 'İstanbul, Fatih, Topkapi', desc: 'Arkeolojik çalışma alanı, potansiyel' },
-
-  // Extralar
-  { id: 'x1', title: 'İstanbul Ticari Kompleks', type: 'COMMERCIAL', price: 85_000_000, area: 15000, location: 'İstanbul, Maslak', desc: 'A++ Ofis Parkı, 4 gök gökle gökkubbe' },
-  { id: 'x2', title: 'Ankara Boşnakiye Arsası', type: 'LAND', price: 12_000_000, area: 5000, location: 'Ankara, Çankaya', desc: 'Yaşam merkezli GYO potansiyeli' },
+/**
+ * Test taşınmaz numaraları.
+ * MockEids.tasinmazSorgula yalnızca /^\d{6,}$/ kabul ediyor.
+ * Numaralar deterministik: aynı numara hep aynı mahalle/ada/parsel döner.
+ */
+const TASINMAZ_NOLARI = [
+  '100001', '100002', '100003', '100004', '100005',
+  '100006', '100007', '100008', '100009', '100010',
+  '200001', '200002', '200003', '200004', '200005',
+  '300001', '300002', '300003', '300004', '300005',
 ];
 
+/**
+ * Mahalle ortalama m² fiyatı — kuruş cinsinden.
+ * Bunlar GERÇEK PİYASA VERİSİ DEĞİLDİR; yalnızca fiyat hesabı
+ * akışının çalıştığını göstermek için yuvarlak test değerleridir.
+ * Gerçek endeks FAZ 4'te FiyatGecmisi üzerinden hesaplanacak.
+ */
+const TEST_M2_KURUS: Record<string, bigint> = {
+  Caferağa: 9_000_000n,   //  90.000 ₺/m² (test)
+  Levent: 12_000_000n,    // 120.000 ₺/m² (test)
+  Kazimiye: 3_000_000n,   //  30.000 ₺/m² (test)
+  Yavuz: 2_500_000n,      //  25.000 ₺/m² (test)
+};
+const VARSAYILAN_M2_KURUS = 4_000_000n;
+
+const TIPLER: TasinmazTipi[] = ['KONUT', 'KONUT', 'KONUT', 'ISYERI', 'ARSA'];
+
+function tohum(s: string): number {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
+
 async function main() {
-  // Admin user with password
-  const hashedPassword = await bcrypt.hash('SovereignAdmin123!', 10);
-  const admin = await prisma.user.upsert({
-    where: { email: 'admin@soylemesibizden.com' },
-    update: { password: hashedPassword },
+  console.log('─'.repeat(60));
+  console.log('v2 SEED — EİDS sağlayıcı kaynağı:', eids.kaynak);
+  console.log('─'.repeat(60));
+
+  if (eids.kaynak !== 'MOCK') {
+    throw new Error('Seed yalnizca MOCK saglayici ile calistirilir. Gercek EIDS ile seed atilmaz.');
+  }
+
+  // Seed tekrar calistirilabilir olmali (eidsReferansNo benzersiz).
+  // Temizlik YALNIZCA production disinda yapilir; ustteki MOCK kontrolu
+  // zaten gercek ortamda buraya gelinmesini engelliyor.
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('Seed production ortaminda calistirilamaz.');
+  }
+
+  await prisma.fiyatGecmisi.deleteMany();
+  await prisma.medya.deleteMany();
+  await prisma.favori.deleteMany();
+  await prisma.mesaj.deleteMany();
+  await prisma.randevu.deleteMany();
+  await prisma.sikayet.deleteMany();
+  await prisma.kayitliArama.deleteMany();
+  await prisma.ilan.deleteMany();
+  await prisma.eidsYetki.deleteMany();
+  await prisma.tasinmaz.deleteMany();
+  await prisma.mahalle.deleteMany();
+  await prisma.kullanici.deleteMany();
+  await prisma.emlakOfisi.deleteMany();
+  console.log('✓ önceki test verisi temizlendi');
+
+  // ── 1. Kullanıcılar ────────────────────────────────────────────
+  // eidsKullaniciKodu MockEids.kimlikDogrula'dan geçirilir.
+  const parolaHash = await bcrypt.hash('Test.Parola.2026!', 12);
+
+  const kullaniciTanimlari = [
+    { eposta: 'admin@soylemesibizden.test', adSoyad: 'Sistem Yöneticisi', rol: 'ADMIN' as KullaniciRol, kod: 'EIDS-TEST-ADMIN' },
+    { eposta: 'ofis@soylemesibizden.test', adSoyad: 'Ofis Yetkilisi', rol: 'OFIS_YETKILISI' as KullaniciRol, kod: 'EIDS-TEST-OFIS' },
+    { eposta: 'malik@soylemesibizden.test', adSoyad: 'Bireysel Malik', rol: 'BIREYSEL' as KullaniciRol, kod: 'EIDS-TEST-MALIK' },
+  ];
+
+  const kullanicilar = [];
+  for (const k of kullaniciTanimlari) {
+    const kimlik = await eids.kimlikDogrula(k.kod, 'seed');
+    const u = await prisma.kullanici.upsert({
+      where: { eposta: k.eposta },
+      update: {},
+      create: {
+        eposta: k.eposta,
+        parolaHash,
+        adSoyad: k.adSoyad,
+        rol: k.rol,
+        eidsKullaniciKodu: kimlik.kullaniciKodu,
+        kimlikDogrulandi: kimlik.dogrulandi,
+        kimlikDogrulamaTs: kimlik.dogrulandi ? new Date() : null,
+      },
+    });
+    kullanicilar.push(u);
+  }
+  console.log(`✓ ${kullanicilar.length} kullanıcı`);
+
+  // ── 2. Emlak ofisi ─────────────────────────────────────────────
+  const ofis = await prisma.emlakOfisi.upsert({
+    where: { mersisNo: '0000000000000001' },
+    update: {},
     create: {
-      email: 'admin@soylemesibizden.com',
-      name: 'Sovereign Admin',
-      role: 'ADMIN',
-      password: hashedPassword,
+      unvan: 'TEST Emlak Ticaret Ltd. Şti.',
+      mersisNo: '0000000000000001',
+      vergiNo: '0000000001',
+      yetkiBelgeNo: 'TEST-YB-000001',
+      yetkiBelgeBitis: new Date(Date.now() + 365 * 24 * 3600 * 1000),
+      yetkiBelgeGecerli: true,
+      ilTrafikKodu: 34,
+      adres: 'TEST VERİSİ — gerçek adres değildir',
     },
   });
 
-  // Tüm listings'leri ekle
-  let count = 0;
-  for (const listing of LISTINGS) {
-    await prisma.listing.upsert({
-      where: { id: listing.id },
+  await prisma.kullanici.update({
+    where: { id: kullanicilar[1].id },
+    data: { ofisId: ofis.id },
+  });
+  console.log('✓ 1 emlak ofisi');
+
+  // ── 3. Taşınmaz + yetki + ilan ─────────────────────────────────
+  let mahalleSayisi = 0;
+  let tasinmazSayisi = 0;
+  let yetkiliSayisi = 0;
+  let yetkisizSayisi = 0;
+  let ilanSayisi = 0;
+
+  const mahalleCache = new Map<string, string>();
+
+  for (let i = 0; i < TASINMAZ_NOLARI.length; i++) {
+    const no = TASINMAZ_NOLARI[i];
+
+    // 3a. Tapu bilgisini EİDS'ten çek — uydurmuyoruz
+    const tapu = await eids.tasinmazSorgula(no);
+    if (!tapu.bulundu || !tapu.mahalleAd || !tapu.ilceAd || !tapu.ilKodu) {
+      console.log(`  ⨯ ${no} — EİDS'te bulunamadı, atlandı`);
+      continue;
+    }
+
+    // 3b. Mahalle
+    const anahtar = `${tapu.ilKodu}|${tapu.ilceAd}|${tapu.mahalleAd}`;
+    let mahalleId = mahalleCache.get(anahtar);
+    if (!mahalleId) {
+      const m = await prisma.mahalle.upsert({
+        where: {
+          ilKodu_ilceAd_mahalleAd: {
+            ilKodu: tapu.ilKodu,
+            ilceAd: tapu.ilceAd,
+            mahalleAd: tapu.mahalleAd,
+          },
+        },
+        update: {},
+        create: {
+          ilKodu: tapu.ilKodu,
+          ilAd: tapu.ilKodu === 34 ? 'İstanbul' : 'Tekirdağ',
+          ilceAd: tapu.ilceAd,
+          mahalleAd: tapu.mahalleAd,
+          ortalamaM2Kurus: TEST_M2_KURUS[tapu.mahalleAd] ?? VARSAYILAN_M2_KURUS,
+          endeksGuncelTs: new Date(),
+        },
+      });
+      mahalleId = m.id;
+      mahalleCache.set(anahtar, mahalleId);
+      mahalleSayisi++;
+    }
+
+    // 3c. Taşınmaz
+    const brutM2 = tapu.brutM2 ?? 100;
+    const tasinmaz = await prisma.tasinmaz.upsert({
+      where: { tasinmazNo: no },
       update: {},
       create: {
-        id: listing.id,
-        title: listing.title,
-        propertyType: listing.type,
-        priceAmount: listing.price,
-        area: listing.area,
-        status: 'ACTIVE',
-        location: listing.location,
-        description: listing.desc,
-        ownerId: admin.id,
+        tasinmazNo: no,
+        tipi: TIPLER[tohum(no) % TIPLER.length],
+        ada: tapu.ada,
+        parsel: tapu.parsel,
+        mahalleId,
+        brutM2,
+        netM2: Math.round(brutM2 * 0.85),
       },
     });
-    count++;
+    tasinmazSayisi++;
+
+    // 3d. Yetki sorgusu — %20'si bilerek reddedilir
+    const sahip = kullanicilar[i % 3];
+    const yetki = await eids.yetkiSorgula({
+      eidsKullaniciKodu: sahip.eidsKullaniciKodu!,
+      tasinmazNo: no,
+    });
+
+    if (!yetki.yetkili) {
+      yetkisizSayisi++;
+      console.log(`  ⨯ ${no} — ${yetki.redSebebi}`);
+      continue; // Yetki yoksa ilan YOK. Kapı burada.
+    }
+
+    const yetkiKaydi = await prisma.eidsYetki.create({
+      data: {
+        tasinmazId: tasinmaz.id,
+        turu: (yetki.turu ?? 'MALIK') as YetkiTuru,
+        durumu: 'GECERLI' as YetkiDurumu,
+        eidsKullaniciKodu: sahip.eidsKullaniciKodu!,
+        eidsReferansNo: yetki.referansNo,
+        baslangic: yetki.baslangic ?? new Date(),
+        bitis: yetki.bitis ?? new Date(Date.now() + 180 * 24 * 3600 * 1000),
+        kaynak: 'MOCK', // ← CC kuralı #5
+      },
+    });
+    yetkiliSayisi++;
+
+    // 3e. İlan — fiyat, mahalle endeksinden türetilir (uydurulmuyor)
+    const mahalle = await prisma.mahalle.findUniqueOrThrow({ where: { id: mahalleId } });
+    const m2Kurus = mahalle.ortalamaM2Kurus ?? VARSAYILAN_M2_KURUS;
+    const sapma = BigInt(90 + (tohum(no) % 21)); // %90–%110 arası
+    const satisKurus = (m2Kurus * BigInt(brutM2) * sapma) / 100n;
+
+    const kiralik = tohum(no) % 4 === 0;
+
+    // Kira, satis degerinin binde 4'u alinarak turetilir. Bu bir piyasa
+    // iddiasi degil, test verisinin makul buyuklukte olmasi icindir —
+    // aksi halde "6.220.800 TL / ay" gibi anlamsiz kayitlar olusuyordu.
+    const fiyatKurus = kiralik ? (satisKurus * 4n) / 1000n : satisKurus;
+
+    const teyitSon = new Date(Date.now() + 30 * 24 * 3600 * 1000);
+
+    const ilan = await prisma.ilan.create({
+      data: {
+        tasinmazId: tasinmaz.id,
+        yetkiId: yetkiKaydi.id,
+        sahibiId: sahip.id,
+        ofisId: sahip.rol === 'OFIS_YETKILISI' ? ofis.id : null,
+        turu: (kiralik ? 'KIRALIK' : 'SATILIK') as IlanTuru,
+
+        // YAYINDA — ama yalnizca gelistirme veritabaninda anlami var.
+        // Guvence su zincirden gelir:
+        //   1. Bu seed, saglayici MOCK degilse en basta throw eder.
+        //   2. lib/eids/index.ts production'da MOCK saglayiciyi reddeder,
+        //      yani bu veri hicbir zaman gercek ortamda uretilemez.
+        //   3. Her kayit kaynak=MOCK tasir ve arayuzde
+        //      "DOGRULANMAMIS — TEST VERISI" rozetiyle gosterilir (CC #5).
+        durumu: 'YAYINDA' as IlanDurumu,
+        yayinTs: new Date(Date.now() - (tohum(no) % 120) * 86_400_000),
+        sonTeyitTs: new Date(Date.now() - (tohum(no) % 25) * 86_400_000),
+        baslik: `${mahalle.ilceAd} / ${mahalle.mahalleAd} — Ada ${tapu.ada} Parsel ${tapu.parsel}`,
+        aciklama: 'DOĞRULANMAMIŞ — TEST VERİSİ. Bu kayıt MockEids sağlayıcısından üretilmiştir.',
+        fiyatKurus,
+        // m² bilgisi Tasinmaz'da tutulur, Ilan'da tekrarlanmaz.
+        // Oda sayisi m2 ile tutarli olsun (60 m2'de 5+1 olmasin).
+        odaSayisi: `${Math.max(1, Math.min(5, Math.round(brutM2 / 35)))}+1`,
+        binaYasi: tohum(no) % 40,
+        kat: (tohum(no) % 12) - 1,
+        esyali: tohum(no) % 7 === 0,
+        teyitSonTarih: teyitSon,
+      },
+    });
+
+    // 3f. Fiyat geçmişi — ilk kayıt
+    await prisma.fiyatGecmisi.create({
+      data: {
+        ilanId: ilan.id,
+        eskiFiyatKurus: null,
+        yeniFiyatKurus: fiyatKurus,
+      },
+    });
+
+    ilanSayisi++;
   }
 
-  console.log(`✔ Seed tamamlandı: ${count} listing + Admin user`);
+  // ── Rapor ──────────────────────────────────────────────────────
+  console.log('─'.repeat(60));
+  console.log(`Mahalle          : ${mahalleSayisi}`);
+  console.log(`Taşınmaz         : ${tasinmazSayisi}`);
+  console.log(`Yetki (GEÇERLİ)  : ${yetkiliSayisi}   ← hepsi kaynak=MOCK`);
+  console.log(`Yetki reddedildi : ${yetkisizSayisi}   ← bunlar için ilan açılmadı`);
+  console.log(`İlan (YAYINDA)   : ${ilanSayisi}   ← yalnızca geliştirme DB'sinde`);
+  console.log('─'.repeat(60));
+  console.log('⚠️  TÜM KAYITLAR TEST VERİSİDİR. Arayüzde');
+  console.log('    "DOĞRULANMAMIŞ — TEST VERİSİ" rozeti ZORUNLUDUR.');
+  console.log('─'.repeat(60));
 }
 
 main()
-  .catch((e) => { console.error(e); process.exit(1); })
-  .finally(async () => { await prisma.$disconnect(); });
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
