@@ -39,6 +39,7 @@ const CATEGORIES: Category[] = [
       { href: '/kira-artis-hesaplama', icon: TrendingUp, label: 'Kira Artış Hesaplayıcı', desc: 'TÜİK TÜFE + %25 tavan' },
       { href: '/banka-kredileri', icon: Building2, label: 'Banka Kredisi Karşılaştır', desc: '8 banka faiz karşılaştırması', badge: 'Yeni' },
       { href: '/dask-hesaplayici', icon: ShieldCheck, label: 'DASK Prim Hesaplayıcı', desc: 'Deprem sigortası primi' },
+      { href: '/odeme-plani', icon: Calculator, label: 'Ödeme Planı Simülatörü', desc: 'Ay ay anapara + faiz tablosu', badge: 'Yeni' },
     ],
   },
   {
