@@ -262,6 +262,35 @@ Migration SQL kullanıcı tarafından Neon SQL Editor'da çalıştırılmalı.
 - [x] **/market-radar** — Piyasa analitik sayfası
 - [x] **/admin/inquiries** — Admin başvuru yönetimi
 
+### Oturum 6 (FAZ 118-132) — Tamamlananlar
+- [x] **FAZ-118:** RSS 2.0 feed — /feed.xml (50 aktif ilan), layout'a autodiscovery link
+- [x] **FAZ-119:** District filtresi — listings, ListingsClient, ilce page linkleri düzeltildi, breadcrumb
+- [x] **FAZ-120:** Search sayfasına district filtresi — SearchFilterSidebar + /search/page.tsx
+- [x] **FAZ-121:** Market Radar iyileştirme — SATILIK/KİRALIK bazlı şehir fiyat tablosu, 6 aylık trend grafik
+- [x] **FAZ-122:** ListingsClient ₺/m² gösterimi, district/neighborhood location display
+- [x] **FAZ-123:** İlan detay breadcrumb — /sehir/ ve /ilce/ SEO linkleri
+- [x] **FAZ-124:** ListingsClient — liste görünümünde ₺/m², neighbourhood+district+city birleşik konum
+- [x] **FAZ-125:** Günün Fırsatı bölümü — ana sayfaya piyasa ortalamasının ≥%15 altındaki ilanlar
+- [x] **FAZ-126:** Harita sayfası — listingType/propertyType filtre, şehir badge sayısı, ₺/m² popup, URL param
+- [x] **FAZ-127:** Benzer ilanlar kartları — listingType badge, ₺/m², filtreli Tümünü Gör; komşu ilanlar iyileştirme
+- [x] **FAZ-128:** Avatar desteği — NextAuth JWT'e avatar, Navbar'da profil fotoğrafı gösterimi
+- [x] **FAZ-129:** Admin toplu işlem — BulkActionsTable, checkbox, approve/delete/durum; /api/admin/listings-bulk
+- [x] **FAZ-130:** /istatistikler — platform KPI, mülk türü dağılımı, aylık trend, şehir fiyat tablosu
+- [x] **FAZ-131:** /hakkimizda — kurumsal sayfa, misyon/vizyon, değerler, timeline, CTA
+- [x] **FAZ-132:** MortgagePartners — Türk banka faiz karşılaştırması, taksit hesaplama; ilan detay + hesaplama
+
+### Yeni Bileşenler (Oturum 6)
+- [x] **MortgagePartners** — Banka faiz oranları karşılaştırması, taksit hesaplama
+- [x] **BulkActionsTable** — Admin toplu işlem tablosu (checkbox, approve, delete, set status)
+
+### Yeni Sayfalar (Oturum 6)
+- [x] **/feed.xml** — RSS 2.0 ilan beslemesi
+- [x] **/istatistikler** — Platform istatistikleri (KPI, trend, dağılım)
+- [x] **/hakkimizda** — Kurumsal hakkımızda sayfası
+
+### Yeni API'ler (Oturum 6)
+- [x] **/api/admin/listings-bulk** — Toplu ilan işlemi (approve/delete/status)
+
 ---
 
 ## 5. Kalan Kritik İşler
@@ -393,7 +422,7 @@ git push https://minan19:<GITHUB_TOKEN>@github.com/minan19/soylemesibizden-core.
 
 ---
 
-*Son güncelleme: 2026-08-14 — Oturum 7: FAZ 89-99 tamamlandı.*
+*Son güncelleme: 2026-08-14 — Oturum 8 (bağlam devamı): FAZ 118-132 tamamlandı. RSS feed, district filtresi, Günün Fırsatı, harita iyileştirme, avatar, toplu işlem, istatistikler, hakkımızda, MortgagePartners.*
 
 **Oturum 6 (FAZ 79-88) — Tamamlananlar:**
 - FAZ-79: İlan şikayet sistemi — /api/reports + ReportListingButton modal
