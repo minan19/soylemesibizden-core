@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
-import { Building2, CheckCircle, Users, Clock, ArrowUpRight, Plus, MessageSquare, Activity } from 'lucide-react';
+import { Building2, CheckCircle, Users, Clock, ArrowUpRight, Plus, MessageSquare, Activity, Flag } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -238,6 +238,14 @@ export default async function AdminDashboardPage() {
               <p className="text-[10px] text-gray-400">Concierge vakalar</p>
             </div>
             <ArrowUpRight size={13} className="text-gray-300 ml-auto" />
+          </Link>
+          <Link href="/admin/reports" className="flex items-center gap-3 bg-white rounded-2xl px-4 py-3 border border-red-100 hover:border-red-300 hover:shadow-sm transition-all">
+            <Flag size={16} className="text-red-500" />
+            <div>
+              <p className="text-xs font-bold text-gray-700">Şikayetler</p>
+              <p className="text-[10px] text-gray-400">İlan raporları</p>
+            </div>
+            <ArrowUpRight size={13} className="text-red-300 ml-auto" />
           </Link>
         </div>
 
