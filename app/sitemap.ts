@@ -31,6 +31,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/listings?city=${encodeURIComponent('Ankara')}`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.75 },
     { url: `${baseUrl}/listings?city=${encodeURIComponent('İzmir')}`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.75 },
     { url: `${baseUrl}/listings?city=${encodeURIComponent('Antalya')}`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.7 },
+    { url: `${baseUrl}/sehir`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.85 },
     { url: `${baseUrl}/sehir/${encodeURIComponent('İstanbul')}`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.85 },
     { url: `${baseUrl}/sehir/${encodeURIComponent('Ankara')}`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.85 },
     { url: `${baseUrl}/sehir/${encodeURIComponent('İzmir')}`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.85 },
