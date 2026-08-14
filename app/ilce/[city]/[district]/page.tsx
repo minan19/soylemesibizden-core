@@ -75,8 +75,28 @@ export default async function DistrictPage({ params }: { params: { city: string;
   const avgPrice = stats._avg.price;
   const avgArea = stats._avg.area;
 
+  const baseUrl = 'https://soylemesibizden-core.vercel.app';
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: `${district} / ${city} Gayrimenkul İlanları`,
+    description: `${city} ${district} ilçesinde ${totalActive} aktif gayrimenkul ilanı`,
+    url: `${baseUrl}/ilce/${encodeURIComponent(city)}/${encodeURIComponent(district)}`,
+    numberOfItems: totalActive,
+    itemListElement: recentListings.slice(0, 5).map((l, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      url: `${baseUrl}/listing/${l.id}`,
+      name: l.title,
+    })),
+  };
+
   return (
     <main className="min-h-screen bg-[#F8FAFC]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="max-w-7xl mx-auto px-6 py-10 space-y-10">
 
         {/* Breadcrumb */}
