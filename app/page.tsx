@@ -31,7 +31,7 @@ export default async function HomePage() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const [totalListings, activeListings, totalUsers, totalOffers, featuredListings, cityCounts, todayCount, newListings, hotListings, avgPriceByType] =
+  const [totalListings, activeListings, totalUsers, totalOffers, featuredListings, cityCounts, todayCount, newListings, hotListings, avgPriceByType, topAgents] =
     await Promise.all([
       prisma.listing.count(),
       prisma.listing.count({ where: { status: 'ACTIVE' } }),
@@ -76,6 +76,16 @@ export default async function HomePage() {
         where: { status: 'ACTIVE' },
         _avg: { price: true },
         having: { price: { _avg: { gt: 0 } } },
+      }),
+      // Top agents (CONCIERGE/ADMIN) by active listing count
+      prisma.user.findMany({
+        where: { OR: [{ role: 'CONCIERGE' }, { role: 'ADMIN' }] },
+        select: {
+          id: true, name: true, email: true, role: true, avatar: true,
+          _count: { select: { listings: { where: { status: 'ACTIVE' } } } },
+        },
+        orderBy: { listings: { _count: 'desc' } },
+        take: 4,
       }),
     ]);
 
@@ -590,6 +600,50 @@ export default async function HomePage() {
 
       {/* ─── FOR YOU ──────────────────────────────────────────────── */}
       <ForYouSection />
+
+      {/* ─── FEATURED AGENTS ────────────────────────────────────── */}
+      {topAgents.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-10">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Users className="w-5 h-5 text-[#00C49F]" />
+              <h2 className="text-lg font-bold text-gray-900">Öne Çıkan Danışmanlar</h2>
+            </div>
+            <Link href="/agents" className="flex items-center gap-1 text-xs font-semibold text-[#00C49F] hover:text-[#00a882] transition-colors">
+              Tümü <ArrowRight size={13} />
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {topAgents.map(agent => (
+              <Link
+                key={agent.id}
+                href={`/user/${agent.id}`}
+                className="group bg-white rounded-2xl border border-gray-100 p-5 shadow-sm hover:shadow-md hover:border-[#00C49F]/20 transition-all text-center"
+              >
+                <div className="w-14 h-14 rounded-2xl bg-[#F0FDF8] flex items-center justify-center mx-auto mb-3 group-hover:bg-[#00C49F]/10 transition-colors overflow-hidden">
+                  {agent.avatar ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={agent.avatar} alt={agent.name ?? ''} className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-xl font-black text-[#00C49F]">
+                      {(agent.name ?? agent.email)[0]?.toUpperCase()}
+                    </span>
+                  )}
+                </div>
+                <p className="text-sm font-bold text-gray-900 truncate group-hover:text-[#00C49F] transition-colors">
+                  {agent.name ?? 'Danışman'}
+                </p>
+                <p className="text-[10px] font-bold text-[#00C49F] uppercase tracking-widest mt-0.5">
+                  {agent.role === 'ADMIN' ? 'Admin' : 'Danışman'}
+                </p>
+                <p className="text-xs text-gray-400 mt-2">
+                  {agent._count.listings} aktif ilan
+                </p>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* ─── WHY US ────────────────────────────────────────────────── */}
       <section className="bg-white border-y border-gray-100">
