@@ -735,9 +735,21 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
                         <p className="text-xs font-semibold text-gray-800 line-clamp-2 group-hover:text-[#00C49F] transition-colors">
                           {n.title}
                         </p>
-                        <p className="text-xs font-bold font-mono text-gray-900 mt-0.5">
-                          ₺{n.price.toLocaleString('tr-TR')}
-                        </p>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <p className="text-xs font-bold font-mono text-gray-900">
+                            ₺{n.price.toLocaleString('tr-TR')}
+                          </p>
+                          {n.area && n.area > 0 && (
+                            <p className="text-[10px] text-gray-400">{Math.round(n.price / n.area).toLocaleString('tr-TR')} ₺/m²</p>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-1 mt-0.5">
+                          <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${n.listingType === 'KİRALIK' ? 'bg-violet-50 text-violet-600' : 'bg-[#F0FDF8] text-[#00C49F]'}`}>
+                            {n.listingType}
+                          </span>
+                          {n.rooms != null && <span className="text-[9px] text-gray-400">{n.rooms}+1</span>}
+                          {n.area != null && <span className="text-[9px] text-gray-400">{n.area}m²</span>}
+                        </div>
                       </div>
                     </Link>
                   ))}
@@ -770,7 +782,7 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-lg font-bold text-gray-900">Benzer İlanlar</h2>
               <Link
-                href="/listings"
+                href={`/listings?propertyType=${encodeURIComponent(listing.propertyType)}${listing.city ? `&city=${encodeURIComponent(listing.city)}` : ''}`}
                 className="text-sm font-semibold text-[#00C49F] hover:text-[#00a882] flex items-center gap-1 transition-colors"
               >
                 Tümünü Gör <ArrowRight size={14} />
@@ -782,13 +794,14 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
                   [item.neighborhood, item.district, item.city].filter(Boolean).join(', ') ||
                   item.location ||
                   '';
+                const pricePerM2 = item.area && item.area > 0 ? Math.round(item.price / item.area) : null;
                 return (
                   <Link
                     key={item.id}
                     href={`/listing/${item.id}`}
-                    className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm hover:shadow-md hover:border-[#00C49F]/25 transition-all group"
+                    className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md hover:border-[#00C49F]/25 transition-all group"
                   >
-                    <div className="w-full h-44 rounded-xl overflow-hidden bg-gray-100 mb-4">
+                    <div className="relative w-full h-44 bg-gray-100">
                       {item.photos[0] ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
@@ -801,19 +814,35 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
                           <ImageOff size={24} className="text-gray-300" />
                         </div>
                       )}
+                      <div className="absolute bottom-2 left-2 flex gap-1">
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${item.listingType === 'KİRALIK' ? 'bg-violet-100 text-violet-700' : 'bg-[#F0FDF8] text-[#00C49F]'}`}>
+                          {item.listingType}
+                        </span>
+                      </div>
                     </div>
-                    <p className="font-semibold text-gray-900 text-sm mb-1.5 line-clamp-2 group-hover:text-[#00C49F] transition-colors">
-                      {item.title}
-                    </p>
-                    {itemLocation && (
-                      <p className="flex items-center gap-1 text-xs text-gray-400 mb-3">
-                        <MapPin size={11} className="flex-shrink-0" />
-                        {itemLocation}
+                    <div className="p-4">
+                      <p className="font-semibold text-gray-900 text-sm mb-1.5 line-clamp-2 group-hover:text-[#00C49F] transition-colors">
+                        {item.title}
                       </p>
-                    )}
-                    <p className="font-bold font-mono text-gray-900">
-                      ₺ {item.price.toLocaleString('tr-TR')}
-                    </p>
+                      {itemLocation && (
+                        <p className="flex items-center gap-1 text-xs text-gray-400 mb-2">
+                          <MapPin size={11} className="flex-shrink-0" />
+                          {itemLocation}
+                        </p>
+                      )}
+                      <div className="flex items-center gap-2 text-xs text-gray-400 mb-3">
+                        {item.rooms != null && <span className="bg-gray-50 px-2 py-0.5 rounded">{item.rooms}+1</span>}
+                        {item.area != null && <span className="bg-gray-50 px-2 py-0.5 rounded">{item.area} m²</span>}
+                      </div>
+                      <div>
+                        <p className="font-bold font-mono text-gray-900">
+                          ₺ {item.price.toLocaleString('tr-TR')}
+                        </p>
+                        {pricePerM2 && (
+                          <p className="text-[11px] text-gray-400">{pricePerM2.toLocaleString('tr-TR')} ₺/m²</p>
+                        )}
+                      </div>
+                    </div>
                   </Link>
                 );
               })}
