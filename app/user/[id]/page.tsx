@@ -23,7 +23,7 @@ export default async function UserProfilePage({ params }: { params: { id: string
   const user = await prisma.user.findUnique({
     where: { id: params.id },
     select: {
-      id: true, name: true, email: true, phone: true, role: true, createdAt: true,
+      id: true, name: true, email: true, phone: true, avatar: true, role: true, createdAt: true,
       _count: { select: { listings: true, offers: true } },
     },
   });
@@ -70,10 +70,15 @@ export default async function UserProfilePage({ params }: { params: { id: string
         <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">
           <div className="flex flex-col sm:flex-row items-start gap-6">
             {/* Avatar */}
-            <div className="w-20 h-20 rounded-2xl bg-[#F0FDF8] flex items-center justify-center shrink-0">
-              <span className="text-3xl font-bold text-[#00C49F]">
-                {displayName.charAt(0).toUpperCase()}
-              </span>
+            <div className="w-20 h-20 rounded-2xl bg-[#F0FDF8] overflow-hidden flex items-center justify-center shrink-0">
+              {user.avatar ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={user.avatar} alt={displayName} className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-3xl font-bold text-[#00C49F]">
+                  {displayName.charAt(0).toUpperCase()}
+                </span>
+              )}
             </div>
 
             {/* Info */}

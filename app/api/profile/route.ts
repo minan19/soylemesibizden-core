@@ -11,15 +11,16 @@ export async function PUT(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { name, phone } = body as { name?: string; phone?: string };
+    const { name, phone, avatar } = body as { name?: string; phone?: string; avatar?: string };
 
     const updated = await prisma.user.update({
       where: { email: session.user.email },
       data: {
         ...(name !== undefined && { name: name || null }),
         ...(phone !== undefined && { phone: phone || null }),
+        ...(avatar !== undefined && { avatar: avatar || null }),
       },
-      select: { id: true, name: true, phone: true, email: true },
+      select: { id: true, name: true, phone: true, email: true, avatar: true },
     });
 
     return NextResponse.json(updated);
