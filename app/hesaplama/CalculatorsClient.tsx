@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Calculator, Home, TrendingUp, PiggyBank, DollarSign } from 'lucide-react';
+import { Calculator, Home, TrendingUp, PiggyBank, DollarSign, BarChart2 } from 'lucide-react';
 
 function fmt(n: number) {
   return new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY', maximumFractionDigits: 0 }).format(n);
@@ -268,11 +268,90 @@ function TapuCalc() {
   );
 }
 
+/* ── Gayrimenkul ROI Hesaplayıcısı ──────────────────────────── */
+function RoiCalc() {
+  const [purchasePrice, setPurchasePrice] = useState('');
+  const [renovationCost, setRenovationCost] = useState('');
+  const [monthlyRent, setMonthlyRent] = useState('');
+  const [monthlyExpenses, setMonthlyExpenses] = useState('');
+  const [salePrice, setSalePrice] = useState('');
+  const [holdYears, setHoldYears] = useState('5');
+
+  const purchase = parseFloat(purchasePrice) || 0;
+  const reno = parseFloat(renovationCost) || 0;
+  const rent = parseFloat(monthlyRent) || 0;
+  const expenses = parseFloat(monthlyExpenses) || 0;
+  const sale = parseFloat(salePrice) || 0;
+  const years = parseInt(holdYears) || 5;
+
+  const totalInvestment = purchase + reno;
+  const netMonthlyIncome = rent - expenses;
+  const totalRentalIncome = netMonthlyIncome * 12 * years;
+  const capitalGain = sale - purchase;
+  const totalReturn = totalRentalIncome + capitalGain;
+  const roi = totalInvestment > 0 ? (totalReturn / totalInvestment) * 100 : 0;
+  const annualRoi = years > 0 ? roi / years : 0;
+  const coc = totalInvestment > 0 ? ((netMonthlyIncome * 12) / totalInvestment) * 100 : 0;
+
+  const show = purchase > 0;
+
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-3">
+        {[
+          { label: 'Alım Fiyatı (₺)', value: purchasePrice, set: setPurchasePrice, placeholder: '3.000.000' },
+          { label: 'Tadilat Maliyeti (₺)', value: renovationCost, set: setRenovationCost, placeholder: '200.000' },
+          { label: 'Aylık Kira Geliri (₺)', value: monthlyRent, set: setMonthlyRent, placeholder: '20.000' },
+          { label: 'Aylık Giderler (₺)', value: monthlyExpenses, set: setMonthlyExpenses, placeholder: '3.000' },
+          { label: 'Tahmini Satış Fiyatı (₺)', value: salePrice, set: setSalePrice, placeholder: '5.000.000' },
+          { label: 'Elde Tutma Süresi (Yıl)', value: holdYears, set: setHoldYears, placeholder: '5' },
+        ].map(f => (
+          <div key={f.label}>
+            <label className="block text-xs font-semibold text-gray-600 mb-1">{f.label}</label>
+            <input
+              type="number"
+              value={f.value}
+              onChange={e => f.set(e.target.value)}
+              placeholder={f.placeholder}
+              className="w-full px-3 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#00C49F] transition-colors"
+            />
+          </div>
+        ))}
+      </div>
+      {show && (
+        <div className="bg-[#F0FDF8] border border-[#00C49F]/20 rounded-2xl p-5 space-y-3">
+          <div className="grid grid-cols-3 gap-3 text-center mb-2">
+            <div className="bg-white rounded-xl p-3">
+              <p className="text-xl font-bold text-[#00C49F]">%{roi.toFixed(1)}</p>
+              <p className="text-[10px] text-gray-400 font-semibold mt-0.5">TOPLAM ROI</p>
+            </div>
+            <div className="bg-white rounded-xl p-3">
+              <p className="text-xl font-bold text-blue-600">%{annualRoi.toFixed(1)}</p>
+              <p className="text-[10px] text-gray-400 font-semibold mt-0.5">YILLIK ROI</p>
+            </div>
+            <div className="bg-white rounded-xl p-3">
+              <p className="text-xl font-bold text-amber-600">%{coc.toFixed(1)}</p>
+              <p className="text-[10px] text-gray-400 font-semibold mt-0.5">NAKİT GETİRİ</p>
+            </div>
+          </div>
+          <div className="space-y-2 text-xs text-gray-600">
+            <div className="flex justify-between"><span>Toplam Yatırım</span><span className="font-bold">{fmt(totalInvestment)}</span></div>
+            <div className="flex justify-between"><span>Kira Geliri ({years} yıl)</span><span className="font-bold text-[#00C49F]">{fmt(totalRentalIncome)}</span></div>
+            {sale > 0 && <div className="flex justify-between"><span>Sermaye Kazancı</span><span className={`font-bold ${capitalGain >= 0 ? 'text-[#00C49F]' : 'text-red-500'}`}>{capitalGain >= 0 ? '+' : ''}{fmt(capitalGain)}</span></div>}
+            <div className="flex justify-between border-t pt-2"><span>Net Getiri</span><span className={`font-bold ${totalReturn >= 0 ? 'text-[#00C49F]' : 'text-red-500'}`}>{fmt(totalReturn)}</span></div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 const TABS = [
   { id: 'mortgage', label: 'Konut Kredisi', icon: Home, component: MortgageCalc },
   { id: 'rentvsbuy', label: 'Kira vs Satın Al', icon: Calculator, component: RentVsBuyCalc },
   { id: 'yield', label: 'Kira Getirisi', icon: TrendingUp, component: RentalYieldCalc },
   { id: 'tapu', label: 'Tapu & Vergiler', icon: DollarSign, component: TapuCalc },
+  { id: 'roi', label: 'Yatırım ROI', icon: BarChart2, component: RoiCalc },
 ];
 
 export default function CalculatorsClient() {
