@@ -949,6 +949,7 @@ export default async function HomePage() {
             </p>
             <div className="flex items-center gap-6 text-sm text-gray-400">
               <Link href="/hakkimizda" className="hover:text-[#00C49F] transition-colors">Hakkımızda</Link>
+              <Link href="/rehber" className="hover:text-[#00C49F] transition-colors">Rehber</Link>
               <Link href="/istatistikler" className="hover:text-[#00C49F] transition-colors">İstatistikler</Link>
               <Link href="/agents" className="hover:text-[#00C49F] transition-colors">Danışmanlar</Link>
               <Link href="/concierge" className="hover:text-[#00C49F] transition-colors">Danışmanlık</Link>

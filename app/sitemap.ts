@@ -47,6 +47,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/concierge`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.65 },
     { url: `${baseUrl}/hakkimizda`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
     { url: `${baseUrl}/login`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.5 },
+    { url: `${baseUrl}/rehber`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.65 },
+    { url: `${baseUrl}/rehber/ev-satin-alma`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${baseUrl}/rehber/kiralama-rehberi`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${baseUrl}/rehber/yatirim-rehberi`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
   ];
 
   const listingPages: MetadataRoute.Sitemap = listings.map(l => ({
