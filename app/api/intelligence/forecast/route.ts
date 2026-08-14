@@ -34,58 +34,12 @@ Yanıtını SADECE şu JSON formatında ver:
   "confidence": <0-100>
 }`;
 
-// Deterministik tahmin (API key yokken)
-function generateForecast(city: string, propertyType: string, months: number) {
-  // Şehir bazlı başlangıç m² fiyatları
-  const BASE_PRICES: Record<string, number> = {
-    istanbul: 85_000, ankara: 38_000, izmir: 55_000, antalya: 48_000,
-    bursa: 28_000, adana: 22_000, konya: 20_000, gaziantep: 18_000,
-    default: 25_000,
-  };
-  const TYPE_MULT: Record<string, number> = {
-    RESIDENTIAL: 1.0, COMMERCIAL: 1.4, LAND: 0.6, INDUSTRIAL: 1.1,
-  };
-
-  const cityKey = Object.keys(BASE_PRICES).find((k) => city.toLowerCase().includes(k)) ?? 'default';
-  const baseM2 = BASE_PRICES[cityKey] * (TYPE_MULT[propertyType] ?? 1.0);
-
-  // Aylık büyüme modeli: TÜFE etkisi + talep premium + mevsimsel etki
-  const annualInflation = 0.40; // %40 TÜFE tahmini
-  const demandPremium = cityKey === 'istanbul' ? 0.05 : cityKey === 'izmir' ? 0.03 : 0.01;
-  const monthlyBase = (annualInflation + demandPremium) / 12;
-
-  const forecastMonths = Array.from({ length: months }, (_, i) => {
-    const month = i + 1;
-    const seasonal = Math.sin((month / 12) * Math.PI) * 0.01; // Yaz piki
-    const cumChange = (1 + monthlyBase + seasonal) ** month - 1;
-    const priceM2 = Math.round(baseM2 * (1 + cumChange));
-    return {
-      month,
-      priceM2,
-      changePercent: Math.round(cumChange * 1000) / 10,
-    };
-  });
-
-  const change6 = forecastMonths[5]?.changePercent ?? 0;
-  const change12 = forecastMonths[11]?.changePercent ?? forecastMonths[months - 1]?.changePercent ?? 0;
-
-  return {
-    currentAvgM2: Math.round(baseM2),
-    forecastMonths,
-    summary6Month: `${city} ${propertyType === 'RESIDENTIAL' ? 'konut' : 'gayrimenkul'} piyasasında önümüzdeki 6 ayda yaklaşık %${change6.toFixed(1)} değer artışı öngörülmektedir.`,
-    summary12Month: `12 aylık projeksiyon %${change12.toFixed(1)} kümülatif artış işaret etmektedir. TÜFE ve talep dinamikleri belirleyici faktörler olacak.`,
-    keyFactors: [
-      'TCMB faiz politikası ve enflasyon görünümü',
-      'Konut arz-talep dengesizliği',
-      `${city} bölgesel gelişim projeleri`,
-      'Döviz kuru ve yabancı talep',
-      'İnşaat maliyeti artışları',
-    ],
-    riskLevel: annualInflation > 0.35 ? 'MEDIUM' : 'LOW',
-    confidence: 68,
-    demo: true,
-  };
-}
+// NOT: generateForecast() 14.08.2026'da kaldirildi.
+// Sabit sehir m2 fiyatlari, sabit "%40 TUFE" varsayimi ve sinus
+// egrisiyle uretilmis "mevsimsel etki" kullanarak 12 aylik fiyat
+// projeksiyonu uretiyor, bunu "confidence: 68" ile donduruyordu.
+// Hicbir girdi olculmus veri degildi. Gercek tahmin uretilemiyorsa
+// 503/502 doner.
 
 export async function POST(request: NextRequest) {
   try {
@@ -109,11 +63,14 @@ export async function POST(request: NextRequest) {
     const { city, propertyType = 'RESIDENTIAL', months } = parsed.data;
 
     if (!process.env.ANTHROPIC_API_KEY) {
-      return NextResponse.json({
-        forecast: generateForecast(city, propertyType, months),
-        city, propertyType, months,
-        generatedAt: new Date().toISOString(),
-      });
+      // Uydurma fiyat tahmini DONMEZ.
+      return NextResponse.json(
+        {
+          error: 'Tahmin servisi yapilandirilmamis.',
+          detail: 'ANTHROPIC_API_KEY tanimli degil. Tahmin uretilemez.',
+        },
+        { status: 503 }
+      );
     }
 
     // Platform verisi: şehirdeki ilanlar
@@ -160,10 +117,14 @@ JSON yanıtı ver.
     });
   } catch (error) {
     console.error('[Forecast]', error);
-    const body = await request.json().catch(() => ({ city: '', propertyType: 'RESIDENTIAL', months: 12 })) as { city: string; propertyType: string; months: number };
-    return NextResponse.json({
-      forecast: generateForecast(body.city, body.propertyType, body.months),
-      generatedAt: new Date().toISOString(),
-    });
+    // Hata durumunda uydurma tahmin DONMEZ.
+    // Eski davranis: generateForecast() sabit sehir m2 fiyatlari
+    // (Istanbul 85.000 TL/m2), sabit "%40 TUFE" varsayimi ve sinus
+    // egrisiyle uretilmis "mevsimsel etki" ile 12 aylik fiyat
+    // projeksiyonu donduruyordu. Hicbiri olculmus veri degildi.
+    return NextResponse.json(
+      { error: 'Tahmin uretilemedi. Lutfen daha sonra tekrar deneyin.' },
+      { status: 502 }
+    );
   }
 }

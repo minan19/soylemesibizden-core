@@ -4,7 +4,11 @@ import { authOptions } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
-const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic'];
+const IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic'];
+
+// Belge kasasi (legal-vault) tapu/sozlesme yukluyor — PDF gerekli.
+const DOCUMENT_TYPES = [...IMAGE_TYPES, 'application/pdf'];
+
 const MAX_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB
 
 export async function POST(request: NextRequest) {
@@ -32,9 +36,18 @@ export async function POST(request: NextRequest) {
 
     const safeName = filename.replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 100);
 
-    if (!ALLOWED_TYPES.includes(contentType)) {
+    // ?kind=document → belge kasasi (PDF dahil), aksi halde ilan gorseli
+    const kind = searchParams.get('kind') === 'document' ? 'document' : 'image';
+    const allowed = kind === 'document' ? DOCUMENT_TYPES : IMAGE_TYPES;
+
+    if (!allowed.includes(contentType)) {
       return NextResponse.json(
-        { error: 'Sadece JPEG, PNG, WebP veya HEIC yüklenebilir.' },
+        {
+          error:
+            kind === 'document'
+              ? 'Sadece PDF, JPEG, PNG, WebP veya HEIC yüklenebilir.'
+              : 'Sadece JPEG, PNG, WebP veya HEIC yüklenebilir.',
+        },
         { status: 400 }
       );
     }
@@ -45,7 +58,8 @@ export async function POST(request: NextRequest) {
     }
 
     const userId = (session.user as { id?: string }).id ?? 'unknown';
-    const blobPath = `listings/${userId}/${Date.now()}-${safeName}`;
+    const klasor = kind === 'document' ? 'documents' : 'listings';
+    const blobPath = `${klasor}/${userId}/${Date.now()}-${safeName}`;
 
     // Vercel Blob REST API — @vercel/blob SDK kullanmadan (undici webpack sorunu yok)
     const blobRes = await fetch(`https://blob.vercel-storage.com/${blobPath}`, {

@@ -45,72 +45,10 @@ Yanıtını kesinlikle şu JSON formatında ver, başka hiçbir metin ekleme:
   "disclaimer": "Bu değerleme tahmindir ve kesin değer için uzman degerleme gereklidir."
 }`;
 
-function generateMockValuation(input: ValuationInput) {
-  const baseRates: Record<string, number> = {
-    RESIDENTIAL: 45000,
-    COMMERCIAL: 68000,
-    LAND: 22000,
-    INDUSTRIAL: 35000,
-  };
-
-  const locationMultipliers: Record<string, number> = {
-    istanbul: 2.8,
-    ankara: 1.6,
-    izmir: 1.9,
-    antalya: 1.7,
-    bursa: 1.3,
-    default: 1.0,
-  };
-
-  const locationKey = input.location.toLowerCase();
-  const locationMult = Object.keys(locationMultipliers).find((k) =>
-    locationKey.includes(k)
-  );
-  const mult = locationMult
-    ? locationMultipliers[locationMult]
-    : locationMultipliers.default;
-
-  const baseRate = baseRates[input.propertyType] ?? 45000;
-  const pricePerM2 = Math.round(baseRate * mult);
-  const estimatedValue = Math.round(pricePerM2 * input.area);
-
-  return {
-    estimatedValue,
-    minValue: Math.round(estimatedValue * 0.88),
-    maxValue: Math.round(estimatedValue * 1.12),
-    pricePerM2,
-    confidence: 76,
-    marketTrend: 'RISING' as const,
-    comparables: [
-      {
-        description: `Benzer ${input.propertyType.toLowerCase()} mülk`,
-        pricePerM2: Math.round(pricePerM2 * 0.95),
-        location: input.location,
-      },
-      {
-        description: `Yakın bölge ${input.propertyType.toLowerCase()} referansı`,
-        pricePerM2: Math.round(pricePerM2 * 1.05),
-        location: input.location,
-      },
-    ],
-    factors: {
-      positive: [
-        `${input.location} lokasyon avantajı`,
-        `${input.area} m² kullanılabilir alan`,
-        'Türkiye gayrimenkul piyasasında yükselen trend',
-      ],
-      negative: [
-        'Makroekonomik belirsizlik faktörü',
-        'Faiz oranlarının değerleme üzerindeki etkisi',
-      ],
-    },
-    methodology:
-      'Karşılaştırmalı piyasa analizi (CMA) ve bölge bazlı m² değerleme yöntemi kullanılmıştır.',
-    disclaimer:
-      'Bu değerleme tahmindir ve kesin değer için lisanslı eksper değerlemesi gereklidir.',
-    demo: true,
-  };
-}
+// NOT: generateMockValuation() 14.08.2026'da kaldirildi.
+// Sabit m2 carpanlariyla (Istanbul 2.8x, konut 45.000 TL/m2)
+// uydurulmus bir degerleme uretiyordu ve "confidence: 76" etiketiyle
+// donuyordu. Gercek degerleme yapilamiyorsa 503/502 doner.
 
 export async function POST(request: NextRequest) {
   let rawBody: unknown = {};
@@ -149,10 +87,15 @@ export async function POST(request: NextRequest) {
     const input = parsed.data;
 
     if (!process.env.ANTHROPIC_API_KEY) {
-      return NextResponse.json({
-        valuation: generateMockValuation(input),
-        generatedAt: new Date().toISOString(),
-      });
+      // Uydurma degerleme DONMEZ. Bir gayrimenkulun degerine dair
+      // sayi uretmek, o sayi hesaplanmamissa, dogrudan zarar verir.
+      return NextResponse.json(
+        {
+          error: 'Degerleme servisi yapilandirilmamis.',
+          detail: 'ANTHROPIC_API_KEY tanimli degil. Degerleme uretilemez.',
+        },
+        { status: 503 }
+      );
     }
 
     const prompt = `
@@ -193,15 +136,14 @@ JSON formatında yanıt ver.`.trim();
     });
   } catch (error) {
     console.error('Sovereign AI Error [Valuation]:', error);
-    // Only fall back to mock when we have a valid, parsed input (i.e. the AI call failed,
-    // not the body parse). If rawBody was never assigned or is invalid, return 500.
-    const fallbackParsed = valuationSchema.safeParse(rawBody);
-    if (fallbackParsed.success) {
-      return NextResponse.json({
-        valuation: generateMockValuation(fallbackParsed.data),
-        generatedAt: new Date().toISOString(),
-      });
-    }
-    return NextResponse.json({ error: 'Değerleme yapılamadı.' }, { status: 500 });
+    // Hata durumunda uydurma degerleme DONMEZ.
+    // Eski davranis: generateMockValuation() sabit m2 carpanlariyla
+    // (Istanbul 2.8x, konut 45.000 TL/m2 gibi) bir deger uretip
+    // "confidence: 76" ile donduruyordu. Bu sayilarin hicbiri
+    // olculmus veri degildi.
+    return NextResponse.json(
+      { error: 'Degerleme yapilamadi. Lutfen daha sonra tekrar deneyin.' },
+      { status: 502 }
+    );
   }
 }

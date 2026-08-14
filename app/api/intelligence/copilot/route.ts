@@ -63,12 +63,14 @@ export async function POST(request: NextRequest) {
     const { message, history = [] } = parsed.data;
 
     if (!process.env.ANTHROPIC_API_KEY) {
-      // Demo yanıt
-      return NextResponse.json({
-        reply: generateDemoReply(message),
-        listings: [],
-        demo: true,
-      });
+      // Uydurma piyasa verisi iceren "demo yanit" DONMEZ.
+      return NextResponse.json(
+        {
+          error: 'Danisman servisi yapilandirilmamis.',
+          detail: 'ANTHROPIC_API_KEY tanimli degil.',
+        },
+        { status: 503 }
+      );
     }
 
     // Kullanıcı mesajından filtreler çıkar (basit NLP)
@@ -199,15 +201,8 @@ async function searchListings(filters: Filters) {
   });
 }
 
-function generateDemoReply(message: string): string {
-  return `Merhaba! Ben Sovereign AI Emlak Danışmanınızım. "${message}" isteğinizi aldım.
-
-**Demo Mod:** ANTHROPIC_API_KEY eklendiğinde gerçek AI analizi ve kişiselleştirilmiş ilan önerileri sunacağım.
-
-Şimdilik şunu söyleyebilirim:
-- Türkiye'de konut m² fiyatları İstanbul'da ortalama 85.000₺, Ankara'da 35.000₺, İzmir'de 55.000₺ seviyesinde.
-- Kira getirisi açısından en avantajlı bölgeler: Antalya (%5-6), İzmir Alsancak (%4-5), İstanbul Kadıköy (%4-4.5).
-- Yatırım için 2024-2025 trend bölgeleri: Ataşehir, Kartal, Pendik (İstanbul) ve İzmir Çiğli.
-
-Gerçek AI deneyimi için ANTHROPIC_API_KEY ortam değişkeninizi ekleyin.`;
-}
+// NOT: generateDemoReply() 14.08.2026'da kaldirildi.
+// "Istanbul'da ortalama 85.000 TL/m2", "Antalya kira getirisi %5-6",
+// "2024-2025 trend bolgeleri" gibi ifadeleri KAYNAKSIZ ve OLCULMEMIS
+// olarak, kullaniciya olgu gibi sunuyordu. Bir emlak platformunda
+// bu, dogrudan yanlis bilgilendirmedir.

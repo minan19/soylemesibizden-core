@@ -57,12 +57,38 @@ export default function LegalVaultPage() {
     setError(null);
     setUploading(true);
     try {
+      // ADIM 1 — dosyayi GERCEKTEN yukle.
+      //
+      // Eski davranis: dosya hicbir yere yuklenmiyor, veritabanina
+      // `https://placeholder.blob/<ad>` yaziliyordu. Kullanici tapusunu
+      // kasaya koydugunu saniyordu; ortada belge yoktu.
+      const uploadRes = await fetch(
+        `/api/upload?kind=document&filename=${encodeURIComponent(file.name)}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': file.type || 'application/octet-stream' },
+          body: file,
+        }
+      );
+
+      if (!uploadRes.ok) {
+        const err = await uploadRes.json().catch(() => ({})) as { error?: string };
+        throw new Error(
+          uploadRes.status === 503
+            ? 'Belge yükleme henüz aktif değil. Depolama yapılandırılmamış.'
+            : err.error ?? 'Dosya yüklenemedi.'
+        );
+      }
+
+      const uploaded = await uploadRes.json() as { url: string };
+
+      // ADIM 2 — yalnizca yukleme BASARILI olduysa kayit olustur.
       const saveRes = await fetch('/api/documents', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: form.name, type: form.type,
-          url: `https://placeholder.blob/${encodeURIComponent(file.name)}`,
+          url: uploaded.url,
           size: file.size, mimeType: file.type,
           notes: form.notes || undefined,
         }),

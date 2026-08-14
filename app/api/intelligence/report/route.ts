@@ -52,8 +52,16 @@ export async function POST(request: NextRequest) {
     }
 
     if (!process.env.ANTHROPIC_API_KEY) {
-      // Demo mode: gerçek API key yoksa mock veri döndür
-      return NextResponse.json(generateMockReport());
+      // ANTHROPIC_API_KEY yoksa uydurma rapor DÖNMEZ.
+      // Olmayan bir analizi varmış gibi sunmak, bu platformun
+      // tüm konumlandırmasını çürütür. (ADR-001)
+      return NextResponse.json(
+        {
+          error: 'Analiz servisi yapılandırılmamış.',
+          detail: 'ANTHROPIC_API_KEY tanımlı değil. Rapor üretilemez.',
+        },
+        { status: 503 }
+      );
     }
 
     const body = await request.json() as { listingId?: string };
@@ -121,35 +129,21 @@ ${avgOffer ? `- Ortalama Teklif: ${avgOffer.toLocaleString('tr-TR')} ₺` : ''}
 
   } catch (error) {
     console.error('Sovereign AI Error [Intelligence Report]:', error);
-    // Hata durumunda mock veri döndür
-    return NextResponse.json(generateMockReport());
+    // Hata durumunda UYDURMA RAPOR DÖNMEZ.
+    //
+    // Eski davranış: catch bloğu generateMockReport() döndürüyordu —
+    // trustScore 94.7, recommendation 'BUY', roi12Month 12.4.
+    // Yani AI çağrısı çöktüğünde kullanıcı, gerçek bir ilan için
+    // istediği raporun yerine uydurulmuş bir "AL" tavsiyesi alıyordu.
+    //
+    // Bu iki ilkeyi birden ihlal ediyordu:
+    //  1. ADR-001 sayısal güven skorunu açıkça reddetti.
+    //  2. lib/eids/index.ts "sessizce bozulma" hatasını kapatmak için
+    //     yazıldı; burada aynı hata yatırım tavsiyesi düzleminde
+    //     tekrarlanıyordu.
+    return NextResponse.json(
+      { error: 'Rapor üretilemedi. Lütfen daha sonra tekrar deneyin.' },
+      { status: 502 }
+    );
   }
-}
-
-function generateMockReport() {
-  return {
-    report: {
-      trustScore: 94.7,
-      investmentGrade: 'A',
-      roi12Month: 12.4,
-      roi24Month: 26.8,
-      riskLevel: 'LOW',
-      priceAssessment: 'FAIR',
-      strengths: [
-        'Stratejik lokasyon avantajı',
-        'Güçlü kira getiri potansiyeli',
-        'Gelişen bölge dinamikleri',
-        'Yüksek talep — düşük arz dengesi',
-      ],
-      weaknesses: [
-        'Pazar volatilitesi riski mevcut',
-        'Uzun vadeli değerleme belirsizliği',
-      ],
-      recommendation: 'BUY',
-      summary: 'Bu varlık, mevcut pazar koşulları ve bölgesel büyüme potansiyeli değerlendirildiğinde güçlü bir yatırım fırsatı sunmaktadır. Sovereign IQ analizi portföye eklemeyi önermektedir.',
-    },
-    listingId: 'demo',
-    generatedAt: new Date().toISOString(),
-    demo: true,
-  };
 }
