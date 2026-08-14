@@ -109,7 +109,7 @@ export default async function ListingsPage({
       ? { views: 'desc' as const }
       : { createdAt: 'desc' as const };
 
-  const [listings, totalCount, counts] = await Promise.all([
+  const [listings, totalCount, counts, priceStats] = await Promise.all([
     prisma.listing.findMany({
       where,
       orderBy,
@@ -122,6 +122,7 @@ export default async function ListingsPage({
     }),
     prisma.listing.count({ where }),
     prisma.listing.groupBy({ by: ['status'], _count: true }),
+    prisma.listing.aggregate({ where, _avg: { price: true }, _min: { price: true }, _max: { price: true } }),
   ]);
 
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
@@ -190,6 +191,35 @@ export default async function ListingsPage({
             }} />
           </div>
         </header>
+
+        {/* Price stats bar */}
+        {totalCount > 0 && priceStats._avg.price && (
+          <div className="flex flex-wrap gap-4 text-xs text-gray-500 bg-white border border-gray-100 rounded-xl px-4 py-3 shadow-sm">
+            <span className="font-semibold text-gray-400">Fiyat Aralığı:</span>
+            <span>
+              Ort:{' '}
+              <span className="font-bold text-gray-800">
+                ₺{Math.round(priceStats._avg.price!).toLocaleString('tr-TR')}
+              </span>
+            </span>
+            {priceStats._min.price != null && (
+              <span>
+                En Düşük:{' '}
+                <span className="font-bold text-[#00C49F]">
+                  ₺{Math.round(priceStats._min.price).toLocaleString('tr-TR')}
+                </span>
+              </span>
+            )}
+            {priceStats._max.price != null && (
+              <span>
+                En Yüksek:{' '}
+                <span className="font-bold text-gray-700">
+                  ₺{Math.round(priceStats._max.price).toLocaleString('tr-TR')}
+                </span>
+              </span>
+            )}
+          </div>
+        )}
 
         <ListingsClient
           listings={listings}
