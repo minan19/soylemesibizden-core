@@ -195,8 +195,37 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
     },
   ];
 
+  const baseUrl = 'https://soylemesibizden-core.vercel.app';
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'RealEstateListing',
+    name: listing.title,
+    description: listing.description ?? '',
+    url: `${baseUrl}/listing/${listing.id}`,
+    image: listing.photos.slice(0, 3),
+    offers: {
+      '@type': 'Offer',
+      price: listing.price,
+      priceCurrency: 'TRY',
+      availability: listing.status === 'ACTIVE' ? 'https://schema.org/InStock' : 'https://schema.org/SoldOut',
+    },
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: listing.city ?? undefined,
+      addressRegion: listing.district ?? undefined,
+      addressCountry: 'TR',
+    },
+    floorSize: listing.area ? { '@type': 'QuantitativeValue', value: listing.area, unitCode: 'MTK' } : undefined,
+    numberOfRooms: listing.rooms ?? undefined,
+    datePosted: listing.createdAt,
+  };
+
   return (
     <main className="min-h-screen bg-[#F8FAFC]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <RecordView item={{
         id: listing.id,
         title: listing.title,
