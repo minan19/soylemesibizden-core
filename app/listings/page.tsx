@@ -107,6 +107,10 @@ export default async function ListingsPage({
       ? { area: 'asc' as const }
       : sort === 'views'
       ? { views: 'desc' as const }
+      : sort === 'favored'
+      ? ({ favorites: { _count: 'desc' } } as { favorites: { _count: 'desc' } })
+      : sort === 'offers'
+      ? ({ offers: { _count: 'desc' } } as { offers: { _count: 'desc' } })
       : { createdAt: 'desc' as const };
 
   const [listings, totalCount, counts, priceStats] = await Promise.all([

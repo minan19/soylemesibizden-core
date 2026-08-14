@@ -95,6 +95,8 @@ const SORT_OPTIONS = [
   { label: 'Fiyat ↓', value: 'price_desc' },
   { label: 'Alan ↑', value: 'area_asc' },
   { label: 'Popüler', value: 'views' },
+  { label: 'Favoriler', value: 'favored' },
+  { label: 'Teklif', value: 'offers' },
 ];
 
 const PROPERTY_TYPES = [
