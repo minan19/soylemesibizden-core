@@ -9,7 +9,9 @@ export default function Navbar() {
   const { data: session, status } = useSession();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [toolsOpen, setToolsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const toolsRef = useRef<HTMLDivElement>(null);
 
   const user = session?.user as
     | { name?: string | null; email?: string | null; role?: string; avatar?: string | null }
@@ -40,6 +42,9 @@ export default function Navbar() {
     function handleClickOutside(e: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setDropdownOpen(false);
+      }
+      if (toolsRef.current && !toolsRef.current.contains(e.target as Node)) {
+        setToolsOpen(false);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
@@ -111,6 +116,38 @@ export default function Navbar() {
               </Link>
             );
           })}
+          {/* Araçlar dropdown */}
+          <div className="relative" ref={toolsRef}>
+            <button
+              onClick={() => setToolsOpen(p => !p)}
+              className="flex items-center gap-1 text-sm font-semibold text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              Araçlar <ChevronDown size={13} className={`transition-transform ${toolsOpen ? 'rotate-180' : ''}`} />
+            </button>
+            {toolsOpen && (
+              <div className="absolute left-0 top-full mt-2 w-56 bg-white shadow-xl rounded-2xl border border-gray-100 py-2 z-50">
+                {[
+                  { href: '/hesaplama', label: 'Kredi Hesaplayıcı' },
+                  { href: '/tapu-masrafi', label: 'Tapu Masrafı' },
+                  { href: '/emlak-vergisi', label: 'Emlak Vergisi' },
+                  { href: '/kira-artis-hesaplama', label: 'Kira Artış' },
+                  { href: '/yatirim-analizi', label: 'Yatırım Analizi' },
+                  { href: '/banka-kredileri', label: 'Banka Faizleri' },
+                  { href: '/portfoy', label: 'Portföy Takibi' },
+                  { href: '/tum-araclar', label: 'Tüm Araçlar →' },
+                ].map(t => (
+                  <Link
+                    key={t.href}
+                    href={t.href}
+                    onClick={() => setToolsOpen(false)}
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#F0FDF8] hover:text-[#00C49F] font-semibold transition-colors"
+                  >
+                    {t.label}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Sağ: Auth */}
