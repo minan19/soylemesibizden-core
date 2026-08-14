@@ -393,7 +393,7 @@ git push https://minan19:<GITHUB_TOKEN>@github.com/minan19/soylemesibizden-core.
 
 ---
 
-*Son güncelleme: 2026-08-14 — Oturum 6: FAZ 79-88 tamamlandı.*
+*Son güncelleme: 2026-08-14 — Oturum 7: FAZ 89-99 tamamlandı.*
 
 **Oturum 6 (FAZ 79-88) — Tamamlananlar:**
 - FAZ-79: İlan şikayet sistemi — /api/reports + ReportListingButton modal
@@ -406,3 +406,26 @@ git push https://minan19:<GITHUB_TOKEN>@github.com/minan19/soylemesibizden-core.
 - FAZ-86: JSON-LD structured data — RealEstateListing + ItemList (sehir sayfaları)
 - FAZ-87: İlçe sayfasına JSON-LD ItemList structured data
 - FAZ-88: Hesaplama araçlarına Tapu & Vergiler hesaplayıcısı eklendi
+
+**Oturum 7 (FAZ 89-99) — Tamamlananlar:**
+- FAZ-89: PriceTracker bileşeni — localStorage fiyat takip, değişim göstergesi
+- FAZ-90: /tracked-prices sayfası — takip edilen fiyatlar listesi, diff gösterimi
+- FAZ-91: CommandPalette (Ctrl+K) — global arama, öneri, quick links, klavye nav
+- FAZ-92: Komşu İlanlar widget — listing detayda aynı ilçe/mahallede ilanlar sidebar
+- FAZ-93: Sitemap'e dinamik ilçe sayfaları (/ilce/[city]/[district])
+- FAZ-94: /sehir index sayfası — tüm şehirler, aktif ilan sayısı, avg fiyat
+- FAZ-95: Hesaplama araçlarına Yatırım ROI hesaplayıcısı (5. tab)
+- FAZ-96: Admin CSV export — /api/admin/export + listings sayfasında buton
+- FAZ-97: Listings sayfasına filtre bazlı fiyat istatistikleri (min/maks/ortalama)
+- FAZ-98: Listing detay Quick Stats — görüntülenme piyasa karşılaştırma barı
+- FAZ-99: CommandPalette son aramalar — localStorage + Clock icon
+
+**Yeni Bileşenler (Oturum 7):**
+- PriceTracker — localStorage fiyat izleme widget
+- TrackedPricesClient — fiyat takip listesi client component
+- CommandPalette — Ctrl+K global komut paleti
+
+**Yeni Sayfalar (Oturum 7):**
+- /tracked-prices — fiyat takip listesi
+- /sehir (index) — tüm şehirler listesi
+- /api/admin/export — CSV export endpoint
