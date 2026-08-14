@@ -62,6 +62,7 @@ export default function Navbar() {
     { href: '/valuation', label: 'Değerleme Aracı', authRequired: false },
     { href: '/hesaplama', label: 'Hesaplama Araçları', authRequired: false },
     { href: '/market-radar', label: 'Piyasa Radarı', authRequired: false },
+    { href: '/istatistikler', label: 'İstatistikler', authRequired: false },
     { href: '/favorites', label: 'Favoriler', authRequired: true },
     { href: '/my-listings', label: 'İlanlarım', authRequired: true },
     { href: '/offers', label: 'Teklifler', authRequired: true },
