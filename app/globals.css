@@ -2,8 +2,54 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  background-color: #F8FAFC;
-  color: #0F172A;
-  -webkit-font-smoothing: antialiased;
+/* Sovereign Tasarim Sistemi — temel katman · 14.08.2026 (TRT) */
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-zemin text-metin antialiased;
+    /* Mobilde yatay tasma en sik gorulen hata; kokten kapatiyoruz. */
+    overflow-x: hidden;
+  }
+
+  /* Fiyat, m2, tarih gibi sayilar sutun halinde hizalansin. */
+  .sayi {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum' 1;
+  }
+
+  /* Klavye ile gezinenler icin gorunur odak. Erisilebilirlik sarti. */
+  :focus-visible {
+    @apply outline-none ring-2 ring-marka ring-offset-2 ring-offset-zemin;
+  }
+
+  /* Hareket azaltma tercihine saygi. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* Dokunma hedefi en az 44px — Apple/WCAG onerisi.
+     Onceki kodda 12px padding'li linkler vardi, telefonda isabet etmiyordu. */
+  .dokunulabilir {
+    @apply min-h-[44px] min-w-[44px];
+  }
+
+  .kart {
+    @apply rounded-kart border border-cizgi bg-kart shadow-kart;
+  }
+
+  .rozet {
+    @apply inline-flex items-center gap-1 rounded-rozet px-1.5 py-0.5
+           text-rozet font-semibold whitespace-nowrap;
+  }
 }

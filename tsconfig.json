@@ -1,6 +1,10 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    // target: es5 -> ES2020 (14.08.2026)
+    // BigInt literal (1000n) ES2020 gerektiriyor. v2 semasinda para her
+    // yerde BigInt kurus (CC kurali #6); es5 hedefiyle derlenemiyordu.
+    // ES2020, Next 14'un destekledigi tum tarayicilarda gecerli.
+    "target": "ES2020",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,

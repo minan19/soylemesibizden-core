@@ -18,13 +18,19 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  // Danisman balonu YALNIZCA servis gercekten calisiyorsa gosterilir.
+  // ANTHROPIC_API_KEY yoksa /api/intelligence/copilot 503 doner; her
+  // sayfada calismayan bir asistan dugmesi asili tutmak, kaldirdigimiz
+  // sahte yuzeyin aynisi olur.
+  const danismanAktif = Boolean(process.env.ANTHROPIC_API_KEY);
+
   return (
     <html lang="tr" className={montserrat.variable}>
       <body className="antialiased font-sans">
         <SessionProvider>
           <SovereignProvider>
             {children}
-            <PropertyCopilot />
+            {danismanAktif && <PropertyCopilot />}
           </SovereignProvider>
         </SessionProvider>
       </body>
