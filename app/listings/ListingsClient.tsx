@@ -28,6 +28,8 @@ export interface Listing {
   price: number;
   location: string | null;
   city: string | null;
+  district: string | null;
+  neighborhood: string | null;
   status: string;
   propertyType: string;
   listingType: string;
@@ -586,7 +588,12 @@ export default function ListingsClient({
                       {listing.area != null && <span className="text-xs text-gray-500">{listing.area} m²</span>}
                       {listing.views > 0 && <span className="text-xs text-gray-400">{listing.views} 👁</span>}
                     </div>
-                    <span className="text-base font-bold text-gray-900 font-mono">₺ {listing.price.toLocaleString('tr-TR')}</span>
+                    <div className="text-right">
+                      <span className="text-base font-bold text-gray-900 font-mono">₺ {listing.price.toLocaleString('tr-TR')}</span>
+                      {listing.area && listing.area > 0 && (
+                        <p className="text-[10px] text-gray-400">{Math.round(listing.price / listing.area).toLocaleString('tr-TR')} ₺/m²</p>
+                      )}
+                    </div>
                   </div>
                 </div>
               </Link>
@@ -667,10 +674,16 @@ export default function ListingsClient({
 
             <h2 className="text-base font-semibold text-gray-900 mb-1 line-clamp-1">{listing.title}</h2>
 
-            {(listing.location || listing.city) && (
+            {(listing.neighborhood || listing.district || listing.city) && (
               <p className="text-xs text-gray-400 flex items-center gap-1 mb-2">
                 <MapPin size={11} className="shrink-0" />
-                {listing.location ?? listing.city}
+                {[listing.neighborhood, listing.district, listing.city].filter(Boolean).join(', ') || listing.location}
+              </p>
+            )}
+            {!listing.neighborhood && !listing.district && !listing.city && listing.location && (
+              <p className="text-xs text-gray-400 flex items-center gap-1 mb-2">
+                <MapPin size={11} className="shrink-0" />
+                {listing.location}
               </p>
             )}
 
@@ -695,9 +708,16 @@ export default function ListingsClient({
             )}
 
             <div className="flex justify-between items-center pt-3 border-t border-gray-50">
-              <span className="text-lg font-bold text-gray-900 font-mono">
-                ₺ {listing.price.toLocaleString('tr-TR')}
-              </span>
+              <div>
+                <span className="text-lg font-bold text-gray-900 font-mono">
+                  ₺ {listing.price.toLocaleString('tr-TR')}
+                </span>
+                {listing.area && listing.area > 0 && (
+                  <p className="text-[10px] text-gray-400 mt-0.5">
+                    {Math.round(listing.price / listing.area).toLocaleString('tr-TR')} ₺/m²
+                  </p>
+                )}
+              </div>
               <div className="flex items-center gap-2 text-xs text-gray-400">
                 {listing.views > 0 && (
                   <span>{listing.views.toLocaleString('tr-TR')} 👁</span>
