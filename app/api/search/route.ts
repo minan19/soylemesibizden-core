@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
   const q = req.nextUrl.searchParams.get('q')?.trim();
   if (!q || q.length < 2) return NextResponse.json({ suggestions: [] });
 
-  const [listings, cities] = await Promise.all([
+  const [listings, cities, districts, neighborhoods] = await Promise.all([
     prisma.listing.findMany({
       where: {
         status: 'ACTIVE',
@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
           { neighborhood: { contains: q, mode: 'insensitive' } },
         ],
       },
-      select: { id: true, title: true, city: true, price: true, listingType: true, propertyType: true },
+      select: { id: true, title: true, city: true, district: true, price: true, listingType: true, propertyType: true },
       orderBy: { views: 'desc' },
       take: 5,
     }),
@@ -28,19 +28,65 @@ export async function GET(req: NextRequest) {
       distinct: ['city'],
       take: 3,
     }),
+    prisma.listing.findMany({
+      where: { status: 'ACTIVE', district: { contains: q, mode: 'insensitive' } },
+      select: { district: true, city: true },
+      distinct: ['district'],
+      take: 3,
+    }),
+    prisma.listing.findMany({
+      where: { status: 'ACTIVE', neighborhood: { contains: q, mode: 'insensitive' } },
+      select: { neighborhood: true, city: true },
+      distinct: ['neighborhood'],
+      take: 2,
+    }),
   ]);
 
   const citySuggestions = cities
     .map(l => l.city)
     .filter((c): c is string => !!c)
-    .map(city => ({ type: 'city' as const, label: city, href: `/listings?city=${encodeURIComponent(city)}` }));
+    .map(city => ({
+      type: 'city' as const,
+      label: city,
+      sublabel: 'Şehir',
+      href: `/sehir/${encodeURIComponent(city)}`,
+    }));
+
+  const districtSuggestions = districts
+    .filter(l => l.district)
+    .map(l => ({
+      type: 'city' as const,
+      label: l.district!,
+      sublabel: l.city ? `İlçe · ${l.city}` : 'İlçe',
+      href: l.city
+        ? `/ilce/${encodeURIComponent(l.city)}/${encodeURIComponent(l.district!)}`
+        : `/listings?q=${encodeURIComponent(l.district!)}`,
+    }));
+
+  const neighborhoodSuggestions = neighborhoods
+    .filter(l => l.neighborhood)
+    .map(l => ({
+      type: 'city' as const,
+      label: l.neighborhood!,
+      sublabel: l.city ? `Mahalle · ${l.city}` : 'Mahalle',
+      href: `/listings?neighborhood=${encodeURIComponent(l.neighborhood!)}${l.city ? `&city=${encodeURIComponent(l.city)}` : ''}`,
+    }));
 
   const listingSuggestions = listings.map(l => ({
     type: 'listing' as const,
     label: l.title,
-    sublabel: `${l.city ?? ''} · ${l.listingType} · ₺${l.price.toLocaleString('tr-TR')}`,
+    sublabel: [l.city, l.district].filter(Boolean).join(', ') + ` · ${l.listingType} · ₺${l.price.toLocaleString('tr-TR')}`,
     href: `/listing/${l.id}`,
   }));
 
-  return NextResponse.json({ suggestions: [...citySuggestions, ...listingSuggestions] });
+  const seen = new Set<string>();
+  const deduped = [...citySuggestions, ...districtSuggestions, ...neighborhoodSuggestions, ...listingSuggestions]
+    .filter(s => {
+      if (seen.has(s.href)) return false;
+      seen.add(s.href);
+      return true;
+    })
+    .slice(0, 8);
+
+  return NextResponse.json({ suggestions: deduped });
 }
