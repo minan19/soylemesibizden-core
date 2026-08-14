@@ -393,4 +393,16 @@ git push https://minan19:<GITHUB_TOKEN>@github.com/minan19/soylemesibizden-core.
 
 ---
 
-*Son güncelleme: 2026-07-27 — Oturum 5: FAZ 53-62 tamamlandı. Fotoğraf lightbox, recently viewed, quick view modal, mobil alt nav, satıcı profil sayfası, şehir özet sayfaları (/sehir/[slug]), görüntüleme randevusu formu, SaveSearchButton search sayfasında.*
+*Son güncelleme: 2026-08-14 — Oturum 6: FAZ 79-88 tamamlandı.*
+
+**Oturum 6 (FAZ 79-88) — Tamamlananlar:**
+- FAZ-79: İlan şikayet sistemi — /api/reports + ReportListingButton modal
+- FAZ-80: Admin şikayetler sayfası — /admin/reports + dashboard quick link
+- FAZ-81: Özel ilan notları — ListingNotes + ListingNoteIndicator (localStorage)
+- FAZ-82: Profil avatar URL — fotoğraf URL girişi, önizleme, /user/[id] entegrasyonu
+- FAZ-83: İlan analitik — teklif miktarları bar chart (pure CSS)
+- FAZ-84: İlan embed kodu — /listing/[id]/embed iframe sayfası + EmbedCodeButton
+- FAZ-85: Karşılaştırma sayfasına Yazdır/PDF butonu — ComparePrintButton
+- FAZ-86: JSON-LD structured data — RealEstateListing + ItemList (sehir sayfaları)
+- FAZ-87: İlçe sayfasına JSON-LD ItemList structured data
+- FAZ-88: Hesaplama araçlarına Tapu & Vergiler hesaplayıcısı eklendi
