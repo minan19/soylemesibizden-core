@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import Link from 'next/link';
-import { X, MapPin, Maximize2, Bed } from 'lucide-react';
+import { X, MapPin, Maximize2, Bed, SlidersHorizontal, ChevronDown } from 'lucide-react';
 
 /* Approximate city centers for major Turkish cities */
 const CITY_COORDS: Record<string, [number, number]> = {
@@ -77,6 +77,8 @@ export interface MapListing {
 
 interface Props {
   listings: MapListing[];
+  initialCity?: string;
+  initialListingType?: string;
 }
 
 interface Popup {
@@ -85,171 +87,44 @@ interface Popup {
   y: number;
 }
 
-export default function MapView({ listings }: Props) {
+const PROPERTY_TYPES = ['KONUT', 'TİCARİ', 'ARSA', 'ARAZI', 'DEVREMÜLKs'];
+
+export default function MapView({ listings, initialCity, initialListingType }: Props) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<import('maplibre-gl').Map | null>(null);
   const [popup, setPopup] = useState<Popup | null>(null);
   const [loaded, setLoaded] = useState(false);
-  const [cityFilter, setCityFilter] = useState<string | null>(null);
+  const [cityFilter, setCityFilter] = useState<string | null>(initialCity ?? null);
+  const [listingTypeFilter, setListingTypeFilter] = useState<string | null>(initialListingType ?? null);
+  const [propertyTypeFilter, setPropertyTypeFilter] = useState<string | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
 
-  useEffect(() => {
-    if (!mapContainer.current || mapRef.current) return;
-
-    let map: import('maplibre-gl').Map;
-
-    import('maplibre-gl').then(maplibre => {
-      map = new maplibre.Map({
-        container: mapContainer.current!,
-        style: {
-          version: 8,
-          sources: {
-            osm: {
-              type: 'raster',
-              tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
-              tileSize: 256,
-              attribution: '© OpenStreetMap contributors',
-            },
-          },
-          layers: [{ id: 'osm', type: 'raster', source: 'osm' }],
-        },
-        center: [35.2433, 38.9637],
-        zoom: 5.5,
-        minZoom: 4,
-        maxZoom: 16,
-      });
-
-      mapRef.current = map;
-
-      map.on('load', () => {
-        setLoaded(true);
-
-        // Build GeoJSON from listings with known city coords
-        const features: GeoJSON.Feature<GeoJSON.Point>[] = [];
-
-        for (const listing of listings) {
-          const coords = getCityCoords(listing.city);
-          if (!coords) continue;
-
-          // Jitter to separate overlapping pins
-          const jitter = () => (Math.random() - 0.5) * 0.08;
-
-          features.push({
-            type: 'Feature',
-            geometry: { type: 'Point', coordinates: [coords[0] + jitter(), coords[1] + jitter()] },
-            properties: {
-              id: listing.id,
-              title: listing.title,
-              price: listing.price,
-              city: listing.city,
-              district: listing.district,
-              listingType: listing.listingType,
-              propertyType: listing.propertyType,
-              rooms: listing.rooms,
-              area: listing.area,
-              photo: listing.photos[0] ?? null,
-              status: listing.status,
-            },
-          });
-        }
-
-        map.addSource('listings', {
-          type: 'geojson',
-          data: { type: 'FeatureCollection', features },
-          cluster: true,
-          clusterMaxZoom: 10,
-          clusterRadius: 45,
-        });
-
-        // Cluster circles
-        map.addLayer({
-          id: 'clusters',
-          type: 'circle',
-          source: 'listings',
-          filter: ['has', 'point_count'],
-          paint: {
-            'circle-color': '#00C49F',
-            'circle-radius': ['step', ['get', 'point_count'], 18, 5, 24, 20, 30],
-            'circle-stroke-width': 3,
-            'circle-stroke-color': '#ffffff',
-            'circle-opacity': 0.9,
-          },
-        });
-
-        // Cluster count labels
-        map.addLayer({
-          id: 'cluster-count',
-          type: 'symbol',
-          source: 'listings',
-          filter: ['has', 'point_count'],
-          layout: {
-            'text-field': '{point_count_abbreviated}',
-            'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-            'text-size': 12,
-          },
-          paint: { 'text-color': '#ffffff' },
-        });
-
-        // Individual listing pins
-        map.addLayer({
-          id: 'unclustered-point',
-          type: 'circle',
-          source: 'listings',
-          filter: ['!', ['has', 'point_count']],
-          paint: {
-            'circle-color': '#00C49F',
-            'circle-radius': 10,
-            'circle-stroke-width': 2,
-            'circle-stroke-color': '#ffffff',
-          },
-        });
-
-        // Expand cluster on click
-        map.on('click', 'clusters', (e) => {
-          const features = map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
-          if (!features.length) return;
-          const clusterId = features[0].properties?.cluster_id as number | undefined;
-          if (clusterId == null) return;
-          const src = map.getSource('listings') as import('maplibre-gl').GeoJSONSource;
-          src.getClusterExpansionZoom(clusterId).then((zoom) => {
-            const geo = features[0].geometry as GeoJSON.Point;
-            map.easeTo({ center: geo.coordinates as [number, number], zoom: zoom ?? 8 });
-          }).catch(() => {});
-        });
-
-        // Show popup on single-listing click
-        map.on('click', 'unclustered-point', (e) => {
-          const props = e.features?.[0]?.properties;
-          if (!props) return;
-          const listingData = listings.find(l => l.id === props.id);
-          if (!listingData) return;
-          const point = e.point;
-          setPopup({ listing: listingData, x: point.x, y: point.y });
-        });
-
-        map.on('mouseenter', 'clusters', () => { map.getCanvas().style.cursor = 'pointer'; });
-        map.on('mouseleave', 'clusters', () => { map.getCanvas().style.cursor = ''; });
-        map.on('mouseenter', 'unclustered-point', () => { map.getCanvas().style.cursor = 'pointer'; });
-        map.on('mouseleave', 'unclustered-point', () => { map.getCanvas().style.cursor = ''; });
-      });
+  const filtered = useMemo(() => {
+    return listings.filter(l => {
+      if (cityFilter && !l.city?.toLowerCase().includes(cityFilter.toLowerCase())) return false;
+      if (listingTypeFilter && l.listingType !== listingTypeFilter) return false;
+      if (propertyTypeFilter && l.propertyType !== propertyTypeFilter) return false;
+      return true;
     });
+  }, [listings, cityFilter, listingTypeFilter, propertyTypeFilter]);
 
-    return () => {
-      mapRef.current?.remove();
-      mapRef.current = null;
-    };
+  const cityCount = useMemo(() => {
+    const map = new Map<string, number>();
+    listings.forEach(l => {
+      if (l.city) map.set(l.city, (map.get(l.city) ?? 0) + 1);
+    });
+    return map;
   }, [listings]);
 
-  // Update cluster data when cityFilter changes
-  useEffect(() => {
-    if (!mapRef.current || !loaded) return;
-    const map = mapRef.current;
-    const src = map.getSource('listings') as import('maplibre-gl').GeoJSONSource | undefined;
-    if (!src) return;
+  const cities = useMemo(() =>
+    Array.from(new Set(listings.map(l => l.city).filter(Boolean)))
+      .sort((a, b) => (cityCount.get(b!) ?? 0) - (cityCount.get(a!) ?? 0))
+      .slice(0, 15) as string[]
+  , [listings, cityCount]);
 
+  const buildFeatures = (source: MapListing[]): GeoJSON.Feature<GeoJSON.Point>[] => {
     const features: GeoJSON.Feature<GeoJSON.Point>[] = [];
-    const filtered = cityFilter ? listings.filter(l => l.city?.toLowerCase().includes(cityFilter.toLowerCase())) : listings;
-
-    for (const listing of filtered) {
+    for (const listing of source) {
       const coords = getCityCoords(listing.city);
       if (!coords) continue;
       const jitter = () => (Math.random() - 0.5) * 0.08;
@@ -271,49 +146,250 @@ export default function MapView({ listings }: Props) {
         },
       });
     }
+    return features;
+  };
 
-    src.setData({ type: 'FeatureCollection', features });
+  useEffect(() => {
+    if (!mapContainer.current || mapRef.current) return;
+
+    let map: import('maplibre-gl').Map;
+
+    import('maplibre-gl').then(maplibre => {
+      const initialCenter: [number, number] = initialCity
+        ? (getCityCoords(initialCity) ?? [35.2433, 38.9637])
+        : [35.2433, 38.9637];
+      const initialZoom = initialCity ? 10 : 5.5;
+
+      map = new maplibre.Map({
+        container: mapContainer.current!,
+        style: {
+          version: 8,
+          sources: {
+            osm: {
+              type: 'raster',
+              tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+              tileSize: 256,
+              attribution: '© OpenStreetMap contributors',
+            },
+          },
+          layers: [{ id: 'osm', type: 'raster', source: 'osm' }],
+        },
+        center: initialCenter,
+        zoom: initialZoom,
+        minZoom: 4,
+        maxZoom: 16,
+      });
+
+      mapRef.current = map;
+
+      map.on('load', () => {
+        setLoaded(true);
+
+        map.addSource('listings', {
+          type: 'geojson',
+          data: { type: 'FeatureCollection', features: buildFeatures(filtered) },
+          cluster: true,
+          clusterMaxZoom: 10,
+          clusterRadius: 45,
+        });
+
+        map.addLayer({
+          id: 'clusters',
+          type: 'circle',
+          source: 'listings',
+          filter: ['has', 'point_count'],
+          paint: {
+            'circle-color': '#00C49F',
+            'circle-radius': ['step', ['get', 'point_count'], 18, 5, 24, 20, 30],
+            'circle-stroke-width': 3,
+            'circle-stroke-color': '#ffffff',
+            'circle-opacity': 0.9,
+          },
+        });
+
+        map.addLayer({
+          id: 'cluster-count',
+          type: 'symbol',
+          source: 'listings',
+          filter: ['has', 'point_count'],
+          layout: {
+            'text-field': '{point_count_abbreviated}',
+            'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+            'text-size': 12,
+          },
+          paint: { 'text-color': '#ffffff' },
+        });
+
+        map.addLayer({
+          id: 'unclustered-point',
+          type: 'circle',
+          source: 'listings',
+          filter: ['!', ['has', 'point_count']],
+          paint: {
+            'circle-color': [
+              'case',
+              ['==', ['get', 'listingType'], 'KİRALIK'], '#8B5CF6',
+              '#00C49F',
+            ],
+            'circle-radius': 10,
+            'circle-stroke-width': 2,
+            'circle-stroke-color': '#ffffff',
+          },
+        });
+
+        map.on('click', 'clusters', (e) => {
+          const features = map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
+          if (!features.length) return;
+          const clusterId = features[0].properties?.cluster_id as number | undefined;
+          if (clusterId == null) return;
+          const src = map.getSource('listings') as import('maplibre-gl').GeoJSONSource;
+          src.getClusterExpansionZoom(clusterId).then((zoom) => {
+            const geo = features[0].geometry as GeoJSON.Point;
+            map.easeTo({ center: geo.coordinates as [number, number], zoom: zoom ?? 8 });
+          }).catch(() => {});
+        });
+
+        map.on('click', 'unclustered-point', (e) => {
+          const props = e.features?.[0]?.properties;
+          if (!props) return;
+          const listingData = listings.find(l => l.id === props.id);
+          if (!listingData) return;
+          setPopup({ listing: listingData, x: e.point.x, y: e.point.y });
+        });
+
+        map.on('click', (e) => {
+          const features = map.queryRenderedFeatures(e.point, { layers: ['unclustered-point', 'clusters'] });
+          if (!features.length) setPopup(null);
+        });
+
+        map.on('mouseenter', 'clusters', () => { map.getCanvas().style.cursor = 'pointer'; });
+        map.on('mouseleave', 'clusters', () => { map.getCanvas().style.cursor = ''; });
+        map.on('mouseenter', 'unclustered-point', () => { map.getCanvas().style.cursor = 'pointer'; });
+        map.on('mouseleave', 'unclustered-point', () => { map.getCanvas().style.cursor = ''; });
+      });
+    });
+
+    return () => {
+      mapRef.current?.remove();
+      mapRef.current = null;
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Update data when filters change
+  useEffect(() => {
+    if (!mapRef.current || !loaded) return;
+    const map = mapRef.current;
+    const src = map.getSource('listings') as import('maplibre-gl').GeoJSONSource | undefined;
+    if (!src) return;
+
+    src.setData({ type: 'FeatureCollection', features: buildFeatures(filtered) });
 
     if (cityFilter) {
-      const firstCoords = getCityCoords(cityFilter);
-      if (firstCoords) map.easeTo({ center: firstCoords, zoom: 10 });
-    } else {
+      const coords = getCityCoords(cityFilter);
+      if (coords) map.easeTo({ center: coords, zoom: 10 });
+    } else if (!listingTypeFilter && !propertyTypeFilter) {
       map.easeTo({ center: [35.2433, 38.9637], zoom: 5.5 });
     }
-  }, [cityFilter, listings, loaded]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filtered, loaded]);
 
-  const cities = Array.from(new Set(listings.map(l => l.city).filter(Boolean))).sort() as string[];
+  const mappedCount = filtered.filter(l => getCityCoords(l.city) !== null).length;
 
-  const mappedCount = listings.filter(l => getCityCoords(l.city) !== null).length;
+  const activeFilterCount = [cityFilter, listingTypeFilter, propertyTypeFilter].filter(Boolean).length;
 
   return (
     <div className="relative w-full h-full flex flex-col">
       {/* Controls bar */}
-      <div className="shrink-0 bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-3 flex-wrap">
-        <div className="flex items-center gap-2">
-          <MapPin size={15} className="text-[#00C49F]" />
-          <span className="text-sm font-semibold text-gray-700">{mappedCount} ilan haritada</span>
+      <div className="shrink-0 bg-white border-b border-gray-100 px-4 py-2.5 flex items-center gap-3 flex-wrap">
+        {/* Count */}
+        <div className="flex items-center gap-1.5 shrink-0">
+          <MapPin size={14} className="text-[#00C49F]" />
+          <span className="text-sm font-semibold text-gray-700">{mappedCount} ilan</span>
         </div>
-        <div className="flex-1 overflow-x-auto">
-          <div className="flex gap-2 min-w-max">
+
+        {/* Listing type pills */}
+        <div className="flex items-center gap-1.5 shrink-0">
+          {['SATILIK', 'KİRALIK'].map(lt => (
+            <button
+              key={lt}
+              onClick={() => setListingTypeFilter(listingTypeFilter === lt ? null : lt)}
+              className={`px-2.5 py-1 text-[11px] font-bold rounded-full border transition-all ${
+                listingTypeFilter === lt
+                  ? lt === 'KİRALIK'
+                    ? 'bg-violet-600 text-white border-violet-600'
+                    : 'bg-[#00C49F] text-white border-[#00C49F]'
+                  : 'bg-white text-gray-500 border-gray-200 hover:border-gray-400'
+              }`}
+            >
+              {lt}
+            </button>
+          ))}
+        </div>
+
+        <div className="w-px h-5 bg-gray-200 shrink-0" />
+
+        {/* City chips */}
+        <div className="flex-1 overflow-x-auto scrollbar-hide">
+          <div className="flex gap-1.5 min-w-max">
             <button
               onClick={() => setCityFilter(null)}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all shrink-0 ${!cityFilter ? 'bg-[#00C49F] text-white border-[#00C49F]' : 'bg-white text-gray-500 border-gray-200 hover:border-[#00C49F]/50'}`}
+              className={`px-2.5 py-1 text-[11px] font-bold rounded-full border transition-all shrink-0 ${!cityFilter ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-500 border-gray-200 hover:border-gray-400'}`}
             >
               Tümü
             </button>
-            {cities.slice(0, 12).map(c => (
+            {cities.map(c => (
               <button
                 key={c}
                 onClick={() => setCityFilter(cityFilter === c ? null : c)}
-                className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all shrink-0 ${cityFilter === c ? 'bg-[#00C49F] text-white border-[#00C49F]' : 'bg-white text-gray-500 border-gray-200 hover:border-[#00C49F]/50'}`}
+                className={`px-2.5 py-1 text-[11px] font-bold rounded-full border transition-all shrink-0 ${cityFilter === c ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-500 border-gray-200 hover:border-gray-400'}`}
               >
                 {c}
+                {cityCount.get(c) != null && (
+                  <span className={`ml-1 ${cityFilter === c ? 'text-gray-300' : 'text-gray-400'}`}>
+                    {cityCount.get(c)}
+                  </span>
+                )}
               </button>
             ))}
           </div>
         </div>
+
+        {/* Filter toggle */}
+        <button
+          onClick={() => setShowFilters(f => !f)}
+          className={`shrink-0 flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-bold rounded-lg border transition-all ${showFilters || activeFilterCount > 0 ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'}`}
+        >
+          <SlidersHorizontal size={12} />
+          Filtre
+          {activeFilterCount > 0 && <span className="bg-[#00C49F] text-white rounded-full w-4 h-4 flex items-center justify-center text-[9px]">{activeFilterCount}</span>}
+          <ChevronDown size={11} className={`transition-transform ${showFilters ? 'rotate-180' : ''}`} />
+        </button>
       </div>
+
+      {/* Extended filter panel */}
+      {showFilters && (
+        <div className="shrink-0 bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-3 flex-wrap">
+          <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Mülk Türü:</span>
+          {PROPERTY_TYPES.map(pt => (
+            <button
+              key={pt}
+              onClick={() => setPropertyTypeFilter(propertyTypeFilter === pt ? null : pt)}
+              className={`px-2.5 py-1 text-[11px] font-bold rounded-full border transition-all ${propertyTypeFilter === pt ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-500 border-gray-200 hover:border-gray-400'}`}
+            >
+              {pt}
+            </button>
+          ))}
+          {(cityFilter || listingTypeFilter || propertyTypeFilter) && (
+            <button
+              onClick={() => { setCityFilter(null); setListingTypeFilter(null); setPropertyTypeFilter(null); }}
+              className="ml-auto text-[11px] text-rose-500 font-bold hover:underline"
+            >
+              Tümünü Temizle
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Map container */}
       <div className="flex-1 relative">
@@ -328,13 +404,29 @@ export default function MapView({ listings }: Props) {
           </div>
         )}
 
+        {/* Legend */}
+        <div className="absolute bottom-4 left-4 z-10 bg-white/90 backdrop-blur-sm rounded-xl shadow border border-gray-100 px-3 py-2 flex items-center gap-3 text-[11px] font-semibold text-gray-600">
+          <span className="flex items-center gap-1">
+            <span className="w-3 h-3 rounded-full bg-[#00C49F] inline-block" />
+            Satılık
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="w-3 h-3 rounded-full bg-violet-500 inline-block" />
+            Kiralık
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="w-4 h-4 rounded-full bg-[#00C49F] border-2 border-white inline-flex items-center justify-center text-white text-[7px] font-black">N</span>
+            Küme
+          </span>
+        </div>
+
         {/* Popup overlay */}
         {popup && (
           <div
             className="absolute z-20 w-72"
             style={{
-              left: Math.min(popup.x + 12, window.innerWidth - 300),
-              top: Math.max(popup.y - 140, 8),
+              left: Math.min(popup.x + 12, (typeof window !== 'undefined' ? window.innerWidth : 800) - 300),
+              top: Math.max(popup.y - 160, 8),
             }}
           >
             <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
@@ -353,7 +445,7 @@ export default function MapView({ listings }: Props) {
                   <X size={13} />
                 </button>
                 <div className="absolute bottom-2 left-2 flex gap-1">
-                  <span className="text-[10px] font-bold px-2 py-0.5 bg-blue-50 text-blue-600 rounded-full">
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${popup.listing.listingType === 'KİRALIK' ? 'bg-violet-100 text-violet-700' : 'bg-[#F0FDF8] text-[#00C49F]'}`}>
                     {popup.listing.listingType}
                   </span>
                   <span className="text-[10px] font-bold px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full">
@@ -367,21 +459,28 @@ export default function MapView({ listings }: Props) {
                 {popup.listing.city && (
                   <p className="text-xs text-gray-400 flex items-center gap-1 mb-2">
                     <MapPin size={10} />
-                    {[popup.listing.district, popup.listing.city].filter(Boolean).join(', ')}
+                    {[popup.listing.neighborhood, popup.listing.district, popup.listing.city].filter(Boolean).join(', ')}
                   </p>
                 )}
-                <div className="flex items-center gap-3 text-xs text-gray-500 mb-3">
+                <div className="flex items-center gap-3 text-xs text-gray-500 mb-2">
                   {popup.listing.rooms != null && (
-                    <span className="flex items-center gap-1"><Bed size={11} /> {popup.listing.rooms} oda</span>
+                    <span className="flex items-center gap-1"><Bed size={11} /> {popup.listing.rooms}+1</span>
                   )}
                   {popup.listing.area != null && (
                     <span className="flex items-center gap-1"><Maximize2 size={11} /> {popup.listing.area} m²</span>
                   )}
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-base font-bold text-gray-900 font-mono">
-                    ₺ {popup.listing.price.toLocaleString('tr-TR')}
-                  </span>
+                  <div>
+                    <span className="text-base font-bold text-gray-900 font-mono">
+                      ₺ {popup.listing.price.toLocaleString('tr-TR')}
+                    </span>
+                    {popup.listing.area && popup.listing.area > 0 && (
+                      <p className="text-[10px] text-gray-400">
+                        {Math.round(popup.listing.price / popup.listing.area).toLocaleString('tr-TR')} ₺/m²
+                      </p>
+                    )}
+                  </div>
                   <Link
                     href={`/listing/${popup.listing.id}`}
                     className="px-3 py-1.5 bg-[#00C49F] hover:bg-[#00a882] text-white text-xs font-bold rounded-lg transition-colors"

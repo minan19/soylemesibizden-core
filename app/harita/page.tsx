@@ -13,9 +13,20 @@ export const metadata: Metadata = {
 
 const MapView = dynImport(() => import('./MapView'), { ssr: false });
 
-export default async function HaritaPage() {
+type SearchParams = { city?: string; listingType?: string };
+
+export default async function HaritaPage({ searchParams }: { searchParams: SearchParams }) {
+  const { city, listingType } = searchParams;
+
+  const where = {
+    status: 'ACTIVE' as const,
+    city: { not: null as null },
+    ...(city ? { city: { contains: city, mode: 'insensitive' as const } } : {}),
+    ...(listingType ? { listingType } : {}),
+  };
+
   const listings = await prisma.listing.findMany({
-    where: { status: 'ACTIVE', city: { not: null } },
+    where,
     select: {
       id: true,
       title: true,
@@ -73,7 +84,11 @@ export default async function HaritaPage() {
 
       {/* Full-height map */}
       <div className="flex-1 overflow-hidden">
-        <MapView listings={listings} />
+        <MapView
+          listings={listings}
+          initialCity={city}
+          initialListingType={listingType}
+        />
       </div>
     </main>
   );
