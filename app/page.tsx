@@ -985,6 +985,11 @@ export default async function HomePage() {
                   { href: '/yatirim-analizi', label: 'Yatırım Analizi' },
                   { href: '/fiyat-trendi', label: 'Fiyat Trendi' },
                   { href: '/mahalle-analizi', label: 'Mahalle Analizi' },
+                  { href: '/odeme-plani', label: 'Ödeme Planı' },
+                  { href: '/kredi-karsilastirma', label: 'Kredi Karşılaştırma' },
+                  { href: '/dask-hesaplayici', label: 'DASK Hesaplayıcı' },
+                  { href: '/kira-geliri-vergisi', label: 'Kira Vergisi Hesapla' },
+                  { href: '/gayrimenkul-sozlugu', label: 'Gayrimenkul Sözlüğü' },
                   { href: '/saved-searches', label: 'Kayıtlı Aramalar' },
                 ].map(l => (
                   <Link key={l.href} href={l.href} className="text-sm text-gray-400 hover:text-[#00C49F] transition-colors">{l.label}</Link>

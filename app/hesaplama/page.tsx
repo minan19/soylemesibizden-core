@@ -105,6 +105,10 @@ export default function HesaplamaPage() {
               { href: '/yatirim-analizi', label: 'Yatırım ROI', desc: 'Getiri analizi + al/kirala' },
               { href: '/portfoy', label: 'Portföy Takibi', desc: 'Gayrimenkul portföyüm' },
               { href: '/valuation', label: 'Değerleme Aracı', desc: 'Bölge fiyat analizi' },
+              { href: '/odeme-plani', label: 'Ödeme Planı', desc: 'Ay ay anapara + faiz' },
+              { href: '/kredi-karsilastirma', label: 'Kredi Karşılaştır', desc: '4 senaryo yan yana' },
+              { href: '/dask-hesaplayici', label: 'DASK Hesapla', desc: 'Deprem sigortası primi' },
+              { href: '/kira-geliri-vergisi', label: 'Kira Vergisi', desc: '2024 gelir vergisi' },
             ].map(l => (
               <Link
                 key={l.href}
