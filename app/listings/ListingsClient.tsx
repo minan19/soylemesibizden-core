@@ -53,6 +53,7 @@ export interface FilterParams {
   currentMinArea?: string;
   currentMaxArea?: string;
   currentCity?: string;
+  currentDistrict?: string;
   currentNeighborhood?: string;
   currentHasElevator?: string;
   currentHasParking?: string;
@@ -130,6 +131,7 @@ export default function ListingsClient({
   currentMinArea,
   currentMaxArea,
   currentCity,
+  currentDistrict,
   currentNeighborhood,
   currentHasElevator,
   currentHasParking,
@@ -168,6 +170,7 @@ export default function ListingsClient({
       minArea: areaMin || undefined,
       maxArea: areaMax || undefined,
       city: currentCity || undefined,
+      district: currentDistrict || undefined,
       neighborhood: currentNeighborhood || undefined,
       hasElevator: currentHasElevator || undefined,
       hasParking: currentHasParking || undefined,
@@ -335,27 +338,49 @@ export default function ListingsClient({
             )}
           </div>
 
-          {/* Row 3b — neighborhood filter (visible only when a city is selected) */}
+          {/* Row 3b — district + neighborhood filter (visible only when a city is selected) */}
           {currentCity && (
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-gray-400 font-medium shrink-0">Mahalle:</span>
-              <input
-                type="text"
-                defaultValue={currentNeighborhood ?? ''}
-                placeholder="Mahalle adı…"
-                className="w-44 px-3 py-2 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#00C49F] transition-colors"
-                onKeyDown={e => {
-                  if (e.key === 'Enter') push({ neighborhood: (e.currentTarget.value || undefined) });
-                }}
-              />
-              {currentNeighborhood && (
-                <button
-                  onClick={() => push({ neighborhood: undefined })}
-                  className="text-xs text-gray-400 hover:text-red-500 transition-colors"
-                >
-                  ✕
-                </button>
-              )}
+            <div className="flex flex-wrap items-center gap-4">
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-400 font-medium shrink-0">İlçe:</span>
+                <input
+                  type="text"
+                  defaultValue={currentDistrict ?? ''}
+                  placeholder="İlçe adı…"
+                  className="w-36 px-3 py-2 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#00C49F] transition-colors"
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') push({ district: (e.currentTarget.value || undefined) });
+                  }}
+                />
+                {currentDistrict && (
+                  <button
+                    onClick={() => push({ district: undefined })}
+                    className="text-xs text-gray-400 hover:text-red-500 transition-colors"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-400 font-medium shrink-0">Mahalle:</span>
+                <input
+                  type="text"
+                  defaultValue={currentNeighborhood ?? ''}
+                  placeholder="Mahalle adı…"
+                  className="w-36 px-3 py-2 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#00C49F] transition-colors"
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') push({ neighborhood: (e.currentTarget.value || undefined) });
+                  }}
+                />
+                {currentNeighborhood && (
+                  <button
+                    onClick={() => push({ neighborhood: undefined })}
+                    className="text-xs text-gray-400 hover:text-red-500 transition-colors"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
             </div>
           )}
 
@@ -458,6 +483,7 @@ export default function ListingsClient({
         const chips: Array<{ label: string; clearKey: Record<string, undefined> }> = [];
         if (currentQ) chips.push({ label: `"${currentQ}"`, clearKey: { q: undefined } });
         if (currentCity) chips.push({ label: currentCity, clearKey: { city: undefined } });
+        if (currentDistrict) chips.push({ label: `İlçe: ${currentDistrict}`, clearKey: { district: undefined } });
         if (currentNeighborhood) chips.push({ label: currentNeighborhood, clearKey: { neighborhood: undefined } });
         if (activeListingType !== 'ALL') chips.push({ label: activeListingType, clearKey: { listingType: undefined } });
         if (activePropertyType !== 'ALL') chips.push({ label: activePropertyType, clearKey: { propertyType: undefined } });
@@ -482,7 +508,7 @@ export default function ListingsClient({
             ))}
             <button
               onClick={() => push({
-                q: undefined, city: undefined, neighborhood: undefined,
+                q: undefined, city: undefined, district: undefined, neighborhood: undefined,
                 listingType: undefined, propertyType: undefined, minRooms: undefined,
                 minPrice: undefined, maxPrice: undefined, minArea: undefined, maxArea: undefined,
                 hasElevator: undefined, hasParking: undefined, hasGarden: undefined,

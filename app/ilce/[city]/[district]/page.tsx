@@ -122,7 +122,7 @@ export default async function DistrictPage({ params }: { params: { city: string;
             </div>
           </div>
           <Link
-            href={`/listings?city=${encodeURIComponent(city)}&q=${encodeURIComponent(district)}`}
+            href={`/listings?city=${encodeURIComponent(city)}&district=${encodeURIComponent(district)}`}
             className="inline-flex items-center gap-2 mt-4 px-5 py-2.5 bg-[#00C49F] hover:bg-[#00a882] text-white text-sm font-bold rounded-xl transition-colors"
           >
             Tüm İlanları Listele <ArrowRight size={14} />
@@ -172,7 +172,7 @@ export default async function DistrictPage({ params }: { params: { city: string;
               {byType.map(t => (
                 <Link
                   key={t.propertyType}
-                  href={`/listings?city=${encodeURIComponent(city)}&q=${encodeURIComponent(district)}&propertyType=${encodeURIComponent(t.propertyType)}`}
+                  href={`/listings?city=${encodeURIComponent(city)}&district=${encodeURIComponent(district)}&propertyType=${encodeURIComponent(t.propertyType)}`}
                   className="flex items-center justify-between group"
                 >
                   <span className="text-sm text-gray-700 group-hover:text-[#00C49F] transition-colors font-medium">
@@ -198,7 +198,7 @@ export default async function DistrictPage({ params }: { params: { city: string;
               {byListingType.map(lt => (
                 <Link
                   key={lt.listingType}
-                  href={`/listings?city=${encodeURIComponent(city)}&q=${encodeURIComponent(district)}&listingType=${encodeURIComponent(lt.listingType)}`}
+                  href={`/listings?city=${encodeURIComponent(city)}&district=${encodeURIComponent(district)}&listingType=${encodeURIComponent(lt.listingType)}`}
                   className="flex items-center justify-between group"
                 >
                   <div className="flex-1">
@@ -229,7 +229,7 @@ export default async function DistrictPage({ params }: { params: { city: string;
           <div className="flex items-center justify-between mb-5">
             <h2 className="text-xl font-bold text-gray-900">Son Eklenen İlanlar</h2>
             <Link
-              href={`/listings?city=${encodeURIComponent(city)}&q=${encodeURIComponent(district)}`}
+              href={`/listings?city=${encodeURIComponent(city)}&district=${encodeURIComponent(district)}`}
               className="text-sm font-semibold text-[#00C49F] hover:underline flex items-center gap-1"
             >
               Tümünü Gör <ArrowRight size={14} />
@@ -294,7 +294,7 @@ export default async function DistrictPage({ params }: { params: { city: string;
               ['KONUT', 'TİCARİ', 'ARAZI', 'OFİS'].map(pt => (
                 <Link
                   key={`${lt}-${pt}`}
-                  href={`/listings?city=${encodeURIComponent(city)}&q=${encodeURIComponent(district)}&listingType=${encodeURIComponent(lt)}&propertyType=${encodeURIComponent(pt)}`}
+                  href={`/listings?city=${encodeURIComponent(city)}&district=${encodeURIComponent(district)}&listingType=${encodeURIComponent(lt)}&propertyType=${encodeURIComponent(pt)}`}
                   className="px-3 py-1.5 bg-gray-50 hover:bg-[#F0FDF8] border border-gray-200 hover:border-[#00C49F] rounded-xl text-xs font-semibold text-gray-600 hover:text-[#00C49F] transition-all"
                 >
                   {lt} {pt}

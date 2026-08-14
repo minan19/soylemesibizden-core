@@ -36,6 +36,7 @@ type SearchParams = {
   minArea?: string;
   maxArea?: string;
   city?: string;
+  district?: string;
   neighborhood?: string;
   page?: string;
   hasElevator?: string;
@@ -60,6 +61,7 @@ export default async function ListingsPage({
     minArea,
     maxArea,
     city,
+    district,
     neighborhood,
     page,
     hasElevator,
@@ -93,6 +95,7 @@ export default async function ListingsPage({
     ...(minRooms ? { rooms: { gte: Number(minRooms) } } : {}),
     ...((minArea || maxArea) ? { area: { ...(minArea ? { gte: Number(minArea) } : {}), ...(maxArea ? { lte: Number(maxArea) } : {}) } } : {}),
     ...(city ? { city: { contains: city, mode: 'insensitive' as const } } : {}),
+    ...(district ? { district: { contains: district, mode: 'insensitive' as const } } : {}),
     ...(neighborhood ? { neighborhood: { contains: neighborhood, mode: 'insensitive' as const } } : {}),
     ...(hasElevator === '1' ? { hasElevator: true } : {}),
     ...(hasParking === '1' ? { hasParking: true } : {}),
@@ -145,6 +148,7 @@ export default async function ListingsPage({
     if (minArea) sp.set('minArea', minArea);
     if (maxArea) sp.set('maxArea', maxArea);
     if (city) sp.set('city', city);
+    if (district) sp.set('district', district);
     if (neighborhood) sp.set('neighborhood', neighborhood);
     if (hasElevator) sp.set('hasElevator', hasElevator);
     if (hasParking) sp.set('hasParking', hasParking);
@@ -245,6 +249,7 @@ export default async function ListingsPage({
           currentMinArea={minArea}
           currentMaxArea={maxArea}
           currentCity={city}
+          currentDistrict={district}
           currentNeighborhood={neighborhood}
           currentHasElevator={hasElevator}
           currentHasParking={hasParking}
