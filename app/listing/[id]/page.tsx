@@ -98,8 +98,8 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
     (sessionUser.id === listing.ownerId || sessionUser.role === 'ADMIN')
   );
 
-  // Increment views, fetch similar listings, and market context concurrently
-  const [similarListings, , marketContext] = await Promise.all([
+  // Increment views, fetch similar listings, market context, and neighboring listings concurrently
+  const [similarListings, , marketContext, neighborListings] = await Promise.all([
     prisma.listing.findMany({
       where: {
         id: { not: listing.id },
@@ -129,6 +129,19 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
       _min: { price: true },
       _max: { price: true },
     }),
+    (listing.district || listing.neighborhood)
+      ? prisma.listing.findMany({
+          where: {
+            id: { not: listing.id },
+            status: 'ACTIVE',
+            ...(listing.district ? { district: listing.district } : { neighborhood: listing.neighborhood! }),
+            ...(listing.city ? { city: listing.city } : {}),
+          },
+          take: 4,
+          orderBy: { createdAt: 'desc' },
+          select: { id: true, title: true, price: true, photos: true, rooms: true, area: true, listingType: true },
+        })
+      : Promise.resolve([]),
   ]);
 
   /* ── Derived values ───────────────────────────────────────────── */
@@ -602,6 +615,54 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
 
             {/* Viewing Request */}
             <ViewingRequestForm listingId={listing.id} listingTitle={listing.title} />
+
+            {/* Neighboring listings */}
+            {neighborListings.length > 0 && (
+              <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+                <p className="text-[10px] font-bold tracking-widest text-gray-400 uppercase mb-4">
+                  Komşu İlanlar
+                </p>
+                <p className="text-xs text-gray-400 -mt-3 mb-3">
+                  {listing.district ?? listing.neighborhood} bölgesinde
+                </p>
+                <div className="space-y-3">
+                  {neighborListings.map(n => (
+                    <Link
+                      key={n.id}
+                      href={`/listing/${n.id}`}
+                      className="flex items-center gap-3 group"
+                    >
+                      <div className="w-12 h-12 rounded-xl overflow-hidden bg-gray-100 shrink-0">
+                        {n.photos[0] ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={n.photos[0]} alt={n.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <ImageOff size={14} className="text-gray-300" />
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-semibold text-gray-800 line-clamp-2 group-hover:text-[#00C49F] transition-colors">
+                          {n.title}
+                        </p>
+                        <p className="text-xs font-bold font-mono text-gray-900 mt-0.5">
+                          ₺{n.price.toLocaleString('tr-TR')}
+                        </p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+                {listing.district && (
+                  <Link
+                    href={`/listings?district=${encodeURIComponent(listing.district)}&city=${encodeURIComponent(listing.city ?? '')}`}
+                    className="mt-4 block text-center text-xs font-semibold text-[#00C49F] hover:text-[#00a882] transition-colors"
+                  >
+                    Tümünü gör →
+                  </Link>
+                )}
+              </div>
+            )}
 
             {/* Notes */}
             <ListingNotes listingId={listing.id} />
