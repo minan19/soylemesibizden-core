@@ -38,6 +38,7 @@ import ViewingRequestForm from '@/components/ViewingRequestForm';
 import ReportListingButton from '@/components/ReportListingButton';
 import ListingNotes from '@/components/ListingNotes';
 import EmbedCodeButton from '@/components/EmbedCodeButton';
+import PriceTracker from '@/components/PriceTracker';
 
 export const dynamic = 'force-dynamic';
 
@@ -480,6 +481,7 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
                 >
                   Anlaşma Odası Aç
                 </Link>
+                <PriceTracker listingId={listing.id} currentPrice={listing.price} />
               </div>
             </div>
 
