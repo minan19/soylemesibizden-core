@@ -76,6 +76,7 @@ export default function Navbar() {
     { href: '/mahalle-analizi', label: 'Mahalle Analizi', authRequired: false },
     { href: '/yatirim-analizi', label: 'Yatırım Analizi', authRequired: false },
     { href: '/tapu-masrafi', label: 'Tapu Masrafı', authRequired: false },
+    { href: '/gayrimenkul-sozlugu', label: 'Gayrimenkul Sözlüğü', authRequired: false },
     { href: '/favorites', label: 'Favoriler', authRequired: true },
     { href: '/my-listings', label: 'İlanlarım', authRequired: true },
     { href: '/offers', label: 'Teklifler', authRequired: true },
@@ -134,6 +135,7 @@ export default function Navbar() {
                   { href: '/yatirim-analizi', label: 'Yatırım Analizi' },
                   { href: '/banka-kredileri', label: 'Banka Faizleri' },
                   { href: '/portfoy', label: 'Portföy Takibi' },
+                  { href: '/gayrimenkul-sozlugu', label: 'Gayrimenkul Sözlüğü' },
                   { href: '/tum-araclar', label: 'Tüm Araçlar →' },
                 ].map(t => (
                   <Link

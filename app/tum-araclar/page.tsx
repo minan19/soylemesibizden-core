@@ -95,6 +95,7 @@ const CATEGORIES: Category[] = [
       { href: '/rehber/ev-satin-alma', icon: Home, label: 'Ev Satın Alma Rehberi', desc: 'Adım adım satın alma süreci' },
       { href: '/rehber/kiralama-rehberi', icon: Key, label: 'Kiralama Rehberi', desc: 'Sözleşme, depozito, haklar' },
       { href: '/rehber/yatirim-rehberi', icon: TrendingUp, label: 'Yatırım Rehberi', desc: 'ROI ve getiri stratejileri' },
+      { href: '/gayrimenkul-sozlugu', icon: BookOpen, label: 'Gayrimenkul Sözlüğü', desc: '25 terim ve tanım', badge: 'Yeni' },
       { href: '/sss', icon: BookOpen, label: 'Sıkça Sorulan Sorular', desc: 'Tüm platform soruları' },
     ],
   },
