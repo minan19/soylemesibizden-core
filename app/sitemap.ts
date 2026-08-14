@@ -4,12 +4,20 @@ import prisma from '@/lib/prisma';
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://soylemesibizden-core.vercel.app';
 
-  const listings = await prisma.listing.findMany({
-    where: { status: 'ACTIVE' },
-    select: { id: true, updatedAt: true },
-    orderBy: { updatedAt: 'desc' },
-    take: 500,
-  });
+  const [listings, districts] = await Promise.all([
+    prisma.listing.findMany({
+      where: { status: 'ACTIVE' },
+      select: { id: true, updatedAt: true },
+      orderBy: { updatedAt: 'desc' },
+      take: 500,
+    }),
+    prisma.listing.findMany({
+      where: { status: 'ACTIVE', city: { not: null }, district: { not: null } },
+      select: { city: true, district: true },
+      distinct: ['city', 'district'],
+      take: 200,
+    }),
+  ]);
 
   const staticPages: MetadataRoute.Sitemap = [
     { url: baseUrl, lastModified: new Date(), changeFrequency: 'daily', priority: 1 },
@@ -44,5 +52,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  return [...staticPages, ...listingPages];
+  const districtPages: MetadataRoute.Sitemap = districts
+    .filter(d => d.city && d.district)
+    .map(d => ({
+      url: `${baseUrl}/ilce/${encodeURIComponent(d.city!)}/${encodeURIComponent(d.district!)}`,
+      lastModified: new Date(),
+      changeFrequency: 'daily' as const,
+      priority: 0.75,
+    }));
+
+  return [...staticPages, ...listingPages, ...districtPages];
 }
