@@ -18,6 +18,7 @@ import {
   Phone,
   Mail,
   Flame,
+  Tag,
 } from 'lucide-react';
 import SearchAutocomplete from '@/components/SearchAutocomplete';
 import CompareButton from '@/components/CompareButton';
@@ -30,7 +31,7 @@ export default async function HomePage() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const [totalListings, activeListings, totalUsers, totalOffers, featuredListings, cityCounts, todayCount, newListings, hotListings] =
+  const [totalListings, activeListings, totalUsers, totalOffers, featuredListings, cityCounts, todayCount, newListings, hotListings, avgPriceByType] =
     await Promise.all([
       prisma.listing.count(),
       prisma.listing.count({ where: { status: 'ACTIVE' } }),
@@ -69,7 +70,40 @@ export default async function HomePage() {
           _count: { select: { offers: true } },
         },
       }),
+      // Avg price by propertyType for "deal of the day" calculation
+      prisma.listing.groupBy({
+        by: ['propertyType', 'listingType'],
+        where: { status: 'ACTIVE' },
+        _avg: { price: true },
+        having: { price: { _avg: { gt: 0 } } },
+      }),
     ]);
+
+  // Build avg price map and find deal listings (>= 20% below avg)
+  const avgMap = new Map<string, number>();
+  for (const r of avgPriceByType) {
+    if (r._avg.price) avgMap.set(`${r.propertyType}:${r.listingType}`, r._avg.price);
+  }
+  const dealListings = await prisma.listing.findMany({
+    where: {
+      status: 'ACTIVE',
+      area: { gt: 0 },
+    },
+    select: { id: true, title: true, price: true, city: true, district: true, propertyType: true, listingType: true, photos: true, area: true, rooms: true, views: true },
+    orderBy: { views: 'desc' },
+    take: 100,
+  }).then(all => {
+    return all
+      .map(l => {
+        const avg = avgMap.get(`${l.propertyType}:${l.listingType}`);
+        if (!avg || avg <= 0) return null;
+        const discount = ((avg - l.price) / avg) * 100;
+        return discount >= 15 ? { ...l, discount: Math.round(discount), avgPrice: Math.round(avg) } : null;
+      })
+      .filter(Boolean)
+      .sort((a, b) => b!.discount - a!.discount)
+      .slice(0, 4) as Array<{ id: string; title: string; price: number; city: string | null; district: string | null; propertyType: string; listingType: string; photos: string[]; area: number | null; rooms: number | null; views: number; discount: number; avgPrice: number }>;
+  });
 
   const cityCountMap = new Map(cityCounts.map(c => [c.city!, c._count]));
 
@@ -481,6 +515,69 @@ export default async function HomePage() {
                     {l.area != null && <span className="text-[10px] text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded">{l.area} m²</span>}
                   </div>
                   <p className="text-sm font-bold text-[#00C49F] mt-2">{l.price.toLocaleString('tr-TR')} ₺</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* ─── GÜNÜN FIRSATI ────────────────────────────────────────── */}
+      {dealListings.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-10">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Tag className="w-5 h-5 text-rose-500" />
+              <h2 className="text-lg font-bold text-gray-900">Günün Fırsatı</h2>
+              <span className="text-xs font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full">Piyasanın Altında</span>
+            </div>
+            <Link href="/listings?sort=price_asc" className="text-sm text-[#00C49F] font-semibold hover:underline flex items-center gap-1">
+              Tümü <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {dealListings.map(l => (
+              <Link
+                key={l.id}
+                href={`/listing/${l.id}`}
+                className="group bg-white border border-gray-100 rounded-2xl overflow-hidden hover:shadow-lg hover:border-rose-200 transition-all flex flex-col"
+              >
+                <div className="relative w-full h-36 bg-gradient-to-br from-slate-100 to-slate-200 overflow-hidden flex-shrink-0">
+                  {l.photos[0] ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={l.photos[0]} alt={l.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <Building2 className="w-8 h-8 text-slate-300" />
+                    </div>
+                  )}
+                  <span className="absolute top-2 left-2 flex items-center gap-1 bg-rose-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
+                    <Tag className="w-2.5 h-2.5" />
+                    %{l.discount} indirim
+                  </span>
+                </div>
+                <div className="p-3 flex flex-col flex-1">
+                  <div className="flex items-center gap-1 mb-1">
+                    <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${l.listingType === 'KİRALIK' ? 'bg-violet-50 text-violet-600' : 'bg-[#F0FDF8] text-[#00C49F]'}`}>
+                      {l.listingType}
+                    </span>
+                    <span className="text-[9px] text-gray-400">{l.propertyType}</span>
+                  </div>
+                  <p className="text-xs font-semibold text-gray-900 line-clamp-2 group-hover:text-[#00C49F] transition-colors leading-snug mb-1">{l.title}</p>
+                  {(l.district || l.city) && (
+                    <p className="text-[10px] text-gray-400 flex items-center gap-0.5 mb-1">
+                      <MapPin className="w-2.5 h-2.5 flex-shrink-0" />
+                      {[l.district, l.city].filter(Boolean).join(', ')}
+                    </p>
+                  )}
+                  <div className="flex items-center gap-2 mt-auto">
+                    {l.rooms != null && <span className="text-[10px] text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded">{l.rooms}+1</span>}
+                    {l.area != null && <span className="text-[10px] text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded">{l.area} m²</span>}
+                  </div>
+                  <div className="mt-2">
+                    <p className="text-sm font-bold text-rose-600">{l.price.toLocaleString('tr-TR')} ₺</p>
+                    <p className="text-[10px] text-gray-400 line-through">{l.avgPrice.toLocaleString('tr-TR')} ₺ (ort.)</p>
+                  </div>
                 </div>
               </Link>
             ))}
