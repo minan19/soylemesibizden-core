@@ -1,6 +1,7 @@
 import prisma from '@/lib/prisma';
 import Link from 'next/link';
-import { ArrowLeft, CheckCircle2, XCircle, MapPin, Bed, Bath, Maximize2, Layers, Building2, CalendarDays, ArrowRight, Star, Eye } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, XCircle, MapPin, Bed, Bath, Maximize2, Layers, Building2, CalendarDays, ArrowRight, Star, Eye, Printer } from 'lucide-react';
+import ComparePrintButton from '@/components/ComparePrintButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -203,18 +204,21 @@ export default async function ComparePage({
           >
             <ArrowLeft size={14} /> İlanlara Dön
           </Link>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#F0FDF8] flex items-center justify-center text-[#00C49F]">
-              <Building2 size={18} />
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-[#F0FDF8] flex items-center justify-center text-[#00C49F]">
+                <Building2 size={18} />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold tracking-tight">İlan Karşılaştırma</h1>
+                <p className="text-xs text-gray-400 mt-0.5">
+                  {listings.length > 0
+                    ? `${listings.length} ilan karşılaştırılıyor`
+                    : 'URL\'ye ?ids=id1,id2 ekleyerek karşılaştır'}
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight">İlan Karşılaştırma</h1>
-              <p className="text-xs text-gray-400 mt-0.5">
-                {listings.length > 0
-                  ? `${listings.length} ilan karşılaştırılıyor`
-                  : 'URL\'ye ?ids=id1,id2 ekleyerek karşılaştır'}
-              </p>
-            </div>
+            {listings.length > 0 && <ComparePrintButton />}
           </div>
         </div>
 
