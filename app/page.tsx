@@ -1,6 +1,7 @@
 import prisma from '@/lib/prisma';
 import Link from 'next/link';
 import {
+  Map as MapIcon,
   Search,
   Home,
   Building2,
@@ -648,6 +649,92 @@ export default async function HomePage() {
                 )}
               </Link>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── MAP DISCOVERY ───────────────────────────────────────── */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
+        <div className="bg-white border border-gray-100 rounded-3xl overflow-hidden shadow-sm">
+          <div className="grid md:grid-cols-2 gap-0">
+            {/* Left: copy */}
+            <div className="flex flex-col justify-center px-8 py-10 gap-5">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 bg-[#F0FDF8] rounded-xl flex items-center justify-center">
+                  <MapIcon size={18} className="text-[#00C49F]" />
+                </div>
+                <span className="text-[10px] font-bold tracking-widest text-[#00C49F] uppercase">Yeni Özellik</span>
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">Haritada Keşfet</h2>
+                <p className="text-gray-500 text-sm leading-relaxed max-w-sm">
+                  Tüm aktif ilanları interaktif harita üzerinde görün. Şehir, ilçe ve mahalle bazında
+                  kolayca filtreleyin. Pini tıklayın, detayları anında görün.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-3">
+                {[
+                  { label: 'İstanbul', count: cityCounts.find(c => c.city === 'İstanbul')?._count ?? 0 },
+                  { label: 'Ankara', count: cityCounts.find(c => c.city === 'Ankara')?._count ?? 0 },
+                  { label: 'İzmir', count: cityCounts.find(c => c.city === 'İzmir')?._count ?? 0 },
+                  { label: 'Antalya', count: cityCounts.find(c => c.city === 'Antalya')?._count ?? 0 },
+                ].filter(c => c.count > 0).map(c => (
+                  <span key={c.label} className="text-xs font-semibold text-gray-500 bg-gray-50 border border-gray-100 px-3 py-1.5 rounded-full">
+                    {c.label} <span className="text-[#00C49F] font-bold">{c.count}</span>
+                  </span>
+                ))}
+              </div>
+              <Link
+                href="/harita"
+                className="inline-flex items-center gap-2 bg-[#00C49F] hover:bg-[#00a882] text-white font-bold px-6 py-3 rounded-xl transition-colors w-fit shadow-sm shadow-[#00C49F]/20"
+              >
+                <MapIcon size={16} /> Haritada Gör
+              </Link>
+            </div>
+            {/* Right: visual map hint */}
+            <div className="relative bg-gradient-to-br from-[#F0FDF8] to-[#E6FAF4] min-h-[240px] flex items-center justify-center overflow-hidden">
+              {/* Simplified Turkey map silhouette with city markers */}
+              <div className="relative w-full max-w-xs mx-8">
+                {/* Abstract map grid lines */}
+                <div className="absolute inset-0 opacity-10">
+                  {[...Array(6)].map((_, i) => (
+                    <div key={i} className="absolute border-b border-[#00C49F]" style={{ top: `${i * 20}%`, left: 0, right: 0 }} />
+                  ))}
+                  {[...Array(8)].map((_, i) => (
+                    <div key={i} className="absolute border-r border-[#00C49F]" style={{ left: `${i * 14}%`, top: 0, bottom: 0 }} />
+                  ))}
+                </div>
+                {/* City markers positioned roughly like Turkey geography */}
+                {[
+                  { label: 'İST', x: '12%', y: '28%', size: 'w-10 h-10', textSize: 'text-[9px]', count: cityCounts.find(c => c.city === 'İstanbul')?._count },
+                  { label: 'ANK', x: '46%', y: '38%', size: 'w-8 h-8', textSize: 'text-[8px]', count: cityCounts.find(c => c.city === 'Ankara')?._count },
+                  { label: 'İZM', x: '18%', y: '58%', size: 'w-7 h-7', textSize: 'text-[8px]', count: cityCounts.find(c => c.city === 'İzmir')?._count },
+                  { label: 'ANT', x: '40%', y: '78%', size: 'w-7 h-7', textSize: 'text-[8px]', count: cityCounts.find(c => c.city === 'Antalya')?._count },
+                  { label: 'BRS', x: '30%', y: '28%', size: 'w-6 h-6', textSize: 'text-[7px]', count: cityCounts.find(c => c.city === 'Bursa')?._count },
+                  { label: 'MRS', x: '58%', y: '72%', size: 'w-5 h-5', textSize: 'text-[7px]', count: cityCounts.find(c => c.city === 'Mersin')?._count },
+                ].map(city => (
+                  <div
+                    key={city.label}
+                    className="absolute"
+                    style={{ left: city.x, top: city.y, transform: 'translate(-50%, -50%)' }}
+                  >
+                    <div className={`${city.size} rounded-full bg-[#00C49F] border-2 border-white shadow-lg flex flex-col items-center justify-center relative`}>
+                      <span className={`${city.textSize} font-black text-white leading-none`}>{city.label}</span>
+                      {city.count ? (
+                        <span className="absolute -top-1.5 -right-1.5 bg-amber-400 text-white text-[7px] font-bold px-1 rounded-full">{city.count}</span>
+                      ) : null}
+                    </div>
+                    <div className="absolute w-0.5 h-3 bg-[#00C49F]/40 left-1/2 -translate-x-1/2 top-full" />
+                  </div>
+                ))}
+                {/* Map container box */}
+                <div className="h-48 border-2 border-[#00C49F]/20 rounded-2xl bg-white/30 backdrop-blur-sm" />
+              </div>
+              {/* Corner label */}
+              <div className="absolute bottom-4 right-4 text-[10px] font-bold text-[#00C49F]/50 uppercase tracking-widest">
+                Türkiye
+              </div>
+            </div>
           </div>
         </div>
       </section>
