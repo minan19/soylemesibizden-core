@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, User, Save } from 'lucide-react';
+import { ArrowLeft, User, CheckCircle2, AlertCircle } from 'lucide-react';
 import ProfileSettingsForm from './ProfileSettingsForm';
 
 export const dynamic = 'force-dynamic';
@@ -57,6 +57,46 @@ export default async function ProfileSettingsPage() {
             <span className="text-sm font-medium text-gray-700">{new Date(user.createdAt).toLocaleDateString('tr-TR')}</span>
           </div>
         </div>
+
+        {/* Profile completeness */}
+        {(() => {
+          const checks = [
+            { ok: !!user.name?.trim(), label: 'İsim ekle' },
+            { ok: !!user.phone?.trim(), label: 'Telefon numarası ekle' },
+            { ok: !!user.avatar?.trim(), label: 'Profil fotoğrafı ekle' },
+          ];
+          const score = Math.round((checks.filter(c => c.ok).length / checks.length) * 100);
+          const missing = checks.filter(c => !c.ok).map(c => c.label);
+          return (
+            <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  {score === 100 ? (
+                    <CheckCircle2 size={14} className="text-[#00C49F]" />
+                  ) : (
+                    <AlertCircle size={14} className="text-amber-500" />
+                  )}
+                  <p className="text-xs font-bold text-gray-700">Profil Tamamlama</p>
+                </div>
+                <span className={`text-sm font-black ${score === 100 ? 'text-[#00C49F]' : 'text-amber-600'}`}>%{score}</span>
+              </div>
+              <div className="w-full bg-gray-100 rounded-full h-2 mb-3">
+                <div
+                  className={`h-2 rounded-full transition-all ${score === 100 ? 'bg-[#00C49F]' : 'bg-amber-400'}`}
+                  style={{ width: `${score}%` }}
+                />
+              </div>
+              {missing.length > 0 && (
+                <p className="text-xs text-gray-400">
+                  Eksik: {missing.join(' · ')}
+                </p>
+              )}
+              {score === 100 && (
+                <p className="text-xs text-[#00C49F] font-semibold">Profiliniz tamamlandı!</p>
+              )}
+            </div>
+          );
+        })()}
 
         <ProfileSettingsForm initialName={user.name ?? ''} initialPhone={user.phone ?? ''} initialAvatar={user.avatar ?? ''} />
       </div>
