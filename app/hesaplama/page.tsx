@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Metadata } from 'next';
 import { ArrowLeft, Calculator, Home, TrendingUp, Info, DollarSign, BarChart2 } from 'lucide-react';
 import CalculatorsClient from './CalculatorsClient';
+import MortgagePartners from '@/components/MortgagePartners';
 
 export const metadata: Metadata = {
   title: 'Gayrimenkul Hesaplama Araçları | Söylemesi Bizden',
@@ -80,6 +81,9 @@ export default function HesaplamaPage() {
 
         {/* Main calculators */}
         <CalculatorsClient />
+
+        {/* Bank comparison */}
+        <MortgagePartners />
 
         {/* Disclaimer */}
         <div className="flex items-start gap-3 bg-blue-50 border border-blue-100 rounded-2xl p-4">

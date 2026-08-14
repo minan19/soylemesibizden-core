@@ -26,6 +26,7 @@ import {
   Edit,
 } from 'lucide-react';
 import MortgageCalculator from '@/components/MortgageCalculator';
+import MortgagePartners from '@/components/MortgagePartners';
 import InquiryForm from '@/components/InquiryForm';
 import FavoriteButton from '@/components/FavoriteButton';
 import OfferForm from '@/components/OfferForm';
@@ -483,6 +484,9 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
 
             {/* 7 · Mortgage Calculator */}
             <MortgageCalculator defaultPrice={listing.price} />
+
+            {/* 7b · Mortgage Partners */}
+            <MortgagePartners listingPrice={listing.price} />
 
             {/* 7 · Inquiry / Contact Form */}
             <InquiryForm listingId={listing.id} />
