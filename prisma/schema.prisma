@@ -285,6 +285,15 @@ model Medya {
   algiHash       String?
   yapayZekaSuphe Int?
 
+  // KÖKEN BEYANI — dosyanın üstverisinden okunur, TAHMİN EDİLMEZ.
+  // Piksel analiziyle "bu YZ ürünü" demek güvenilir değil; yanlış
+  // pozitif masum bir ilan sahibini damgalar. Bunun yerine C2PA
+  // imzası, XMP araç beyanı ve EXIF kamera bilgisi kaydedilir.
+  kokenIsaretleri String[] @default([])
+  kokenAraci      String?
+  kameraMarka     String?
+  cekimTarihi     String?
+
   eklendi DateTime @default(now())
 
   @@index([ilanId, sira])

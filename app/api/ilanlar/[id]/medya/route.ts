@@ -5,6 +5,7 @@ import prisma from '@/lib/prisma';
 import { checkRateLimit } from '@/lib/ratelimit';
 import { algiHashHesapla, icerikHashHesapla } from '@/lib/algiHash';
 import { gorselDenetle } from '@/lib/gorselDenetim';
+import { kokenAnaliz, rozetGerekliMi } from '@/lib/gorselKoken';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 30;
@@ -111,6 +112,10 @@ export async function POST(
       haricIlanId: ilan.id,
     });
 
+    // ── KOKEN BEYANI ─────────────────────────────────────────────
+    // Tahmin edilmez, dosyanin kendi ustverisi okunur.
+    const koken = await kokenAnaliz(govde);
+
     // ── DEPOLAMA ─────────────────────────────────────────────────
     const token = process.env.BLOB_READ_WRITE_TOKEN;
     if (!token) {
@@ -121,8 +126,9 @@ export async function POST(
         {
           error: 'Görsel depolama yapılandırılmamış.',
           detay: 'BLOB_READ_WRITE_TOKEN tanımlı değil.',
-          // Denetim yine de doner — hash hesaplandi, bilgi degerli.
+          // Denetim ve koken yine de doner — hesaplandi, bilgi degerli.
           denetim,
+          koken,
         },
         { status: 503 }
       );
@@ -156,11 +162,18 @@ export async function POST(
         sira: ilan._count.medyalar,
         icerikHash,
         algiHash,
+        kokenIsaretleri: koken.isaretler,
+        kokenAraci: koken.aracAdi,
+        kameraMarka: koken.kameraMarka,
+        cekimTarihi: koken.cekimTarihi,
       },
       select: { id: true, url: true, sira: true },
     });
 
-    return NextResponse.json({ ...medya, denetim }, { status: 201 });
+    return NextResponse.json(
+      { ...medya, denetim, koken, rozetGerekli: rozetGerekliMi(koken) },
+      { status: 201 }
+    );
   } catch (error) {
     console.error('[medya POST]', error);
     return NextResponse.json({ error: 'Görsel eklenemedi.' }, { status: 500 });

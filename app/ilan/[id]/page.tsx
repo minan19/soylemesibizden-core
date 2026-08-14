@@ -4,6 +4,7 @@ import { ArrowLeft, MapPin, Hash, Building2, ImageOff } from 'lucide-react';
 import { ilanGetir } from '@/lib/ilanSorgu';
 import { KanitSeridi } from '@/components/kanit/KanitSeridi';
 import { FiyatGecmisi } from '@/components/kanit/FiyatGecmisi';
+import { GorselKoken } from '@/components/kanit/GorselKoken';
 import { kurus, m2Fiyat, yayindaSure, goreliGun } from '@/lib/bicim';
 
 export const dynamic = 'force-dynamic';
@@ -111,6 +112,11 @@ export default async function IlanDetayPage({
         <h2 className="mb-3 text-sm font-bold text-metin">Fiyat geçmişi</h2>
         <FiyatGecmisi kayitlar={ilan.fiyatGecmisi} />
       </section>
+
+      {/* Gorsellerin kokeni */}
+      <div className="mb-5">
+        <GorselKoken medyalar={ilan.medyalar} />
+      </div>
 
       {/* Tapu kimligi */}
       <section className="kart mb-5 p-4">
