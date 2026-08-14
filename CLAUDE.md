@@ -312,6 +312,35 @@ Migration SQL kullanıcı tarafından Neon SQL Editor'da çalıştırılmalı.
 - [x] **/kiralik** — Kiralık konut landing sayfası
 - [x] **/satilik** — Satılık konut landing sayfası
 
+### Oturum 9 (FAZ 148-165) — Tamamlananlar
+- [x] **FAZ-148:** Emlak vergisi hesaplayıcı (/emlak-vergisi) — 4 mülk türü, 3 belediye tipi, hisseli mülk
+- [x] **FAZ-149:** Portföy takip aracı (/portfoy) — localStorage tabanlı, çoklu mülk, şehir dağılımı
+- [x] **FAZ-150:** Kira artış hesaplayıcı (/kira-artis-hesaplama) — TÜİK TÜFE verileri, %25 tavan toggle
+- [x] **FAZ-151:** Banka kredileri karşılaştırma (/banka-kredileri) — 8 banka, örnek hesaplama, oran bar grafik
+- [x] **FAZ-152:** Hesaplama araçları güncellendi (/hesaplama) — uzman araçlar grid
+- [x] **FAZ-153:** Tüm araçlar sayfası (/tum-araclar) — 7 kategori, 33+ araç
+- [x] **FAZ-154:** Navbar Araçlar dropdown — araçlar menüsü desktop + mobile
+- [x] **FAZ-155:** Gayrimenkul sözlüğü (/gayrimenkul-sozlugu) — 25 terim, arama, alfabetik index, GlossaryClient
+- [x] **FAZ-156:** Sözlük navbar + tum-araclar entegrasyonu
+- [x] **FAZ-157:** Satıcı rehberi (/rehber/satici-rehberi) — 7 adım, kontrol listesi, vergi bilgisi
+- [x] **FAZ-158:** DASK prim hesaplayıcı (/dask-hesaplayici) — 5 risk bölgesi, yapı türü, prim tahmini
+- [x] **FAZ-159:** Ödeme planı simülatörü (/odeme-plani) — ay ay anapara+faiz tablosu, yıllık özet
+- [x] **FAZ-160:** Kira geliri vergisi hesaplayıcı (/kira-geliri-vergisi) — 2024 dilimleri, götürü/gerçek gider, istisna
+- [x] **FAZ-161:** Kredi karşılaştırma aracı (/kredi-karsilastirma) — 4 senaryo yan yana, bar grafikler
+- [x] **FAZ-162:** Hesaplama + footer güncellemesi — yeni araçlar bağlantılandı
+- [x] **FAZ-163:** Kira mı satın mı (/kira-mi-satin-mi) — 30 yıl projeksiyon, fırsat maliyeti, net servet grafik
+
+### Yeni Sayfalar (Oturum 9)
+- [x] **/gayrimenkul-sozlugu** — 25 terim, client-side arama, alfabetik gruplandırma
+- [x] **/rehber/satici-rehberi** — Satış rehberi, 7 adım, belge listesi
+- [x] **/dask-hesaplayici** — Zorunlu deprem sigortası prim hesaplayıcı
+- [x] **/odeme-plani** — Mortgage ödeme planı simülatörü (aylık/yıllık)
+- [x] **/kira-geliri-vergisi** — Kira geliri üzerinden gelir vergisi hesaplayıcı
+- [x] **/kredi-karsilastirma** — 4 senaryoyu yan yana kredi karşılaştırma
+- [x] **/kira-mi-satin-mi** — Kira vs satın alma 30 yıl projeksiyon karşılaştırması
+
+---
+
 ### Oturum 8 (FAZ 143-147) — Tamamlananlar
 - [x] **FAZ-143:** Lüks Gayrimenkul sayfası (/luks) — dinamik eşik (top 10%), altın tema, premium koleksiyon
 - [x] **FAZ-144:** Tapu masrafı hesaplayıcı (/tapu-masrafi) — tapu harcı, döner sermaye, DASK, KDV, emlakçı komisyonu
@@ -458,7 +487,7 @@ git push https://minan19:<GITHUB_TOKEN>@github.com/minan19/soylemesibizden-core.
 
 ---
 
-*Son güncelleme: 2026-08-14 — Oturum 8: FAZ 143-147 tamamlandı. Lüks sayfası, tapu masrafı hesaplayıcı, fiyat trendi, mahalle analizi, yatırım analizi (ROI + al/kirala), footer güncellemesi.*
+*Son güncelleme: 2026-08-14 — Oturum 9: FAZ 148-165 tamamlandı. Gayrimenkul sözlüğü (25 terim), satıcı rehberi, DASK hesaplayıcı, ödeme planı simülatörü, kira geliri vergisi, kredi karşılaştırma, kira mı satın mı (30 yıl projeksiyon). Toplam 40+ araç ve sayfa.*
 
 **Oturum 6 (FAZ 79-88) — Tamamlananlar:**
 - FAZ-79: İlan şikayet sistemi — /api/reports + ReportListingButton modal
