@@ -66,6 +66,7 @@ export default function Navbar() {
     { href: '/istatistikler', label: 'İstatistikler', authRequired: false },
     { href: '/piyasa', label: 'Piyasa Verileri', authRequired: false },
     { href: '/rehber', label: 'Konut Rehberi', authRequired: false },
+    { href: '/luks', label: 'Lüks Gayrimenkul', authRequired: false },
     { href: '/favorites', label: 'Favoriler', authRequired: true },
     { href: '/my-listings', label: 'İlanlarım', authRequired: true },
     { href: '/offers', label: 'Teklifler', authRequired: true },
