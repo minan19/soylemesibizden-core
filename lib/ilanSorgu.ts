@@ -1,14 +1,27 @@
+import { Prisma } from '@prisma/client';
 import prisma from '@/lib/prisma';
 import type { IlanKartVerisi } from '@/components/ilan/IlanKarti';
+import type { Filtre } from '@/lib/ilanFiltre';
 
 /**
  * Ilan sorgulari · 14.08.2026 (TRT)
  *
- * v2 modeli: merkez varlik TASINMAZ, ilan ona bagli bir kayittir.
- * Kart icin gereken her alan tek sorguda cekilir; N+1 yok.
+ * Iki asamali arama:
+ *   1. HAM SQL ile filtrelenmis + siralanmis ID listesi
+ *   2. Prisma ile o ID'lerin iliskilerini tek sorguda cekme
+ *
+ * Neden ham SQL? Iki siralama Prisma'nin filtre API'siyle ifade
+ * edilemiyor:
+ *   - m2 fiyati  : fiyatKurus / tasinmaz.brutM2 (tablolar arasi hesap)
+ *   - fiyati dusenler : ilan.fiyatKurus < ilk kayitli fiyat
+ *                       (ayni satirda iki sutun karsilastirmasi)
+ * Bunlari bellekte yapmak sayfalamayi bozar — 20 kaydi siralayip
+ * "en ucuz m2" demek yanlis olur, tum kumede siralamak gerekir.
+ *
+ * Sorgular parametrelidir; Prisma.sql ile birlestirilir, string
+ * birlestirme yapilmaz.
  */
 
-/** Kart icin gereken minimum iliski seti. */
 const KART_ICERIK = {
   tasinmaz: {
     select: {
@@ -24,15 +37,9 @@ const KART_ICERIK = {
   _count: { select: { fiyatGecmisi: true, medyalar: true } },
 } as const;
 
-type IlanKaydi = Awaited<
-  ReturnType<
-    typeof prisma.ilan.findFirstOrThrow<{ include: typeof KART_ICERIK }>
-  >
->;
+type IlanKaydi = Prisma.IlanGetPayload<{ include: typeof KART_ICERIK }>;
 
 function karteDonustur(i: IlanKaydi): IlanKartVerisi {
-  const kontrolEdilen = i.medyalar.filter((m) => m.algiHash).length;
-
   return {
     id: i.id,
     baslik: i.baslik,
@@ -51,61 +58,145 @@ function karteDonustur(i: IlanKaydi): IlanKartVerisi {
       yetkiKaynagi: i.yetki.kaynak,
       sonTeyitTs: i.sonTeyitTs,
       teyitSonTarih: i.teyitSonTarih,
-      fiyatDegisimSayisi: Math.max(0, i._count.fiyatGecmisi - 1), // ilk kayit "degisim" degil
-      gorselKontrolEdilen: kontrolEdilen,
+      // Ilk kayit "degisim" degil, baslangic fiyati.
+      fiyatDegisimSayisi: Math.max(0, i._count.fiyatGecmisi - 1),
+      gorselKontrolEdilen: i.medyalar.filter((m) => m.algiHash).length,
       gorselToplam: i._count.medyalar,
     },
   };
 }
 
-export interface IlanFiltre {
-  ilceAd?: string;
-  turu?: 'SATILIK' | 'KIRALIK';
-  enAzKurus?: bigint;
-  enCokKurus?: bigint;
-  sayfa?: number;
-  adet?: number;
+const SIRALAMA_SQL: Record<Filtre['siralama'], Prisma.Sql> = {
+  'yayin-yeni': Prisma.sql`i."yayinTs" DESC NULLS LAST`,
+  'yayin-eski': Prisma.sql`i."yayinTs" ASC NULLS LAST`,
+  'fiyat-artan': Prisma.sql`i."fiyatKurus" ASC`,
+  'fiyat-azalan': Prisma.sql`i."fiyatKurus" DESC`,
+  // brutM2 yoksa en sona at; sifira bolme olmasin.
+  'm2-fiyat': Prisma.sql`
+    CASE WHEN t."brutM2" IS NULL OR t."brutM2" = 0 THEN NULL
+         ELSE i."fiyatKurus"::numeric / t."brutM2"
+    END ASC NULLS LAST`,
+  // En cok dusenden en aza.
+  'fiyat-dusen': Prisma.sql`
+    CASE WHEN ilk.deger IS NULL OR ilk.deger = 0 THEN NULL
+         ELSE (i."fiyatKurus"::numeric - ilk.deger) / ilk.deger
+    END ASC NULLS LAST`,
+};
+
+export interface AramaSonucu {
+  ilanlar: IlanKartVerisi[];
+  toplam: number;
+  sayfa: number;
+  sayfaAdedi: number;
+  sorguMs: number;
 }
 
-export async function ilanlariGetir(f: IlanFiltre = {}) {
-  const adet = Math.min(f.adet ?? 20, 50);
-  const sayfa = Math.max(f.sayfa ?? 1, 1);
+export async function ilanAra(f: Filtre, adet = 20): Promise<AramaSonucu> {
+  const t0 = Date.now();
+  const atla = (f.sayfa - 1) * adet;
 
-  const where = {
-    // YALNIZCA yayinda olanlar. Taslak, moderasyondaki veya
-    // teyit suresi dolup pasiflesen ilanlar listede gorunmez.
-    durumu: 'YAYINDA' as const,
-    ...(f.turu ? { turu: f.turu } : {}),
-    ...(f.ilceAd
-      ? { tasinmaz: { mahalle: { ilceAd: { equals: f.ilceAd, mode: 'insensitive' as const } } } }
-      : {}),
-    ...(f.enAzKurus || f.enCokKurus
-      ? {
-          fiyatKurus: {
-            ...(f.enAzKurus ? { gte: f.enAzKurus } : {}),
-            ...(f.enCokKurus ? { lte: f.enCokKurus } : {}),
-          },
-        }
-      : {}),
-  };
+  // ── Kosullar ────────────────────────────────────────────────
+  const kosullar: Prisma.Sql[] = [
+    // Yalnizca yayindakiler. Taslak, moderasyondaki ve teyit
+    // suresi dolup pasiflesenler aramada gorunmez.
+    Prisma.sql`i.durumu = 'YAYINDA'`,
+  ];
 
-  const [kayitlar, toplam] = await Promise.all([
-    prisma.ilan.findMany({
-      where,
-      include: KART_ICERIK,
-      orderBy: { yayinTs: 'desc' },
-      skip: (sayfa - 1) * adet,
-      take: adet,
-    }),
-    prisma.ilan.count({ where }),
+  if (f.turu) kosullar.push(Prisma.sql`i.turu = ${f.turu}::"IlanTuru"`);
+  if (f.tipi) kosullar.push(Prisma.sql`t.tipi = ${f.tipi}::"TasinmazTipi"`);
+  if (f.ilce) kosullar.push(Prisma.sql`m."ilceAd" ILIKE ${f.ilce}`);
+  if (f.odaSayisi) kosullar.push(Prisma.sql`i."odaSayisi" = ${f.odaSayisi}`);
+
+  if (f.enAzLira !== undefined) {
+    kosullar.push(Prisma.sql`i."fiyatKurus" >= ${BigInt(f.enAzLira) * 100n}`);
+  }
+  if (f.enCokLira !== undefined) {
+    kosullar.push(Prisma.sql`i."fiyatKurus" <= ${BigInt(f.enCokLira) * 100n}`);
+  }
+  if (f.enAzM2 !== undefined) kosullar.push(Prisma.sql`t."brutM2" >= ${f.enAzM2}`);
+  if (f.enCokM2 !== undefined) kosullar.push(Prisma.sql`t."brutM2" <= ${f.enCokM2}`);
+
+  if (f.q) {
+    const desen = `%${f.q}%`;
+    kosullar.push(Prisma.sql`(
+      i.baslik ILIKE ${desen}
+      OR m."mahalleAd" ILIKE ${desen}
+      OR m."ilceAd" ILIKE ${desen}
+      OR t."tasinmazNo" = ${f.q}
+    )`);
+  }
+
+  // "Fiyati dusenler" bir siralama degil, ayni zamanda filtredir.
+  if (f.siralama === 'fiyat-dusen') {
+    kosullar.push(Prisma.sql`ilk.deger IS NOT NULL AND i."fiyatKurus" < ilk.deger`);
+  }
+
+  const nerede = Prisma.join(kosullar, ' AND ');
+
+  // Ilk kayitli fiyat — yalnizca gerektiginde baglanir.
+  const ilkFiyatJoin =
+    f.siralama === 'fiyat-dusen'
+      ? Prisma.sql`
+          LEFT JOIN LATERAL (
+            SELECT fg."yeniFiyatKurus"::numeric AS deger
+            FROM fiyat_gecmisi fg
+            WHERE fg."ilanId" = i.id
+            ORDER BY fg."degisimTs" ASC
+            LIMIT 1
+          ) ilk ON TRUE`
+      : Prisma.sql``;
+
+  const kaynak = Prisma.sql`
+    FROM ilan i
+    JOIN tasinmaz t ON t.id = i."tasinmazId"
+    JOIN mahalle m ON m.id = t."mahalleId"
+    ${ilkFiyatJoin}
+    WHERE ${nerede}`;
+
+  const [idSatirlari, sayimSatiri] = await Promise.all([
+    prisma.$queryRaw<{ id: string }[]>(Prisma.sql`
+      SELECT i.id ${kaynak}
+      ORDER BY ${SIRALAMA_SQL[f.siralama]}, i.id
+      LIMIT ${adet} OFFSET ${atla}`),
+    prisma.$queryRaw<{ sayi: bigint }[]>(Prisma.sql`
+      SELECT COUNT(*)::bigint AS sayi ${kaynak}`),
   ]);
+
+  const toplam = Number(sayimSatiri[0]?.sayi ?? 0n);
+  const idler = idSatirlari.map((r) => r.id);
+
+  if (idler.length === 0) {
+    return { ilanlar: [], toplam, sayfa: f.sayfa, sayfaAdedi: 1, sorguMs: Date.now() - t0 };
+  }
+
+  // Iliskileri tek sorguda cek, ham SQL'in sirasini koru.
+  const kayitlar = await prisma.ilan.findMany({
+    where: { id: { in: idler } },
+    include: KART_ICERIK,
+  });
+  const haritaSira = new Map(idler.map((id, i) => [id, i]));
+  kayitlar.sort((a, b) => haritaSira.get(a.id)! - haritaSira.get(b.id)!);
 
   return {
     ilanlar: kayitlar.map(karteDonustur),
     toplam,
-    sayfa,
+    sayfa: f.sayfa,
     sayfaAdedi: Math.max(1, Math.ceil(toplam / adet)),
+    sorguMs: Date.now() - t0,
   };
+}
+
+/** Filtre panelindeki ilce listesi — yalnizca ilan bulunan ilceler. */
+export async function ilceleriGetir(): Promise<{ ilceAd: string; adet: number }[]> {
+  const satirlar = await prisma.$queryRaw<{ ilceAd: string; adet: bigint }[]>(Prisma.sql`
+    SELECT m."ilceAd", COUNT(*)::bigint AS adet
+    FROM ilan i
+    JOIN tasinmaz t ON t.id = i."tasinmazId"
+    JOIN mahalle m ON m.id = t."mahalleId"
+    WHERE i.durumu = 'YAYINDA'
+    GROUP BY m."ilceAd"
+    ORDER BY adet DESC, m."ilceAd" ASC`);
+  return satirlar.map((s) => ({ ilceAd: s.ilceAd, adet: Number(s.adet) }));
 }
 
 export async function ilanGetir(id: string) {
