@@ -109,6 +109,8 @@ export default function HesaplamaPage() {
               { href: '/kredi-karsilastirma', label: 'Kredi Karşılaştır', desc: '4 senaryo yan yana' },
               { href: '/dask-hesaplayici', label: 'DASK Hesapla', desc: 'Deprem sigortası primi' },
               { href: '/kira-geliri-vergisi', label: 'Kira Vergisi', desc: '2024 gelir vergisi' },
+              { href: '/kira-mi-satin-mi', label: 'Kira mı Satın mı?', desc: '30 yıl projeksiyon' },
+              { href: '/pesinat-plani', label: 'Peşinat Planı', desc: 'Ne zaman ev alabilirim?' },
             ].map(l => (
               <Link
                 key={l.href}
