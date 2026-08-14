@@ -2,13 +2,27 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, MapPin, TrendingUp, X, Command, ArrowUpRight } from 'lucide-react';
+import { Search, MapPin, TrendingUp, X, Command, ArrowUpRight, Clock } from 'lucide-react';
 
 interface Suggestion {
   type: 'city' | 'listing';
   label: string;
   sublabel?: string;
   href: string;
+}
+
+const RECENT_KEY = 'sbd_recent_searches';
+const MAX_RECENT = 5;
+
+function getRecentSearches(): Array<{ label: string; href: string }> {
+  try { return JSON.parse(localStorage.getItem(RECENT_KEY) ?? '[]'); } catch { return []; }
+}
+
+function saveRecentSearch(label: string, href: string) {
+  try {
+    const prev = getRecentSearches().filter(r => r.href !== href);
+    localStorage.setItem(RECENT_KEY, JSON.stringify([{ label, href }, ...prev].slice(0, MAX_RECENT)));
+  } catch { /* noop */ }
 }
 
 const QUICK_LINKS = [
@@ -27,6 +41,7 @@ export default function CommandPalette() {
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedIdx, setSelectedIdx] = useState(-1);
+  const [recentSearches, setRecentSearches] = useState<Array<{ label: string; href: string }>>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -48,6 +63,7 @@ export default function CommandPalette() {
       setQ('');
       setSuggestions([]);
       setSelectedIdx(-1);
+      setRecentSearches(getRecentSearches());
     }
   }, [open]);
 
@@ -72,7 +88,8 @@ export default function CommandPalette() {
     debounceRef.current = setTimeout(() => search(value), 200);
   };
 
-  const navigate = (href: string) => {
+  const navigate = (href: string, label?: string) => {
+    if (label) saveRecentSearch(label, href);
     setOpen(false);
     router.push(href);
   };
@@ -90,9 +107,9 @@ export default function CommandPalette() {
     } else if (e.key === 'Enter') {
       e.preventDefault();
       if (selectedIdx >= 0 && allItems[selectedIdx]) {
-        navigate(allItems[selectedIdx].href);
+        navigate(allItems[selectedIdx].href, allItems[selectedIdx].label);
       } else if (q.trim()) {
-        navigate(`/listings?q=${encodeURIComponent(q.trim())}`);
+        navigate(`/listings?q=${encodeURIComponent(q.trim())}`, q.trim());
       }
     }
   };
@@ -135,7 +152,7 @@ export default function CommandPalette() {
               {allItems.map((item, idx) => (
                 <li key={idx}>
                   <button
-                    onClick={() => navigate(item.href)}
+                    onClick={() => navigate(item.href, item.label)}
                     className={`w-full text-left px-5 py-3 flex items-center gap-3 transition-colors ${
                       selectedIdx === idx ? 'bg-[#F0FDF8]' : 'hover:bg-gray-50'
                     }`}
@@ -160,7 +177,7 @@ export default function CommandPalette() {
             <div className="py-8 text-center">
               <p className="text-sm text-gray-400">Sonuç bulunamadı</p>
               <button
-                onClick={() => navigate(`/listings?q=${encodeURIComponent(q)}`)}
+                onClick={() => navigate(`/listings?q=${encodeURIComponent(q)}`, q)}
                 className="mt-2 text-xs text-[#00C49F] font-semibold hover:underline"
               >
                 Tüm ilanları ara →
@@ -168,12 +185,31 @@ export default function CommandPalette() {
             </div>
           ) : (
             <div className="py-3">
+              {recentSearches.length > 0 && (
+                <>
+                  <p className="text-[10px] font-bold tracking-widest text-gray-400 uppercase px-5 pb-2">Son Aramalar</p>
+                  <ul>
+                    {recentSearches.map((r, i) => (
+                      <li key={i}>
+                        <button
+                          onClick={() => navigate(r.href)}
+                          className="w-full text-left px-5 py-2.5 flex items-center gap-3 hover:bg-gray-50 transition-colors"
+                        >
+                          <Clock size={12} className="text-gray-300 shrink-0" />
+                          <p className="text-sm text-gray-600">{r.label}</p>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="border-t border-gray-50 mt-2 mb-1" />
+                </>
+              )}
               <p className="text-[10px] font-bold tracking-widest text-gray-400 uppercase px-5 pb-2">Hızlı Erişim</p>
               <ul>
                 {QUICK_LINKS.map(link => (
                   <li key={link.href}>
                     <button
-                      onClick={() => navigate(link.href)}
+                      onClick={() => navigate(link.href, link.label)}
                       className="w-full text-left px-5 py-2.5 flex items-center gap-3 hover:bg-gray-50 transition-colors"
                     >
                       <ArrowUpRight size={13} className="text-gray-300 shrink-0" />
