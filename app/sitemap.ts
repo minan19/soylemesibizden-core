@@ -60,6 +60,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/fiyat-trendi`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.8 },
     { url: `${baseUrl}/mahalle-analizi`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.8 },
     { url: `${baseUrl}/yatirim-analizi`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.75 },
+    { url: `${baseUrl}/emlak-vergisi`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.7 },
   ];
 
   const listingPages: MetadataRoute.Sitemap = listings.map(l => ({
