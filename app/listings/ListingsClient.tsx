@@ -389,12 +389,40 @@ export default function ListingsClient({
           {/* Row 4 — price range */}
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-xs text-gray-400 font-medium shrink-0">Fiyat (₺):</span>
+            {/* Quick-select price ranges */}
+            {[
+              { label: '< 1M', min: '', max: '1000000' },
+              { label: '1M–3M', min: '1000000', max: '3000000' },
+              { label: '3M–5M', min: '3000000', max: '5000000' },
+              { label: '5M–10M', min: '5000000', max: '10000000' },
+              { label: '10M+', min: '10000000', max: '' },
+            ].map(r => {
+              const isActive = priceMin === r.min && priceMax === r.max;
+              return (
+                <button
+                  key={r.label}
+                  onClick={() => {
+                    setPriceMin(r.min);
+                    setPriceMax(r.max);
+                    push({ minPrice: r.min || undefined, maxPrice: r.max || undefined });
+                  }}
+                  className={`px-2.5 py-1.5 text-[11px] font-bold rounded-lg border transition-all ${
+                    isActive
+                      ? 'bg-[#00C49F] text-white border-[#00C49F]'
+                      : 'bg-white text-gray-500 border-gray-200 hover:border-[#00C49F]/50'
+                  }`}
+                >
+                  {r.label}
+                </button>
+              );
+            })}
+            <span className="text-gray-200 text-xs">|</span>
             <input
               type="number"
               value={priceMin}
               onChange={e => setPriceMin(e.target.value)}
               placeholder="Min"
-              className="w-28 px-3 py-2 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#00C49F] transition-colors"
+              className="w-24 px-3 py-2 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#00C49F] transition-colors"
             />
             <span className="text-gray-300">—</span>
             <input
@@ -402,7 +430,7 @@ export default function ListingsClient({
               value={priceMax}
               onChange={e => setPriceMax(e.target.value)}
               placeholder="Maks"
-              className="w-28 px-3 py-2 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#00C49F] transition-colors"
+              className="w-24 px-3 py-2 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#00C49F] transition-colors"
             />
             <button
               onClick={() => push({ minPrice: priceMin || undefined, maxPrice: priceMax || undefined })}
@@ -420,6 +448,30 @@ export default function ListingsClient({
           {/* Row 4b — area filter */}
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-xs text-gray-400 font-medium shrink-0">Alan (m²):</span>
+            {[
+              { label: '< 75', min: '', max: '75' },
+              { label: '75–125', min: '75', max: '125' },
+              { label: '125–200', min: '125', max: '200' },
+              { label: '200+', min: '200', max: '' },
+            ].map(r => {
+              const isActive = areaMin === r.min && areaMax === r.max;
+              return (
+                <button
+                  key={r.label}
+                  onClick={() => {
+                    setAreaMin(r.min);
+                    setAreaMax(r.max);
+                    push({ minArea: r.min || undefined, maxArea: r.max || undefined });
+                  }}
+                  className={`px-2.5 py-1.5 text-[11px] font-bold rounded-lg border transition-all ${
+                    isActive ? 'bg-[#00C49F] text-white border-[#00C49F]' : 'bg-white text-gray-500 border-gray-200 hover:border-[#00C49F]/50'
+                  }`}
+                >
+                  {r.label}
+                </button>
+              );
+            })}
+            <span className="text-gray-200 text-xs">|</span>
             <input
               type="number"
               value={areaMin}
