@@ -43,6 +43,7 @@ const CATEGORIES: Category[] = [
       { href: '/kira-geliri-vergisi', icon: FileText, label: 'Kira Geliri Vergisi', desc: '2024 gelir vergisi hesabı', badge: 'Yeni' },
       { href: '/kredi-karsilastirma', icon: Scale, label: 'Kredi Karşılaştırma', desc: '4 senaryoyu yan yana karşılaştır', badge: 'Yeni' },
       { href: '/kira-mi-satin-mi', icon: Scale, label: 'Kira mı, Satın mı?', desc: '30 yıl projeksiyon karşılaştırma', badge: 'Yeni' },
+      { href: '/pesinat-plani', icon: TrendingUp, label: 'Peşinat Birikim Planı', desc: 'Ne zaman ev alabilirim?', badge: 'Yeni' },
     ],
   },
   {
