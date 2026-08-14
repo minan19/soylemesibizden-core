@@ -7,9 +7,10 @@ import SaveSearchButton from '@/components/SaveSearchButton';
 
 export const dynamic = 'force-dynamic';
 
-export async function generateMetadata({ searchParams }: { searchParams: { city?: string; propertyType?: string; listingType?: string; q?: string } }): Promise<Metadata> {
+export async function generateMetadata({ searchParams }: { searchParams: { city?: string; district?: string; propertyType?: string; listingType?: string; q?: string } }): Promise<Metadata> {
   const parts: string[] = [];
   if (searchParams.city) parts.push(searchParams.city);
+  if (searchParams.district) parts.push(searchParams.district);
   if (searchParams.propertyType) parts.push(searchParams.propertyType);
   if (searchParams.listingType) parts.push(searchParams.listingType);
   if (searchParams.q) parts.push(`"${searchParams.q}"`);
@@ -163,8 +164,33 @@ export default async function ListingsPage({
       <div className="max-w-7xl mx-auto px-6 lg:px-8 py-10 space-y-8">
         <header className="flex items-start justify-between flex-wrap gap-3">
           <div>
+            {(city || district) && (
+              <nav className="flex items-center gap-1.5 text-xs text-gray-400 mb-2 flex-wrap">
+                <Link href="/listings" className="hover:text-[#00C49F] transition-colors">Tüm İlanlar</Link>
+                {city && (
+                  <>
+                    <span>/</span>
+                    <Link href={`/listings?city=${encodeURIComponent(city)}`} className="hover:text-[#00C49F] transition-colors">{city}</Link>
+                  </>
+                )}
+                {district && (
+                  <>
+                    <span>/</span>
+                    <span className="text-gray-600 font-medium">{district}</span>
+                  </>
+                )}
+              </nav>
+            )}
             <h1 className="text-3xl font-bold tracking-tight text-gray-900">
-              {q ? `"${q}" için sonuçlar` : city ? `${city} İlanları` : 'Tüm İlanlar'}
+              {q
+                ? `"${q}" için sonuçlar`
+                : district && city
+                ? `${city} · ${district} İlanları`
+                : district
+                ? `${district} İlanları`
+                : city
+                ? `${city} İlanları`
+                : 'Tüm İlanlar'}
             </h1>
             <p className="text-sm text-gray-500 mt-1">
               {totalCount} ilan bulundu
@@ -199,6 +225,7 @@ export default async function ListingsPage({
               ...(minArea ? { minArea } : {}),
               ...(maxArea ? { maxArea } : {}),
               ...(city ? { city } : {}),
+              ...(district ? { district } : {}),
               ...(neighborhood ? { neighborhood } : {}),
               ...(hasElevator ? { hasElevator } : {}),
               ...(hasParking ? { hasParking } : {}),
