@@ -36,6 +36,7 @@ import RecordView from '@/components/RecordView';
 import PhotoGallery from '@/components/PhotoGallery';
 import ViewingRequestForm from '@/components/ViewingRequestForm';
 import ReportListingButton from '@/components/ReportListingButton';
+import ListingNotes from '@/components/ListingNotes';
 
 export const dynamic = 'force-dynamic';
 
@@ -568,6 +569,9 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
 
             {/* Viewing Request */}
             <ViewingRequestForm listingId={listing.id} listingTitle={listing.title} />
+
+            {/* Notes */}
+            <ListingNotes listingId={listing.id} />
 
             {/* Report */}
             <div className="flex justify-end pt-1">

@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation';
 import { Plus, MapPin, ArrowRight, Edit, TrendingUp, BarChart2 } from 'lucide-react';
 import DeleteListingButton from '@/components/DeleteListingButton';
 import ChangeStatusButton from '@/components/ChangeStatusButton';
+import ListingNoteIndicator from '@/components/ListingNoteIndicator';
 
 export const dynamic = 'force-dynamic';
 
@@ -102,7 +103,10 @@ export default async function MyListingsPage() {
                         {listing.listingType} · {listing.propertyType}
                       </span>
                     </div>
-                    <h2 className="text-base font-semibold text-gray-900 mb-1">{listing.title}</h2>
+                    <div className="flex items-center gap-2 mb-1">
+                      <h2 className="text-base font-semibold text-gray-900">{listing.title}</h2>
+                      <ListingNoteIndicator listingId={listing.id} />
+                    </div>
                     {(listing.location || listing.city) && (
                       <p className="text-xs text-gray-400 flex items-center gap-1 mb-2">
                         <MapPin size={10} /> {listing.location ?? listing.city}
