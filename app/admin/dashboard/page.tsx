@@ -215,11 +215,11 @@ export default async function AdminDashboardPage() {
             </div>
             <ArrowUpRight size={13} className="text-gray-300 ml-auto" />
           </Link>
-          <Link href="/admin/analytics" className="flex items-center gap-3 bg-white rounded-2xl px-4 py-3 border border-gray-100 hover:border-[#00C49F]/30 hover:shadow-sm transition-all">
+          <Link href="/admin/trends" className="flex items-center gap-3 bg-white rounded-2xl px-4 py-3 border border-gray-100 hover:border-[#00C49F]/30 hover:shadow-sm transition-all">
             <Activity size={16} className="text-[#00C49F]" />
             <div>
-              <p className="text-xs font-bold text-gray-700">Platform Analitik</p>
-              <p className="text-[10px] text-gray-400">Dönüşüm & Metrik</p>
+              <p className="text-xs font-bold text-gray-700">Platform Trendleri</p>
+              <p className="text-[10px] text-gray-400">14 günlük grafik</p>
             </div>
             <ArrowUpRight size={13} className="text-gray-300 ml-auto" />
           </Link>
