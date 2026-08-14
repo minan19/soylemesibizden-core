@@ -31,6 +31,17 @@ const GUIDES = [
     readTime: '6 dk',
   },
   {
+    href: '/rehber/satici-rehberi',
+    icon: ArrowRight,
+    title: 'Satıcı Rehberi',
+    desc: 'Doğru fiyatlama, etkili ilan hazırlama, pazarlık teknikleri, tapu işlemleri ve vergi yükümlülükleri.',
+    color: 'text-rose-600',
+    bg: 'bg-rose-50',
+    border: 'border-rose-100',
+    tags: ['Fiyatlama', 'Tapu', 'Pazarlık', 'Vergi'],
+    readTime: '15 dk',
+  },
+  {
     href: '/rehber/yatirim-rehberi',
     icon: TrendingUp,
     title: 'Gayrimenkul Yatırım Rehberi',
