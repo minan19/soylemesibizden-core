@@ -4,6 +4,10 @@
     {
       "path": "/api/cron/teyit-kontrol",
       "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/cron/arama-bildirim",
+      "schedule": "0 8 * * *"
     }
   ]
 }
