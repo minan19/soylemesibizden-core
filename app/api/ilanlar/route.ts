@@ -5,6 +5,7 @@ import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 import { getEids } from '@/lib/eids';
 import { checkRateLimit } from '@/lib/ratelimit';
+import { belgeDegerlendir, TTBS_SORGU_URL } from '@/lib/yetkiBelgesi';
 
 export const dynamic = 'force-dynamic';
 
@@ -74,13 +75,42 @@ export async function POST(request: NextRequest) {
 
     const kullanici = await prisma.kullanici.findUnique({
       where: { id: kullaniciId },
-      select: { id: true, eidsKullaniciKodu: true, rol: true, ofisId: true },
+      select: {
+        id: true, eidsKullaniciKodu: true, rol: true, ofisId: true,
+        ofis: {
+          select: {
+            unvan: true,
+            yetkiBelgeNo: true,
+            yetkiBelgeBitis: true,
+            yetkiBelgeGecerli: true,
+          },
+        },
+      },
     });
     if (!kullanici?.eidsKullaniciKodu) {
       return NextResponse.json(
         { error: 'EİDS kimlik doğrulaması yapılmamış.' },
         { status: 403 }
       );
+    }
+
+    // ── KAPI 0: ofis yetki belgesi ───────────────────────────────
+    // Yonetmelik geregi ilan, YETKI BELGELI isletme tarafindan
+    // verilebilir. 1 Ocak 2026'dan beri belge yillik harca tabi;
+    // harci odemeyenin belgesi yenilenmiyor. Bu yuzden "belgesi vardi"
+    // ile "belgesi gecerli" ayrimi 2026'da kritik.
+    if (kullanici.ofis) {
+      const belge = belgeDegerlendir(kullanici.ofis);
+      if (!belge.ilanVerebilir) {
+        return NextResponse.json(
+          {
+            error: 'Ofisinizin yetki belgesi ilan vermeye uygun değil.',
+            detay: belge.mesaj,
+            sorgulamaAdresi: TTBS_SORGU_URL,
+          },
+          { status: 403 }
+        );
+      }
     }
 
     const eids = getEids();

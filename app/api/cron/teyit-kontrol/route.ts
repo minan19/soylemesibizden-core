@@ -10,9 +10,10 @@ export const maxDuration = 60;
  *
  * OTOMATIK PASIFLESTIRME — hayalet ilan sorununun ikinci yarisi.
  *
- * Gunde bir calisir ve iki is yapar:
- *   1. Yetki suresi dolan ilanlari YETKI_BITTI ile pasiflestirir.
- *   2. Teyit suresi dolan ilanlari TEYIT_EDILMEDI ile pasiflestirir.
+ * Gunde bir calisir ve uc is yapar:
+ *   1. EIDS yetki suresi dolan ilanlari pasiflestirir.
+ *   2. Yetki belgesi dusen OFISLERIN ilanlarini pasiflestirir.
+ *   3. Teyit suresi dolan ilanlari pasiflestirir.
  *
  * "Insan eli degmeden kalkiyor" iddiasi ancak bu is calisirsa dogrudur.
  * Bu yuzden gorev sessizce basarisiz olmaz: hata durumunda 500 doner
@@ -62,7 +63,30 @@ export async function GET(request: NextRequest) {
       data: { durumu: 'PASIF', otomatikPasifTs: simdi },
     });
 
-    // ── 2. Teyit suresi dolanlar ─────────────────────────────────
+    // ── 2. Yetki belgesi suresi dolan ofislerin ilanlari ─────────
+    // Yonetmelik geregi ilan yalnizca yetki belgeli isletme
+    // tarafindan verilebilir. Belge duserse ilanin dayanagi da duser.
+    // 1 Ocak 2026'dan beri belge yillik harca tabi (20.000 TL,
+    // buyuksehirde 40.000 TL); odemeyenin belgesi yenilenmiyor.
+    const belgesiDusenOfis = await prisma.emlakOfisi.updateMany({
+      where: { yetkiBelgeGecerli: true, yetkiBelgeBitis: { lte: simdi } },
+      data: { yetkiBelgeGecerli: false },
+    });
+
+    const belgeNedeniylePasif = await prisma.ilan.updateMany({
+      where: {
+        durumu: { in: ['YAYINDA', 'TEYIT_BEKLIYOR'] },
+        ofis: {
+          OR: [
+            { yetkiBelgeGecerli: false },
+            { yetkiBelgeBitis: { lte: simdi } },
+          ],
+        },
+      },
+      data: { durumu: 'PASIF', otomatikPasifTs: simdi },
+    });
+
+    // ── 3. Teyit suresi dolanlar ─────────────────────────────────
     const teyitDolan = await prisma.ilan.updateMany({
       where: {
         durumu: { in: ['YAYINDA', 'TEYIT_BEKLIYOR'] },
@@ -71,7 +95,7 @@ export async function GET(request: NextRequest) {
       data: { durumu: 'PASIF', otomatikPasifTs: simdi },
     });
 
-    // ── 3. Yaklasanlar — hatirlatma icin sayilir ─────────────────
+    // ── 4. Yaklasanlar — hatirlatma icin sayilir ─────────────────
     const esik = new Date(simdi.getTime() + HATIRLATMA_ESIGI_GUN * 86_400_000);
     const hatirlatilacak = await prisma.ilan.count({
       where: {
@@ -84,6 +108,8 @@ export async function GET(request: NextRequest) {
       calismaTs: simdi.toISOString(),
       yetkisiDolanKayit: yetkiSonuc.count,
       yetkiNedeniylePasif: yetkiBiten.count,
+      belgesiDusenOfis: belgesiDusenOfis.count,
+      belgeNedeniylePasif: belgeNedeniylePasif.count,
       teyitNedeniylePasif: teyitDolan.count,
       hatirlatmaBekleyen: hatirlatilacak,
       sebepMetinleri: PASIFLESME_METNI,
