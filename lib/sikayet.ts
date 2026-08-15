@@ -18,6 +18,8 @@
  * Bu dosya saf mantik icerir — veritabani ve HTTP bilmez.
  */
 
+import { iyelik } from '@/lib/bicim';
+
 export type SikayetTuru =
   | 'SATILDI_HALA_YAYINDA'
   | 'YANLIS_FIYAT'
@@ -121,7 +123,7 @@ export function slaMetni(s: SlaOzeti): string {
   }
   const yuzde = Math.round((s.kirkSekizSaatOrani ?? 0) * 100);
   return (
-    `${s.toplam} şikâyetin ${s.kapali}'i kapatıldı. ` +
+    `${s.toplam} şikâyetin ${iyelik(s.kapali)} kapatıldı. ` +
     `Ortanca kapanma süresi ${s.ortancaSaat} saat; ` +
     `%${yuzde}'i 48 saat içinde kapandı.`
   );

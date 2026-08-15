@@ -1,8 +1,9 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { Building2, ShieldCheck, ShieldX, Clock, ArrowLeft } from 'lucide-react';
+import { Building2, ShieldCheck, ShieldX, Clock, ArrowLeft, Eye } from 'lucide-react';
 import prisma from '@/lib/prisma';
 import { slaHesapla, slaMetni, SIKAYET_METIN, type SikayetTuru } from '@/lib/sikayet';
+import { gosterimOzetle, gosterimMetni } from '@/lib/randevu';
 import { goreliGun } from '@/lib/bicim';
 
 export const dynamic = 'force-dynamic';
@@ -53,6 +54,14 @@ export default async function OfisPage({ params }: { params: { id: string } }) {
   });
 
   const sla = slaHesapla(sikayetler);
+
+  // Gosterim kayitlari — yem ilan sinyalinin gorunen yuzu.
+  const randevular = await prisma.randevu.findMany({
+    where: { ilan: { ofisId: ofis.id } },
+    select: { durumu: true, ilanGercekMi: true },
+    take: 500,
+  });
+  const gosterim = gosterimOzetle(randevular);
 
   const turDagilimi = sikayetler.reduce<Record<string, number>>((a, s) => {
     a[s.turu] = (a[s.turu] ?? 0) + 1;
@@ -127,6 +136,35 @@ export default async function OfisPage({ params }: { params: { id: string } }) {
         <p className="mt-2 text-mikro text-metinSonuk">
           Bu sayılar ofise verilmiş bir puan değildir. Kayıtlı şikâyetlerin
           açılış ve kapanış zamanlarından hesaplanır; yorumu siz yaparsınız.
+        </p>
+      </section>
+
+      {/* Gosterim dogrulamasi — yem ilan sinyali */}
+      <section className="mb-5">
+        <h2 className="mb-1 flex items-center gap-1.5 text-sm font-bold text-metin">
+          <Eye size={14} aria-hidden /> Gösterim doğrulaması
+        </h2>
+        <p className="mb-3 text-sm text-metinIkincil">{gosterimMetni(gosterim)}</p>
+
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          <Kutu baslik="Gerçekleşen gösterim" deger={gosterim.toplamGosterim} />
+          <Kutu
+            baslik="İlan gerçek çıktı"
+            deger={gosterim.gercekCikti}
+            alt="ziyaretçi beyanı"
+          />
+          <Kutu
+            baslik="Gösterilmedi"
+            deger={gosterim.gercekCikmadi}
+            alt="yem ilan bildirimi"
+          />
+          <Kutu baslik="Gelinmedi" deger={gosterim.gelinmedi} />
+        </div>
+
+        <p className="mt-2 text-mikro text-metinSonuk">
+          Gösterimin gerçekleştiğini ilan sahibi işaretler; ilandaki taşınmazın
+          gösterilip gösterilmediğini gösterime giden kişi bildirir. İki beyanı
+          ayırmak, kaydın anlamlı olması için gereklidir.
         </p>
       </section>
 
