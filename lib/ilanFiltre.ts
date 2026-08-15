@@ -53,9 +53,29 @@ export interface Filtre {
 const TURLER: IlanTuru[] = ['SATILIK', 'KIRALIK'];
 const TIPLER: TasinmazTipi[] = ['KONUT', 'ISYERI', 'ARSA', 'BINA', 'DEVREMULK'];
 
+/**
+ * Sayi ayristirma.
+ *
+ * Iki hata testlerle yakalandi ve burada duzeltildi:
+ *
+ *   "abc" -> replace(/\D/g,'') bos dize uretiyor, Number('') = 0.
+ *            Yani anlamsiz bir deger "en az 0 TL" filtresine
+ *            donusuyordu.
+ *   "-5"  -> eksi isareti de temizlendigi icin "5" oluyordu;
+ *            sayfa=-5 istegi 5. sayfayi aciyordu.
+ *
+ * Ayirici temizligi (2.500.000 -> 2500000) korunuyor cunku
+ * kullanici bicimlenmis deger yapistirabiliyor.
+ */
 function sayi(v: string | undefined, enAz = 0, enCok = Number.MAX_SAFE_INTEGER) {
-  if (!v) return undefined;
-  const n = Number(v.replace(/\D/g, ''));
+  if (v === undefined) return undefined;
+  const t = v.trim();
+  if (t.startsWith('-')) return undefined;
+
+  const temiz = t.replace(/\D/g, '');
+  if (temiz === '') return undefined;
+
+  const n = Number(temiz);
   if (!Number.isFinite(n) || n < enAz || n > enCok) return undefined;
   return n;
 }
