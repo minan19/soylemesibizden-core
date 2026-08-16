@@ -44,6 +44,7 @@ export const config = {
   matcher: [
     // Korumali alanlar
     '/admin/:path*',
+    '/panel/:path*',
     '/dashboard/:path*',
     '/profile/:path*',
     '/deals/:path*',
