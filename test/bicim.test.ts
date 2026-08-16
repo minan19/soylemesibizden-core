@@ -33,14 +33,29 @@ describe('kurus — PARA KURALI (CC #6)', () => {
 });
 
 describe('kurusKisa', () => {
-  it('milyonu kısaltır', () => {
-    expect(kurusKisa(1_275_000_000n)).toBe('12,7 Mn ₺');
+  it('milyarı kısaltır', () => {
+    // 2.500.000.000 kuruş = 2,5 milyar TL. Ondalık tam, yorum yok.
+    expect(kurusKisa(250_000_000_000n)).toBe('2,5 Mr ₺');
   });
-  it('tam milyonda ondalık yazmaz', () => {
+
+  it('tam milyonda gereksiz ondalık yazmaz', () => {
     expect(kurusKisa(1_000_000_000n)).toBe('10 Mn ₺');
   });
-  it('milyarı kısaltır', () => {
-    expect(kurusKisa(250_000_000_000n)).toBe('2,5 Mr ₺');
+
+  it('ondalıkta AŞAĞI KESER, yuvarlamaz — bilinçli seçim', () => {
+    // 12.750.000 TL tek ondalıkla 12,7 mi 12,8 mi?
+    //
+    // Bu gereksinimde belirtilmemişti; testi yazarken çıktıya
+    // bakıp "12,7" yazmak, ibanMaskele'de düştüğüm hatanın aynısı
+    // olurdu. Bu yüzden KARARI BURADA VERİYORUM ve gerekçesini
+    // yazıyorum:
+    //
+    // Aşağı kesme seçildi. Gayrimenkulde fiyatı olduğundan yüksek
+    // göstermek, düşük göstermekten daha zararlıdır; kullanıcı
+    // kartta gördüğü rakamın altını değil üstünü sürpriz saymalı.
+    // Tam fiyat zaten kartta ve detayda ayrıca gösteriliyor.
+    expect(kurusKisa(1_275_000_000n)).toBe('12,7 Mn ₺');
+    expect(kurusKisa(1_299_000_000n)).toBe('12,9 Mn ₺'); // 12,99 -> 12,9
   });
 });
 

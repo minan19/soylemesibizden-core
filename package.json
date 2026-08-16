@@ -9,6 +9,7 @@
     "lint": "next lint",
     "test": "vitest run",
     "test:izle": "vitest",
+    "test:mutasyon": "node test/mutasyon.mjs",
     "seed": "node --loader ts-node/esm prisma/seed.ts"
   },
   "prisma": {

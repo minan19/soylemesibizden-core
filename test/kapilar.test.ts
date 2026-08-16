@@ -191,7 +191,13 @@ describe('algısal hash', () => {
   });
 
   it('farklı uzunlukta güvenli davranır — çakışma üretmez', () => {
-    expect(hammingMesafesi('abc', 'abcd')).toBe(Number.MAX_SAFE_INTEGER);
+    // GEREKSİNİM: farklı uzunluktaki hash'ler benzer SAYILMAMALI.
+    //
+    // Önceki hâlinde burada Number.MAX_SAFE_INTEGER bekleniyordu.
+    // O bir uygulama detayı: sentinel değer Infinity'ye çevrilse
+    // gereksinim hâlâ karşılanır ama test kırılırdı. Gereksinimi
+    // doğruluyoruz, seçilen sayıyı değil.
+    expect(hammingMesafesi('abc', 'abcd')).toBeGreaterThan(64);
     expect(benzerlik('abc', 'abcd')).toBe('farkli');
   });
 
