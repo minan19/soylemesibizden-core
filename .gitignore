@@ -11,8 +11,6 @@ build/
 out/
 
 # NestJS build
-soylemesi-bizden-os/dist/
-soylemesi-bizden-os/node_modules/
 
 # build artifacts & backups
 *.tsbuildinfo
