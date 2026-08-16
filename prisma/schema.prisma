@@ -344,6 +344,19 @@ model Mesaj {
   okundu  Boolean  @default(false)
   eklendi DateTime @default(now())
 
+  // ── ÖDEME UYARISI DENETİM KAYDI ──────────────────────────────
+  // Telefon numarası engellenmez (bkz. lib/mesajGuvenlik.ts).
+  // Ama IBAN veya kapora dili geçtiğinde kullanıcıya uyarı gösterilir
+  // ve GÖSTERİLDİĞİ KAYDEDİLİR. Şikâyet geldiğinde elimizde kanıt olur;
+  // rakiplerde bu kayıt hiç yok.
+  //
+  // icerik DÜZ METİN saklanır — kullanıcı kendi yazışmasını olduğu gibi
+  // görebilmeli. denetimOzeti'nde ise IBAN maskelenir: kişisel finansal
+  // veri gereksiz yere çoğaltılmaz, eşleştirmeye uç haneler yeter.
+  odemeUyarisiGosterildi Boolean  @default(false)
+  tespitEdilenIsaretler  String[] @default([])
+  denetimOzeti           String?
+
   @@index([ilanId])
   @@index([aliciId, okundu])
   @@map("mesaj")
@@ -385,6 +398,10 @@ enum SikayetTuru {
   YEM_ILAN
   SAHTE_GORSEL
   YETKISIZ_ILAN
+  // 1 Ekim 2026'dan itibaren taşınmaz satışlarında ödeme, tapu devri
+  // tamamlanana kadar güvenli hesapta tutuluyor. Bundan önce doğrudan
+  // hesaba para istenmesi bildirilebilir olmalı.
+  TAPU_ONCESI_ODEME_TALEBI
   DIGER
 }
 

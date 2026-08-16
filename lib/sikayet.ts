@@ -27,6 +27,7 @@ export type SikayetTuru =
   | 'YEM_ILAN'
   | 'SAHTE_GORSEL'
   | 'YETKISIZ_ILAN'
+  | 'TAPU_ONCESI_ODEME_TALEBI'
   | 'DIGER';
 
 export const SIKAYET_METIN: Record<SikayetTuru, string> = {
@@ -36,6 +37,7 @@ export const SIKAYET_METIN: Record<SikayetTuru, string> = {
   YEM_ILAN: 'Yem ilan — gidince başka yer gösterildi',
   SAHTE_GORSEL: 'Görseller bu taşınmaza ait değil',
   YETKISIZ_ILAN: 'İlanı veren yetkili değil',
+  TAPU_ONCESI_ODEME_TALEBI: 'Tapu devrinden önce hesaba para istendi',
   DIGER: 'Diğer',
 };
 

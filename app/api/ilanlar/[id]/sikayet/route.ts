@@ -32,6 +32,7 @@ const govde = z.object({
     'YEM_ILAN',
     'SAHTE_GORSEL',
     'YETKISIZ_ILAN',
+    'TAPU_ONCESI_ODEME_TALEBI',
     'DIGER',
   ]),
   aciklama: z.string().trim().max(2000).optional(),
