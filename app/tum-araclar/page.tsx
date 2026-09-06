@@ -73,6 +73,7 @@ const CATEGORIES: Category[] = [
     tools: [
       { href: '/piyasa', icon: BarChart2, label: 'Piyasa Verileri', desc: 'Türkiye geneli gayrimenkul verisi' },
       { href: '/fiyat-trendi', icon: TrendingUp, label: 'Fiyat Trendi', desc: 'Aylık fiyat değişim grafikleri', badge: 'Yeni' },
+      { href: '/faiz-gecmisi', icon: TrendingUp, label: 'Faiz Geçmişi', desc: 'Tarihsel mortgage faiz oranları 2015-2024', badge: 'Yeni' },
       { href: '/istatistikler', icon: BarChart2, label: 'Platform İstatistikleri', desc: 'Kapsamlı piyasa istatistikleri' },
       { href: '/mahalle-analizi', icon: MapPin, label: 'Mahalle Analizi', desc: 'Aktivite skoru ve ₺/m² verisi', badge: 'Yeni' },
       { href: '/sehir', icon: MapPin, label: 'Şehir Sayfaları', desc: 'Her şehir için detaylı analiz' },
