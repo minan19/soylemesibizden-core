@@ -277,6 +277,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/tapu-iptal-davasi`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.80 },
     { url: `${baseUrl}/fiyat-sezonu-analizi`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.78 },
     { url: `${baseUrl}/kira-endeks-takip`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.85 },
+    { url: `${baseUrl}/istanbul-avrupa-yakasi`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.90 },
+    { url: `${baseUrl}/konut-finansman-rehberi`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.80 },
   ];
 
   const listingPages: MetadataRoute.Sitemap = listings.map(l => ({
