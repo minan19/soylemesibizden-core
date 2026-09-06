@@ -118,6 +118,7 @@ const CATEGORIES: Category[] = [
       { href: '/miras-ve-gayrimenkul', icon: FileText, label: 'Miras ve Gayrimenkul', desc: 'Veraset, intikal, mirasçı hakları', badge: 'Yeni' },
       { href: '/kira-sozlesmesi', icon: Key, label: 'Kira Sözleşmesi Rehberi', desc: 'Zorunlu maddeler, depozito, haklar', badge: 'Yeni' },
       { href: '/tapu-devir-sureci', icon: FileText, label: 'Tapu Devir Süreci', desc: '7 adım, belgeler, maliyet dökümü', badge: 'Yeni' },
+      { href: '/belediye-hizmetleri', icon: Building2, label: 'Belediye Hizmetleri', desc: 'Emlak vergisi, imar, iskan', badge: 'Yeni' },
     ],
   },
   {
