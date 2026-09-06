@@ -172,6 +172,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/kira-sozlesmesi-hazirlama`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
     { url: `${baseUrl}/tapu-devir-rehberi`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.78 },
     { url: `${baseUrl}/net-kira-hesaplayici`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.78 },
+    { url: `${baseUrl}/yeni-konut-projeleri`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
+    { url: `${baseUrl}/bolge-getiri-karsilastir`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.80 },
   ];
 
   const listingPages: MetadataRoute.Sitemap = listings.map(l => ({
