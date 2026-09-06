@@ -143,6 +143,7 @@ const CATEGORIES: Category[] = [
       { href: '/kira-endeksi', icon: TrendingUp, label: 'Kira Endeksi ve TÜFE', desc: '2024 aylık TÜFE, %25 tavan, yasal haklar', badge: 'Yeni' },
       { href: '/konut-kredisi-rehberi', icon: Home, label: 'Konut Kredisi Rehberi', desc: 'Şartlar, belgeler, banka karşılaştırması', badge: 'Yeni' },
       { href: '/gayrimenkul-yatirim-fonu', icon: TrendingUp, label: 'GYO ve GYF Rehberi', desc: 'Borsa GYO, temettü, direkt karşılaştırma', badge: 'Yeni' },
+      { href: '/sehir-planlama', icon: MapPin, label: 'Şehir Planlama ve İmar', desc: 'TAKS, KAKS, ruhsat süreci, kaçak yapı', badge: 'Yeni' },
     ],
   },
   {
