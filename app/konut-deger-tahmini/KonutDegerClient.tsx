@@ -1,205 +1,176 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import Link from 'next/link';
-import { ArrowRight, Home } from 'lucide-react';
 
-const SEHIR_KATSAYILARI: Record<string, number> = {
-  'İstanbul': 1.0,
-  'Ankara': 0.60,
-  'İzmir': 0.75,
-  'Antalya': 0.70,
-  'Bursa': 0.55,
-  'Eskişehir': 0.45,
-  'Kocaeli': 0.58,
-  'Gaziantep': 0.42,
-  'Konya': 0.40,
-  'Bodrum': 0.90,
+const SEHIR_M2: Record<string, number> = {
+  'İstanbul — Avrupa Merkez': 90000,
+  'İstanbul — Anadolu Merkez': 70000,
+  'İstanbul — Çevre İlçeler': 45000,
+  'Ankara — Merkez': 40000,
+  'Ankara — Çevre': 25000,
+  'İzmir — Merkez': 55000,
+  'İzmir — Çevre': 30000,
+  'Antalya — Merkez': 45000,
+  'Antalya — Sahil': 60000,
+  'Bursa': 30000,
+  'Gaziantep': 20000,
+  'Kocaeli': 28000,
+  'Bodrum': 80000,
+  'Muğla — Diğer': 40000,
 };
 
-const ILCE_PREMIUM: Record<string, number> = {
-  'Merkez/Şehir Merkezi': 1.15,
-  'Prestijli Semt': 1.35,
-  'Ortalama Semt': 1.0,
-  'Gelişmekte Olan Semt': 0.85,
-  'Çevre/Uydu Kent': 0.75,
-};
-
-const BINA_YASI_KATSAYI: Record<string, number> = {
-  'Sıfır (0-2 yıl)': 1.25,
-  'Yeni (3-5 yıl)': 1.15,
-  'Orta (6-15 yıl)': 1.0,
-  'Eski (16-30 yıl)': 0.85,
-  'Çok Eski (30+ yıl)': 0.70,
+const ODA_KATSAYI: Record<string, number> = {
+  '1+0': 0.90,
+  '1+1': 1.00,
+  '2+1': 1.08,
+  '3+1': 1.12,
+  '4+1': 1.15,
+  '4+2 ve üzeri': 1.10,
 };
 
 export default function KonutDegerClient() {
-  const [sehir, setSehir] = useState('İstanbul');
-  const [ilceTipi, setIlceTipi] = useState('Ortalama Semt');
-  const [binaYasi, setBinaYasi] = useState('Orta (6-15 yıl)');
+  const [sehir, setSehir] = useState('İstanbul — Anadolu Merkez');
   const [alan, setAlan] = useState(100);
+  const [oda, setOda] = useState('2+1');
+  const [binaYasi, setBinaYasi] = useState(10);
   const [kat, setKat] = useState(3);
   const [toplamKat, setToplamKat] = useState(8);
   const [asansor, setAsansor] = useState(true);
-  const [otopark, setOtopark] = useState(true);
+  const [otopark, setOtopark] = useState(false);
   const [bahce, setBahce] = useState(false);
   const [denizManzara, setDenizManzara] = useState(false);
 
-  const sonuc = useMemo(() => {
-    const bazFiyat = 35000;
-    const sehirK = SEHIR_KATSAYILARI[sehir] ?? 1.0;
-    const ilceK = ILCE_PREMIUM[ilceTipi] ?? 1.0;
-    const binaK = BINA_YASI_KATSAYI[binaYasi] ?? 1.0;
-    const katK = kat === 1 ? 0.92 : kat === toplamKat ? 1.05 : kat >= toplamKat - 1 ? 1.02 : 1.0;
-    const asansorK = asansor ? 1.05 : 0.97;
-    const otoparkK = otopark ? 1.08 : 1.0;
-    const bahceK = bahce ? 1.06 : 1.0;
-    const manzaraK = denizManzara ? 1.15 : 1.0;
+  const hesap = useMemo(() => {
+    const bazM2 = SEHIR_M2[sehir] ?? 30000;
+    const odaKat = ODA_KATSAYI[oda] ?? 1.0;
 
-    const m2Fiyati = bazFiyat * sehirK * ilceK * binaK * katK * asansorK * otoparkK * bahceK * manzaraK;
-    const tahminiDeger = m2Fiyati * alan;
-    const minDeger = tahminiDeger * 0.85;
-    const maxDeger = tahminiDeger * 1.15;
+    // Bina yaşı etkisi
+    let yasKat = 1.0;
+    if (binaYasi <= 2) yasKat = 1.20;
+    else if (binaYasi <= 5) yasKat = 1.12;
+    else if (binaYasi <= 10) yasKat = 1.05;
+    else if (binaYasi <= 20) yasKat = 0.95;
+    else if (binaYasi <= 30) yasKat = 0.85;
+    else yasKat = 0.72;
 
-    const aylikKiraOrta = tahminiDeger * 0.004;
-    const brutGetiri = (aylikKiraOrta * 12 / tahminiDeger) * 100;
+    // Kat etkisi
+    let katKat = 1.0;
+    if (toplamKat >= 5) {
+      if (kat === 1) katKat = 0.93;
+      else if (kat === toplamKat) katKat = 1.05;
+      else if (kat >= 3 && kat <= toplamKat - 1) katKat = 1.02;
+    }
 
-    return {
-      m2Fiyati: Math.round(m2Fiyati),
-      tahminiDeger: Math.round(tahminiDeger),
-      minDeger: Math.round(minDeger),
-      maxDeger: Math.round(maxDeger),
-      aylikKira: Math.round(aylikKiraOrta),
-      brutGetiri: brutGetiri.toFixed(2),
-    };
-  }, [sehir, ilceTipi, binaYasi, alan, kat, toplamKat, asansor, otopark, bahce, denizManzara]);
+    // Ek özellikler
+    let ozellikKat = 1.0;
+    if (asansor) ozellikKat += 0.03;
+    if (otopark) ozellikKat += 0.05;
+    if (bahce) ozellikKat += 0.04;
+    if (denizManzara) ozellikKat += 0.12;
+
+    const hesaplananM2 = bazM2 * odaKat * yasKat * katKat * ozellikKat;
+    const tahminiDeger = Math.round(hesaplananM2 * alan);
+    const altSinir = Math.round(tahminiDeger * 0.85);
+    const ustSinir = Math.round(tahminiDeger * 1.15);
+    const m2Fiyat = Math.round(hesaplananM2);
+
+    // Kira tahmini (brüt getiri %4–5)
+    const tahminiKira = Math.round(tahminiDeger * 0.0038);
+
+    return { tahminiDeger, altSinir, ustSinir, m2Fiyat, tahminiKira };
+  }, [sehir, alan, oda, binaYasi, kat, toplamKat, asansor, otopark, bahce, denizManzara]);
 
   return (
-    <main className="min-h-screen bg-[#F8FAFC]">
-      <section className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
-        <div className="max-w-4xl mx-auto px-6 py-16">
-          <div className="inline-flex items-center gap-2 bg-[#00C49F]/20 border border-[#00C49F]/30 text-[#00C49F] text-xs font-bold px-4 py-1.5 rounded-full mb-5">
-            <Home size={13} /> Değer Tahmini
+    <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
+
+      <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+        <h2 className="text-sm font-black text-gray-900 mb-5">Konut Özellikleri</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+
+          <div className="sm:col-span-2">
+            <label className="text-xs font-black text-gray-700 block mb-1">Bölge</label>
+            <select value={sehir} onChange={e => setSehir(e.target.value)}
+              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm font-bold focus:outline-none focus:border-[#00C49F] bg-white">
+              {Object.keys(SEHIR_M2).map(s => <option key={s} value={s}>{s}</option>)}
+            </select>
           </div>
-          <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-4">Konut Değer Tahmini</h1>
-          <p className="text-gray-300 text-sm max-w-xl leading-relaxed">
-            Şehir, semt, bina yaşı ve özelliklerine göre konutunuzun tahmini piyasa değerini hesaplayın.
-          </p>
-          <p className="text-[10px] text-amber-400 mt-3">⚠ Bu araç tahmini değer üretir; kesin değer için ekspertiz raporu yaptırın.</p>
+
+          <div>
+            <label className="text-xs font-black text-gray-700 block mb-1">Net Alan (m²)</label>
+            <input type="number" value={alan} onChange={e => setAlan(Number(e.target.value))} step={5} min={30} max={500}
+              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm font-bold focus:outline-none focus:border-[#00C49F]" />
+          </div>
+
+          <div>
+            <label className="text-xs font-black text-gray-700 block mb-1">Oda Sayısı</label>
+            <select value={oda} onChange={e => setOda(e.target.value)}
+              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm font-bold focus:outline-none focus:border-[#00C49F] bg-white">
+              {Object.keys(ODA_KATSAYI).map(o => <option key={o} value={o}>{o}</option>)}
+            </select>
+          </div>
+
+          <div>
+            <label className="text-xs font-black text-gray-700 block mb-1">Bina Yaşı: {binaYasi} Yıl</label>
+            <input type="range" min={0} max={50} step={1} value={binaYasi} onChange={e => setBinaYasi(Number(e.target.value))}
+              className="w-full accent-[#00C49F]" />
+          </div>
+
+          <div>
+            <label className="text-xs font-black text-gray-700 block mb-1">Bulunduğu Kat: {kat}. Kat</label>
+            <input type="range" min={1} max={toplamKat} step={1} value={kat} onChange={e => setKat(Number(e.target.value))}
+              className="w-full accent-[#00C49F]" />
+          </div>
+
+          <div className="sm:col-span-2">
+            <label className="text-xs font-black text-gray-700 block mb-1">Toplam Kat: {toplamKat}</label>
+            <input type="range" min={2} max={30} step={1} value={toplamKat} onChange={e => { setToplamKat(Number(e.target.value)); if (kat > Number(e.target.value)) setKat(Number(e.target.value)); }}
+              className="w-full accent-[#00C49F]" />
+          </div>
+
+          <div className="sm:col-span-2">
+            <p className="text-xs font-black text-gray-700 mb-2">Ek Özellikler</p>
+            <div className="flex flex-wrap gap-2">
+              {[
+                { label: 'Asansör', value: asansor, set: setAsansor },
+                { label: 'Otopark', value: otopark, set: setOtopark },
+                { label: 'Bahçe/Teras', value: bahce, set: setBahce },
+                { label: 'Deniz/Göl Manzarası', value: denizManzara, set: setDenizManzara },
+              ].map((o, i) => (
+                <button key={i} onClick={() => o.set(!o.value)}
+                  className={`text-xs font-black px-3 py-1.5 rounded-full border transition-colors ${o.value ? 'bg-[#00C49F] text-white border-[#00C49F]' : 'bg-white text-gray-500 border-gray-200'}`}>
+                  {o.label}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
-      </section>
-
-      <div className="max-w-4xl mx-auto px-6 py-12 space-y-8">
-
-        {/* Konum */}
-        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-          <h2 className="text-sm font-black text-gray-900 mb-5">Konum Bilgileri</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-xs font-bold text-gray-700 mb-1">Şehir</label>
-              <select value={sehir} onChange={e => setSehir(e.target.value)}
-                className="w-full text-xs border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#00C49F]/30">
-                {Object.keys(SEHIR_KATSAYILARI).map(s => <option key={s}>{s}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-gray-700 mb-1">Semt Tipi</label>
-              <select value={ilceTipi} onChange={e => setIlceTipi(e.target.value)}
-                className="w-full text-xs border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#00C49F]/30">
-                {Object.keys(ILCE_PREMIUM).map(s => <option key={s}>{s}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-gray-700 mb-1">Bina Yaşı</label>
-              <select value={binaYasi} onChange={e => setBinaYasi(e.target.value)}
-                className="w-full text-xs border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#00C49F]/30">
-                {Object.keys(BINA_YASI_KATSAYI).map(s => <option key={s}>{s}</option>)}
-              </select>
-            </div>
-          </div>
-        </section>
-
-        {/* Fiziksel Özellikler */}
-        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-          <h2 className="text-sm font-black text-gray-900 mb-5">Konut Özellikleri</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-xs font-bold text-gray-700 mb-1">Brüt Alan (m²)</label>
-              <p className="text-lg font-black text-[#00C49F] mb-2">{alan} m²</p>
-              <input type="range" min={30} max={500} step={5} value={alan}
-                onChange={e => setAlan(Number(e.target.value))} className="w-full accent-[#00C49F]" />
-              <div className="flex justify-between text-[10px] text-gray-400 mt-1"><span>30m²</span><span>500m²</span></div>
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-gray-700 mb-1">Bulunduğu Kat / Toplam Kat</label>
-              <p className="text-lg font-black text-gray-700 mb-2">{kat}. Kat / {toplamKat} Kat</p>
-              <div className="flex gap-2">
-                <input type="range" min={1} max={toplamKat} step={1} value={kat}
-                  onChange={e => setKat(Number(e.target.value))} className="w-full accent-[#00C49F]" />
-                <input type="range" min={kat} max={30} step={1} value={toplamKat}
-                  onChange={e => setToplamKat(Number(e.target.value))} className="w-full accent-[#00C49F]" />
-              </div>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5">
-            {[
-              { label: 'Asansör', value: asansor, set: setAsansor },
-              { label: 'Otopark', value: otopark, set: setOtopark },
-              { label: 'Bahçe', value: bahce, set: setBahce },
-              { label: 'Deniz Manzarası', value: denizManzara, set: setDenizManzara },
-            ].map(f => (
-              <button key={f.label} onClick={() => f.set(!f.value)}
-                className={`p-3 rounded-xl border text-xs font-bold transition-all ${f.value ? 'bg-[#F0FDF8] border-[#00C49F]/30 text-[#00C49F]' : 'bg-gray-50 border-gray-100 text-gray-500'}`}>
-                {f.value ? '✓' : '○'} {f.label}
-              </button>
-            ))}
-          </div>
-        </section>
-
-        {/* Sonuç */}
-        <section className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="sm:col-span-2 bg-[#F0FDF8] rounded-2xl border border-[#00C49F]/20 p-5 text-center">
-            <p className="text-3xl font-black text-[#00C49F]">{(sonuc.tahminiDeger / 1000000).toFixed(2)} M ₺</p>
-            <p className="text-xs text-gray-500 mt-1">Tahmini Piyasa Değeri</p>
-            <p className="text-[10px] text-gray-400 mt-1">{(sonuc.minDeger / 1000000).toFixed(2)}M – {(sonuc.maxDeger / 1000000).toFixed(2)}M ₺ aralığı</p>
-          </div>
-          <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm text-center">
-            <p className="text-xl font-black text-gray-900">{sonuc.m2Fiyati.toLocaleString('tr-TR')} ₺</p>
-            <p className="text-xs text-gray-500 mt-1">₺/m²</p>
-          </div>
-          <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm text-center">
-            <p className="text-xl font-black text-blue-600">{sonuc.aylikKira.toLocaleString('tr-TR')} ₺</p>
-            <p className="text-xs text-gray-500 mt-1">Tahmini Kira</p>
-          </div>
-        </section>
-
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-xs text-amber-800">
-          <span className="font-black">Önemli:</span> Bu hesaplama genel katsayılara dayalı tahminidir. Gerçek değer için lisanslı bir ekspertiz firmasına danışın.
-        </div>
-
-        {/* Related */}
-        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-          <h3 className="text-sm font-bold text-gray-900 mb-4">İlgili Araçlar</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {[
-              { href: '/ekspertiz-raporu', label: 'Ekspertiz Raporu Rehberi' },
-              { href: '/amortisman-hesaplayici', label: 'Amortisman Hesaplayıcı' },
-              { href: '/net-kira-hesaplayici', label: 'Net Kira Geliri Hesaplayıcı' },
-              { href: '/yatirim-analizi', label: 'Yatırım ROI Hesaplayıcı' },
-              { href: '/m2-fiyat-karsilastir', label: '₺/m² Karşılaştır' },
-              { href: '/bolge-getiri-karsilastir', label: 'Bölge Getiri Karşılaştırması' },
-            ].map(l => (
-              <Link key={l.href} href={l.href}
-                className="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-[#F0FDF8] border border-transparent hover:border-[#00C49F]/20 transition-all group"
-              >
-                <ArrowRight size={12} className="text-gray-300 group-hover:text-[#00C49F] transition-colors shrink-0" />
-                <span className="text-xs text-gray-700 group-hover:text-[#00C49F] font-medium transition-colors">{l.label}</span>
-              </Link>
-            ))}
-          </div>
-        </section>
-
       </div>
-    </main>
+
+      {/* Sonuç */}
+      <div className="bg-white rounded-2xl border border-[#00C49F]/30 p-6 shadow-sm">
+        <h2 className="text-sm font-black text-gray-900 mb-5">Tahmini Değer</h2>
+        <div className="text-center mb-6">
+          <p className="text-[10px] text-gray-500 mb-1">Tahmini Piyasa Değeri</p>
+          <p className="text-3xl font-black text-[#00C49F]">{hesap.tahminiDeger.toLocaleString('tr-TR')} ₺</p>
+          <p className="text-[10px] text-gray-400 mt-1">Aralık: {hesap.altSinir.toLocaleString('tr-TR')} – {hesap.ustSinir.toLocaleString('tr-TR')} ₺</p>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          {[
+            { label: 'Tahmini ₺/m²', value: `${hesap.m2Fiyat.toLocaleString('tr-TR')} ₺` },
+            { label: 'Tahmini Aylık Kira', value: `${hesap.tahminiKira.toLocaleString('tr-TR')} ₺` },
+            { label: 'Brüt Kira Getirisi', value: `%${((hesap.tahminiKira * 12 / hesap.tahminiDeger) * 100).toFixed(2)}` },
+          ].map((k, i) => (
+            <div key={i} className="bg-gray-50 rounded-xl p-3 text-center">
+              <p className="text-[10px] text-gray-500 mb-1">{k.label}</p>
+              <p className="text-sm font-black text-gray-900">{k.value}</p>
+            </div>
+          ))}
+        </div>
+        <p className="text-[10px] text-gray-400 mt-4 text-center">
+          Bu tahmin istatistiksel bir model olup gerçek değerlemeler ekspertiz, lokasyon detayı ve piyasa koşullarına göre farklılık gösterir.
+        </p>
+      </div>
+
+    </div>
   );
 }
