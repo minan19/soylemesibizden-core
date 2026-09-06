@@ -487,7 +487,7 @@ git push https://minan19:<GITHUB_TOKEN>@github.com/minan19/soylemesibizden-core.
 
 ---
 
-*Son güncelleme: 2026-09-06 — Oturum 11: FAZ 185-196 tamamlandı. Arsa yatırımı, pişmanlık hakkı, mortgage simülatörü, faiz geçmişi, ekspertiz raporu, EKB, kat mülkiyeti, NBD/NPV hesaplayıcı, kira haritası, taksitli satış, 3 şehir karşılaştırma, hisseli tapu. Toplam 70+ araç ve sayfa.*
+*Son güncelleme: 2026-09-06 — Oturum 12: FAZ 201-210 tamamlandı. Deprem riski, komisyoncu rehberi, kat karşılığı, değer artış vergisi hesaplayıcı, sözleşme iptal/fesih, kira endeksi/TÜFE, konut kredisi rehberi, kira net gelir hesaplayıcı, GYO/GYF rehberi, şehir planlama/imar. Toplam 85+ araç ve sayfa.*
 
 ### Oturum 11 (FAZ 185-196) — Tamamlananlar
 - [x] **FAZ-185:** Arsa yatırımı rehberi — imar türleri, kontrol listesi, hisseli arsa (/arsa-yatirimi)
