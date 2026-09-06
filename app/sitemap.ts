@@ -253,6 +253,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/ev-degerleme-raporu`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.79 },
     { url: `${baseUrl}/kiralik-daire-istanbul`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.90 },
     { url: `${baseUrl}/bina-yasi-hesaplayici`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.80 },
+    { url: `${baseUrl}/tasinma-maliyet-hesaplayici`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.79 },
+    { url: `${baseUrl}/gayrimenkul-hukuk-rehberi`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.82 },
   ];
 
   const listingPages: MetadataRoute.Sitemap = listings.map(l => ({
