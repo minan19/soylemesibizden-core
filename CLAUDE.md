@@ -487,7 +487,7 @@ git push https://minan19:<GITHUB_TOKEN>@github.com/minan19/soylemesibizden-core.
 
 ---
 
-*Son güncelleme: 2026-09-06 — Oturum 19: FAZ 329-346 tamamlandı. Kira simülatörü (nominal/reel çift bar grafik), miras ve gayrimenkul rehberi, hisseli tapu rehberi, kredi notu rehberi, ilk ev alma rehberi, ev satışa hazırlama, servet birikimi hesaplayıcı (bileşik faiz), amortisman hesaplayıcı (20 yıl ROI), kentsel dönüşüm rehberi, arsa yatırım rehberi, kira karşılığı birikim, konut değer tahmini (14 bölge), konut sigortası rehberi, stopaj vergisi rehberi, GYF/GYO rehberi, kira zam tablosu (2024-2025), piyasa raporu 2025, ev tadilat rehberi. Toplam 210+ araç ve sayfa.*
+*Son güncelleme: 2026-09-06 — Oturum 20: FAZ 350-371 tamamlandı. Tadilat maliyet hesaplayıcı (10 işlem toggle), fiyat müzakere stratejileri, EKB (enerji kimlik belgesi) rehberi, kira artış hakkı hesaplayıcı (TÜİK TÜFE), kooperatif konut rehberi, NBD yatırım hesaplayıcı (IRR dahil), satılık daire İstanbul/Ankara landing, kira sözleşmesi iptal rehberi, ev değerleme raporu (ekspertiz) rehberi, kiralık daire İstanbul/Ankara landing, bina yaşı değer hesaplayıcı, taşınma maliyet hesaplayıcı, gayrimenkul hukuk rehberi, kira çarpanı hesaplayıcı, satılık villa/arsa landing, kira depozito iade rehberi, yatırım getiri karşılaştırıcı (6 araç), İzmir gayrimenkul sayfası, konut kredisi hesaplayıcı (7 banka karşılaştırmalı). Toplam 240+ araç ve sayfa.*
 
 ### Oturum 11 (FAZ 185-196) — Tamamlananlar
 - [x] **FAZ-185:** Arsa yatırımı rehberi — imar türleri, kontrol listesi, hisseli arsa (/arsa-yatirimi)
