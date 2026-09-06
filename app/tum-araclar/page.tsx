@@ -138,6 +138,7 @@ const CATEGORIES: Category[] = [
       { href: '/deprem-riski', icon: ShieldCheck, label: 'Deprem Riski Rehberi', desc: 'Risk bölgeleri, DASK, yapı güvenliği', badge: 'Yeni' },
       { href: '/gayrimenkul-komisyoncusu', icon: Users, label: 'Komisyoncu Rehberi', desc: 'Seçim, komisyon, haklar, sözleşme', badge: 'Yeni' },
       { href: '/kat-karsiligi', icon: Building2, label: 'Kat Karşılığı Rehberi', desc: 'Pay oranları, sözleşme, riskler', badge: 'Yeni' },
+      { href: '/sozlesme-iptal', icon: Scale, label: 'Sözleşme İptal ve Fesih', desc: 'Tazminat, ihtarname, hukuki süreç', badge: 'Yeni' },
     ],
   },
   {
