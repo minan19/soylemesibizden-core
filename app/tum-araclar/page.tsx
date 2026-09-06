@@ -48,6 +48,7 @@ const CATEGORIES: Category[] = [
       { href: '/butce-planlayici', icon: Calculator, label: 'Bütçe Planlayıcı', desc: 'Ne kadar ev alabilirim?', badge: 'Yeni' },
       { href: '/aidat-hesaplayici', icon: Calculator, label: 'Aidat Hesaplayıcı', desc: 'Bina ortak gider paylaşımı', badge: 'Yeni' },
       { href: '/emlak-komisyonu', icon: Calculator, label: 'Emlak Komisyonu Hesapla', desc: 'Satıcı/alıcı komisyon + KDV', badge: 'Yeni' },
+      { href: '/mortgage-simulatoru', icon: Calculator, label: 'Gelişmiş Mortgage Simülatörü', desc: 'Erken ödeme, refinansman analizi', badge: 'Yeni' },
     ],
   },
   {
