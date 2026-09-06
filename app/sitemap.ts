@@ -176,6 +176,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/bolge-getiri-karsilastir`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.80 },
     { url: `${baseUrl}/yabanci-yatirimci-rehberi`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.78 },
     { url: `${baseUrl}/deprem-sigorta-hesaplayici`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.72 },
+    { url: `${baseUrl}/gayrimenkul-vergi-optimizasyon`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.75 },
+    { url: `${baseUrl}/yatirim-butce-hesaplayici`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.80 },
   ];
 
   const listingPages: MetadataRoute.Sitemap = listings.map(l => ({
