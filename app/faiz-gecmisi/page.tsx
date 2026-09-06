@@ -1,80 +1,69 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { TrendingUp, TrendingDown, ArrowRight, Info } from 'lucide-react';
+import {
+  TrendingUp, ArrowRight, Info, BarChart2,
+} from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Konut Kredisi Faiz Geçmişi | Türkiye Tarihsel Mortgage Oranları | Söylemesi Bizden',
+  title: 'Faiz Geçmişi | TCMB Politika Faizi ve Konut Kredisi Trendi | Söylemesi Bizden',
   description:
-    'Türkiye konut kredisi faiz oranlarının tarihsel seyri 2015-2024. Yıllık en düşük / en yüksek banka faizleri, TCMB politika faizi karşılaştırması.',
+    'TCMB politika faizinin 2018\'den günümüze tarihsel seyri, konut kredisi faiz oranları ve piyasa etkisi.',
 };
 
-const YEARLY_DATA = [
-  { year: 2015, low: 1.00, high: 1.20, tcmb: 7.50, note: 'Faiz görece istikrarlı' },
-  { year: 2016, low: 0.99, high: 1.25, tcmb: 8.00, note: 'Darbe girişimi sonrası belirsizlik' },
-  { year: 2017, low: 0.95, high: 1.35, tcmb: 8.00, note: 'TL değer kaybı baskısı' },
-  { year: 2018, low: 1.20, high: 1.80, tcmb: 24.00, note: 'Kur krizi — faizler yüksek zirve' },
-  { year: 2019, low: 0.80, high: 1.60, tcmb: 12.00, note: 'TCMB faiz indirimi — kredi canlandı' },
-  { year: 2020, low: 0.64, high: 1.50, tcmb: 17.00, note: 'Pandemi: tarihi düşük 0.64%' },
-  { year: 2021, low: 0.90, high: 1.85, tcmb: 14.00, note: 'TCMB faiz kesimleri — enflasyon baskısı' },
-  { year: 2022, low: 0.89, high: 1.59, tcmb: 9.00, note: 'Hedef dışı faiz politikası' },
-  { year: 2023, low: 1.84, high: 3.40, tcmb: 42.50, note: 'Ortodoks dönüş — Mayıs sonrası sıkılaşma' },
-  { year: 2024, low: 2.40, high: 3.20, tcmb: 45.00, note: 'Faiz zirve — yüksek konut kredisi maliyeti' },
+const TCMB_TARIHSEL = [
+  { donem: '2018 Q1', politikaFaiz: 8.0, konutKredi: 1.20, enflasyon: 12.1, not: 'Normalleşme dönemi' },
+  { donem: '2018 Q3', politikaFaiz: 24.0, konutKredi: 2.10, enflasyon: 25.3, not: 'Kur krizi — acil artış' },
+  { donem: '2019 Q3', politikaFaiz: 16.5, politikaFaiz2: null, konutKredi: 1.50, enflasyon: 15.0, not: 'İndirim döngüsü' },
+  { donem: '2020 Q2', politikaFaiz: 8.25, konutKredi: 0.64, enflasyon: 11.4, not: 'Pandemi; tarihi düşük' },
+  { donem: '2021 Q2', politikaFaiz: 19.0, konutKredi: 1.80, enflasyon: 17.5, not: 'Normalleşme girişimi' },
+  { donem: '2021 Q4', politikaFaiz: 14.0, konutKredi: 1.50, enflasyon: 36.1, not: 'Yeni politika: faiz inişi' },
+  { donem: '2022 Q2', politikaFaiz: 14.0, konutKredi: 2.80, enflasyon: 78.6, not: 'Enflasyon zirveye yakın' },
+  { donem: '2023 Q2', politikaFaiz: 8.5, konutKredi: 1.68, enflasyon: 38.2, not: 'Seçim öncesi düşük faiz' },
+  { donem: '2023 Q4', politikaFaiz: 40.0, konutKredi: 3.80, enflasyon: 65.0, not: 'Ortodoks para politikasına dönüş' },
+  { donem: '2024 Q2', politikaFaiz: 50.0, konutKredi: 4.20, enflasyon: 75.4, not: 'Faiz zirve; enflasyonla mücadele' },
+  { donem: '2024 Q4', politikaFaiz: 47.5, konutKredi: 3.90, enflasyon: 62.0, not: 'İlk indirim sinyalleri' },
+  { donem: '2025 Q2', politikaFaiz: 42.5, konutKredi: 3.50, enflasyon: 40.0, not: 'Kademeli indirim döngüsü' },
 ];
 
-const MONTHLY_2024 = [
-  { month: 'Oca', avg: 3.20 },
-  { month: 'Şub', avg: 3.18 },
-  { month: 'Mar', avg: 3.10 },
-  { month: 'Nis', avg: 3.05 },
-  { month: 'May', avg: 2.90 },
-  { month: 'Haz', avg: 2.75 },
-  { month: 'Tem', avg: 2.65 },
-  { month: 'Ağu', avg: 2.55 },
-  { month: 'Eyl', avg: 2.50 },
-  { month: 'Eki', avg: 2.45 },
-  { month: 'Kas', avg: 2.42 },
-  { month: 'Ara', avg: 2.40 },
-];
-
-const INSIGHTS = [
+const ONEMLI_DONEMLER = [
   {
-    icon: TrendingDown,
-    color: 'text-[#00C49F]',
-    bg: 'bg-[#F0FDF8]',
-    title: 'Tarihsel En Düşük',
-    value: '%0.64/ay',
-    detail: 'Temmuz 2020 — Pandemi döneminde TCMB teşvik politikası',
+    baslik: '2020 Pandemi Dönemi',
+    faiz: '%8.25',
+    konutKredi: '%0.64/ay',
+    aciklama: 'Tarihin en düşük konut kredisi faiz oranı. Devlet destekli kampanyalar ile konut satışları rekor kırdı. 2020 yılında 1.5 milyon konut satıldı.',
+    renk: 'text-[#00C49F]',
   },
   {
-    icon: TrendingUp,
-    color: 'text-rose-600',
-    bg: 'bg-rose-50',
-    title: 'Tarihsel En Yüksek',
-    value: '%3.40/ay',
-    detail: 'Aralık 2023 — Ortodoks para politikasına dönüş zirvesi',
+    baslik: '2021–2022 Unortodoks Politika',
+    faiz: '%14',
+    konutKredi: '%1.50–2.80/ay',
+    aciklama: 'Yüksek enflasyona rağmen faiz indirildi. Kur şoku (1$ = 18₺) ve emlak piyasasında spekülatif fiyat artışları yaşandı. Yabancı alımları arttı.',
+    renk: 'text-amber-600',
   },
   {
-    icon: TrendingUp,
-    color: 'text-amber-600',
-    bg: 'bg-amber-50',
-    title: '10 Yıl Ortalaması',
-    value: '~%1.65/ay',
-    detail: '2015-2024 arası ağırlıklı ortalama konut kredisi faizi',
+    baslik: '2023–2024 Normalleşme',
+    faiz: '%8.5 → %50',
+    konutKredi: '%1.68 → %4.20/ay',
+    aciklama: 'Mayıs 2023 seçimlerinin ardından ortodoks para politikasına dönüş. Konut kredisi faizleri 2.5 kat arttı; ipotek satışları %70 düştü.',
+    renk: 'text-rose-600',
+  },
+  {
+    baslik: '2025 İndirim Döngüsü',
+    faiz: '%42.5',
+    konutKredi: '%3.50/ay',
+    aciklama: 'Enflasyonun düşmesiyle birlikte TCMB kademeli faiz indirimlerine başladı. Konut piyasasında canlanma beklentisi oluştu.',
+    renk: 'text-blue-600',
   },
 ];
 
-const TIPS = [
-  'Faiz oranı düştüğünde mevcut kredinizi yeniden yapılandırın (refinansman); %0.20 fark bile 10 yılda onlarca bin lira tasarruf sağlar.',
-  'TCMB politika faizi ile konut kredisi faizi arasında genellikle 12-18 aylık gecikme vardır.',
-  'Sabit faizli kredi, yüksek volatiliteli dönemlerde dalgalanma riskinden korur.',
-  'Kısa vadeli (5-7 yıl) krediler, uzun vadelilere kıyasla %10-20 daha az toplam faiz ödemesi anlamına gelir.',
-  'Banka pazarlığı: birden fazla bankadan teklif alın; aynı günde %0.10-0.20 fark bulunabilir.',
+const ETKILER = [
+  { faizArtis: 'Faiz artar', konut: 'Satışlar düşer, fiyat artışı yavaşlar', kiracı: 'Kira talebi artar (ev sahibi olamaz)', yatirimci: 'Mevduat cazip olur; kira getirisi baskı altında' },
+  { faizArtis: 'Faiz düşer', konut: 'Satışlar canlanır, fiyatlar hızlı yükselir', kiracı: 'Ev sahipliğine geçiş artar', yatirimci: 'Gayrimenkul cazip; erken alım fırsatı' },
 ];
+
+const maxFaiz = Math.max(...TCMB_TARIHSEL.map(d => d.politikaFaiz));
 
 export default function FaizGecmisiPage() {
-  const maxHigh = Math.max(...YEARLY_DATA.map(d => d.high));
-  const maxMonthly = Math.max(...MONTHLY_2024.map(d => d.avg));
-
   return (
     <main className="min-h-screen bg-[#F8FAFC]">
 
@@ -82,113 +71,134 @@ export default function FaizGecmisiPage() {
       <section className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
         <div className="max-w-5xl mx-auto px-6 py-16">
           <div className="inline-flex items-center gap-2 bg-[#00C49F]/20 border border-[#00C49F]/30 text-[#00C49F] text-xs font-bold px-4 py-1.5 rounded-full mb-5">
-            <TrendingUp size={13} /> Piyasa Verisi
+            <TrendingUp size={13} /> Faiz Geçmişi
           </div>
           <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-4">
-            Konut Kredisi Faiz Geçmişi
+            TCMB Faiz ve Konut Kredisi Trendi
           </h1>
           <p className="text-gray-300 text-sm max-w-xl leading-relaxed mb-8">
-            Türkiye konut kredisi faiz oranlarının 2015-2024 tarihsel seyri. Yıllık en düşük/en yüksek
-            değerler ve TCMB politika faizi karşılaştırması.
+            2018&apos;den günümüze TCMB politika faizi, konut kredisi oranları ve piyasaya etkileri.
           </p>
           <div className="flex flex-wrap gap-4">
-            {INSIGHTS.map(i => (
-              <div key={i.title} className="bg-white/10 rounded-xl px-5 py-3">
-                <p className={`text-xl font-black ${i.color.replace('text-', 'text-')}`}>{i.value}</p>
-                <p className="text-xs text-gray-400">{i.title}</p>
-              </div>
-            ))}
+            <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
+              <p className="text-2xl font-black text-[#00C49F]">%0.64</p>
+              <p className="text-xs text-gray-400">Tarihi düşük (2020)</p>
+            </div>
+            <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
+              <p className="text-2xl font-black text-white">%4.20</p>
+              <p className="text-xs text-gray-400">Tarihi yüksek (2024)</p>
+            </div>
+            <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
+              <p className="text-2xl font-black text-amber-400">%50</p>
+              <p className="text-xs text-gray-400">TCMB tepe faizi</p>
+            </div>
           </div>
         </div>
       </section>
 
       <div className="max-w-5xl mx-auto px-6 py-12 space-y-12">
 
-        {/* Yıllık Tablo */}
-        <section>
-          <h2 className="text-xl font-black text-gray-900 mb-4">Yıllık Faiz Aralıkları (2015-2024)</h2>
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs">
-                <thead className="bg-gray-50 border-b border-gray-100">
-                  <tr>
-                    <th className="text-left px-4 py-3 font-black text-gray-700">Yıl</th>
-                    <th className="text-right px-4 py-3 font-black text-[#00C49F]">En Düşük (%/ay)</th>
-                    <th className="text-right px-4 py-3 font-black text-rose-600">En Yüksek (%/ay)</th>
-                    <th className="text-right px-4 py-3 font-black text-amber-600">TCMB (%)</th>
-                    <th className="text-left px-4 py-3 font-black text-gray-700">Not</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {YEARLY_DATA.map((d, i) => (
-                    <tr key={d.year} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                      <td className="px-4 py-3 font-black text-gray-900">{d.year}</td>
-                      <td className="px-4 py-3 text-right font-bold text-[#00C49F]">%{d.low.toFixed(2)}</td>
-                      <td className="px-4 py-3 text-right font-bold text-rose-500">%{d.high.toFixed(2)}</td>
-                      <td className="px-4 py-3 text-right text-amber-600 font-bold">%{d.tcmb.toFixed(2)}</td>
-                      <td className="px-4 py-3 text-gray-500 text-[10px]">{d.note}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </section>
-
-        {/* 2024 Aylık Bar Grafik */}
-        <section>
-          <h2 className="text-xl font-black text-gray-900 mb-4">2024 Aylık Ortalama Faiz (%/ay)</h2>
-          <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-            <div className="flex items-end gap-2 h-32">
-              {MONTHLY_2024.map(d => (
-                <div key={d.month} className="flex-1 flex flex-col items-center gap-1">
-                  <span className="text-[9px] text-gray-600 font-bold">%{d.avg.toFixed(2)}</span>
+        {/* Tarihsel Grafik */}
+        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+          <h2 className="text-sm font-black text-gray-900 mb-4 flex items-center gap-2">
+            <BarChart2 size={14} className="text-[#00C49F]" /> TCMB Politika Faizi Trendi (2018–2025)
+          </h2>
+          <div className="space-y-1.5">
+            {TCMB_TARIHSEL.map((d, i) => (
+              <div key={i} className="flex items-center gap-3">
+                <span className="text-[10px] text-gray-500 w-16 shrink-0">{d.donem}</span>
+                <div className="flex-1 bg-gray-100 rounded-full h-5 overflow-hidden">
                   <div
-                    className="w-full rounded-t-md bg-gradient-to-t from-[#00C49F] to-[#00e5b8]"
-                    style={{ height: `${(d.avg / maxMonthly) * 90}%` }}
-                  />
-                  <span className="text-[9px] text-gray-400">{d.month}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Yıllık bar (düşük vs yüksek) */}
-        <section>
-          <h2 className="text-xl font-black text-gray-900 mb-4">Yıllık Faiz Bandı Görselleştirmesi</h2>
-          <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm space-y-3">
-            {YEARLY_DATA.map(d => (
-              <div key={d.year} className="flex items-center gap-3">
-                <span className="text-xs font-black text-gray-700 w-10 shrink-0">{d.year}</span>
-                <div className="flex-1 h-5 bg-gray-100 rounded-full overflow-hidden relative">
-                  <div
-                    className="absolute inset-y-0 rounded-full bg-gradient-to-r from-[#00C49F] to-rose-400"
+                    className="h-full rounded-full flex items-center justify-end pr-2 transition-all"
                     style={{
-                      left: `${(d.low / maxHigh) * 100}%`,
-                      width: `${((d.high - d.low) / maxHigh) * 100}%`,
+                      width: `${(d.politikaFaiz / maxFaiz) * 100}%`,
+                      backgroundColor: d.politikaFaiz >= 40 ? '#EF4444' : d.politikaFaiz >= 20 ? '#F59E0B' : '#00C49F',
                     }}
-                  />
+                  >
+                    <span className="text-[9px] text-white font-bold">%{d.politikaFaiz}</span>
+                  </div>
                 </div>
-                <span className="text-[10px] text-gray-500 w-20 shrink-0 text-right">%{d.low}–%{d.high}</span>
+                <span className="text-[10px] text-gray-500 w-16 text-right shrink-0">%{d.konutKredi}/ay</span>
+              </div>
+            ))}
+          </div>
+          <p className="text-[10px] text-gray-400 mt-3 flex items-center gap-1">
+            <Info size={10} /> Bar rengi: Yeşil = düşük, Sarı = orta, Kırmızı = yüksek faiz ortamı.
+          </p>
+        </section>
+
+        {/* Tarihi Tablo */}
+        <section>
+          <h2 className="text-xl font-black text-gray-900 mb-4">Dönemsel Veri Tablosu</h2>
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <table className="w-full text-xs">
+              <thead className="bg-gray-50 border-b border-gray-100">
+                <tr>
+                  <th className="text-left px-4 py-3 font-black text-gray-700">Dönem</th>
+                  <th className="text-right px-4 py-3 font-black text-gray-700">TCMB %</th>
+                  <th className="text-right px-4 py-3 font-black text-gray-700">Konut Kredi %/ay</th>
+                  <th className="text-right px-4 py-3 font-black text-gray-500">TÜFE</th>
+                  <th className="text-left px-4 py-3 font-black text-gray-400">Not</th>
+                </tr>
+              </thead>
+              <tbody>
+                {TCMB_TARIHSEL.map((d, i) => (
+                  <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                    <td className="px-4 py-3 font-bold text-gray-800">{d.donem}</td>
+                    <td className={`px-4 py-3 text-right font-bold ${d.politikaFaiz >= 40 ? 'text-rose-500' : d.politikaFaiz >= 20 ? 'text-amber-600' : 'text-[#00C49F]'}`}>%{d.politikaFaiz}</td>
+                    <td className="px-4 py-3 text-right text-gray-700 font-bold">%{d.konutKredi}</td>
+                    <td className="px-4 py-3 text-right text-gray-500">%{d.enflasyon}</td>
+                    <td className="px-4 py-3 text-gray-400">{d.not}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        {/* Önemli Dönemler */}
+        <section>
+          <h2 className="text-xl font-black text-gray-900 mb-4">Kritik Dönemler</h2>
+          <div className="space-y-4">
+            {ONEMLI_DONEMLER.map((o, i) => (
+              <div key={i} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+                <div className="flex items-start justify-between mb-2">
+                  <p className="text-xs font-black text-gray-900">{o.baslik}</p>
+                  <div className="flex gap-2 shrink-0">
+                    <span className="text-[10px] bg-gray-50 text-gray-600 font-bold px-2 py-0.5 rounded-full">TCMB: {o.faiz}</span>
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full bg-gray-50 ${o.renk}`}>{o.konutKredi}</span>
+                  </div>
+                </div>
+                <p className="text-[10px] text-gray-600 leading-relaxed">{o.aciklama}</p>
               </div>
             ))}
           </div>
         </section>
 
-        {/* Tips */}
+        {/* Etki Tablosu */}
         <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-          <h2 className="text-sm font-black text-gray-900 mb-4 flex items-center gap-2">
-            <Info size={14} className="text-[#00C49F]" /> Faiz Döngüsünde Akıllı Kararlar
-          </h2>
-          <ul className="space-y-3">
-            {TIPS.map((tip, i) => (
-              <li key={i} className="flex items-start gap-3">
-                <span className="w-5 h-5 rounded-full bg-[#F0FDF8] text-[#00C49F] text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">{i + 1}</span>
-                <p className="text-xs text-gray-600 leading-relaxed">{tip}</p>
-              </li>
+          <h2 className="text-sm font-black text-gray-900 mb-4">Faiz Hareketlerinin Piyasaya Etkisi</h2>
+          <div className="space-y-4">
+            {ETKILER.map((e, i) => (
+              <div key={i} className={`rounded-xl p-4 ${i === 0 ? 'bg-rose-50 border border-rose-100' : 'bg-[#F0FDF8] border border-[#00C49F]/20'}`}>
+                <p className={`text-xs font-black mb-2 ${i === 0 ? 'text-rose-600' : 'text-[#00C49F]'}`}>{e.faizArtis}</p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  <div className="bg-white rounded-lg p-2">
+                    <p className="text-[10px] text-gray-400 font-bold mb-0.5">Konut Piyasası</p>
+                    <p className="text-[10px] text-gray-600">{e.konut}</p>
+                  </div>
+                  <div className="bg-white rounded-lg p-2">
+                    <p className="text-[10px] text-gray-400 font-bold mb-0.5">Kiracı/Alıcı</p>
+                    <p className="text-[10px] text-gray-600">{e.kiracı}</p>
+                  </div>
+                  <div className="bg-white rounded-lg p-2">
+                    <p className="text-[10px] text-gray-400 font-bold mb-0.5">Yatırımcı</p>
+                    <p className="text-[10px] text-gray-600">{e.yatirimci}</p>
+                  </div>
+                </div>
+              </div>
             ))}
-          </ul>
+          </div>
         </section>
 
         {/* Related */}
@@ -196,12 +206,12 @@ export default function FaizGecmisiPage() {
           <h3 className="text-sm font-bold text-gray-900 mb-4">İlgili Araçlar</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {[
-              { href: '/faiz-takip', label: 'Anlık Faiz Takip' },
-              { href: '/mortgage-simulatoru', label: 'Gelişmiş Mortgage Simülatörü' },
-              { href: '/banka-kredileri', label: 'Banka Kredisi Karşılaştır' },
-              { href: '/kredi-karsilastirma', label: 'Kredi Karşılaştırma (4 Senaryo)' },
-              { href: '/odeme-plani', label: 'Ödeme Planı Simülatörü' },
+              { href: '/faiz-takip', label: 'Güncel Faiz Takip' },
+              { href: '/banka-kredileri', label: 'Banka Kredi Karşılaştır' },
+              { href: '/mortgage-simulatoru', label: 'Mortgage Simülatörü' },
+              { href: '/konut-kredisi-rehberi', label: 'Konut Kredisi Rehberi' },
               { href: '/kira-mi-satin-mi', label: 'Kira mı, Satın mı?' },
+              { href: '/enflasyon-korumasi', label: 'Enflasyon Koruması' },
             ].map(l => (
               <Link key={l.href} href={l.href}
                 className="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-[#F0FDF8] border border-transparent hover:border-[#00C49F]/20 transition-all group"
