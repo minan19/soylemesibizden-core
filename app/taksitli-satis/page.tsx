@@ -1,56 +1,86 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import {
-  CreditCard, CheckCircle, AlertTriangle, ArrowRight, Clock, FileText, ShieldCheck,
+  FileText, CheckCircle, AlertTriangle, ArrowRight, Scale,
 } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Taksitli Gayrimenkul Satışı Rehberi | Sözleşme, Haklar, Riskler | Söylemesi Bizden',
+  title: 'Taksitli Satış Rehberi | Ön Ödemeli Konut, Cayma, Temerrüt | Söylemesi Bizden',
   description:
-    'Taksitli gayrimenkul satışında alıcı ve satıcı hakları, sözleşme zorunlulukları, ön ödeme, temerrüt ve tapu devri süreci.',
+    'Gayrimenkulde taksitli ve ön ödemeli satış: sözleşme şartları, 14 günlük cayma hakkı, temerrüt durumu ve tüketici hakları.',
 };
 
-const COMPARISON = [
-  { aspect: 'Tapu Devri', taksitli: 'Genellikle son taksitte veya sözleşmede belirtilen tarihte', normal: 'Ödeme ile eş zamanlı devir' },
-  { aspect: 'Faiz', taksitli: 'Yasal faiz veya anlaşmalı faiz oranı uygulanabilir', normal: 'Banka faizi ayrıca yürür' },
-  { aspect: 'Cayma Hakkı', taksitli: 'TKHK md. 8 kapsamında 14 gün cayma hakkı (tüketici ise)', normal: 'Cayma anlaşmayla belirlenir' },
-  { aspect: 'Temerrüt', taksitli: 'Müteahhit iki taksiti atlayan alıcının sözleşmesini feshedebilir', normal: 'Tapu iptal davası gündeme gelir' },
-  { aspect: 'İpotek', taksitli: 'Satıcı tapu üzerinde ipotek şerhi koyabilir', normal: 'İpotek olmadan temiz devir' },
-  { aspect: 'Vergi', taksitli: 'Tapu devri ertelendiğinde KDV doğumu ertelenebilir', normal: 'Tapu ile KDV beyanı yapılır' },
+const SOZLESME_TURLERI = [
+  {
+    tur: 'Ön Ödemeli Konut Satışı',
+    tanim: 'Konut tesliminden önce tüketiciden peşin veya taksit ödemesi alınması.',
+    dayanak: 'Tüketicinin Korunması Hakkında Kanun md. 40–50',
+    cayma: '14 gün cayma hakkı; bu sürede ödeme alınamaz.',
+    noterde: 'Noterde tapuya şerh gerekir.',
+  },
+  {
+    tur: 'Müteahhit Taksitli Satış',
+    tanim: 'Müteahhidin projesini kat karşılığı değil, doğrudan taksitle alıcıya sattığı yöntem.',
+    dayanak: 'TBK + Ön Ödemeli Konut Kanunu',
+    cayma: 'Sözleşme 14 gün içinde serbestçe dönülebilir.',
+    noterde: 'Noterde düzenleme zorunlu; tapuya şerh.',
+  },
+  {
+    tur: 'Sahibinden Taksitli Satış',
+    tanim: 'Bireysel satıcının alıcıya taksit imkânı tanıması.',
+    dayanak: 'TBK — tarafların anlaşması',
+    cayma: 'Tüketici kanunu değil; sözleşme hükümleri geçerli.',
+    noterde: 'Zorunlu değil ama resmi şekil tavsiye edilir.',
+  },
 ];
 
-const RIGHTS = [
-  { title: 'TKHK Cayma Hakkı', desc: 'Tüketici olarak devre mülk ve ön ödemeli projeler için 14 gün içinde gerekçesiz cayma hakkı mevcuttur.' },
-  { title: 'Ön Ödeme İadesi', desc: 'Satıcı cayar veya teslimi geciktirirse ön ödeme banka faiziyle iade edilmelidir.' },
-  { title: 'Geç Teslim Tazminatı', desc: 'Projenin geç tesliminde alıcı, gecikmeli süre başına kira eşdeğeri tazminat talep edebilir.' },
-  { title: 'Tapu Devri Güvencesi', desc: 'Tüm taksitler ödenmeden satıcı tapuyu devretmekten kaçınıyorsa ifa davası açılabilir.' },
-  { title: 'Kısmi İfa', desc: 'Alıcı kısmen ödeme yapmışsa, orantılı bağımsız bölüm hissesi talep edilebilir.' },
+const SOZLESME_ICERIGI = [
+  'Tarafların kimlik bilgileri ve iletişim adresleri',
+  'Taşınmazın tapu bilgileri (ada, parsel, bağımsız bölüm)',
+  'Toplam satış bedeli ve para birimi',
+  'Peşinat miktarı ve ödeme tarihi',
+  'Taksit sayısı, tutarı ve vade tarihleri',
+  'Gecikme faizi oranı ve uygulanacak endeks',
+  'Cayma hakkı koşulları ve süresi',
+  'Temerrüt halinde sözleşme feshi koşulları',
+  'Tapu devri koşulu (son taksit mi, belirli oran mı?)',
+  'İnşaat bitmemişse teslim tarihi ve cezai şart',
 ];
 
-const RISKS = [
-  { risk: 'Müteahhit İflası', mitigation: 'Banka teminat mektubu veya garanti belgesi talep edin. İnşaat sigortasını kontrol edin.' },
-  { risk: 'Proje Değişikliği', mitigation: 'Sözleşmeye "proje değişikliği halinde iade" maddesi ekletin.' },
-  { risk: 'Tapu Gecikmesi', mitigation: 'İskan alınmadan tapu devri yapılamaz; iskan sürecini müteahhitten yazılı olarak öğrenin.' },
-  { risk: 'Faiz Yükü', mitigation: 'Banka kredisiyle karşılaştırın; taksitli satış daha pahalı olabilir.' },
-  { risk: 'Şerh Sorunu', mitigation: 'Tapuda ipotek, şerh olup olmadığını tapu siciline sorgulayarak teyit edin.' },
+const TEMERRUT = [
+  {
+    durum: 'Alıcı Temerrüdü',
+    detay: 'Taksit ödenmezse satıcı ihtar gönderir. TBK uyarınca makul süre verilir. İhlalin devam etmesi halinde sözleşme feshi ve tahliye.',
+    risk: 'Ödenmiş taksitler iade edilebilir ya da sözleşmeye göre tutulabilir.',
+  },
+  {
+    durum: 'Satıcı Temerrüdü',
+    detay: 'Teslim gecikirse alıcı kira tazminatı veya teslim zorlaması talebinde bulunabilir.',
+    risk: 'Inşaat bitmemişse her ay gecikme tazminatı talep hakkı doğar.',
+  },
+  {
+    durum: 'İnşaatın Durması',
+    detay: 'Projenin iflas veya hukuki engel nedeniyle durması halinde tüketici sözleşmeden dönebilir ve ödediği bedeli geri alır.',
+    risk: 'İcra takibi; tüketici irtifak hakları devreye girer.',
+  },
 ];
 
-const CHECKLIST = [
-  'Sözleşmenin noter onaylı olduğunu kontrol edin.',
-  'Taksit tutarları, vadeleri ve faiz oranı yazılı şekilde belirtilmeli.',
-  'İskan tarihini ve gecikme tazminatı maddesini sözleşmede arayın.',
-  'Tapu devir tarihinin açıkça yazılı olduğunu teyit edin.',
-  'Müteahhidin garanti belgesi veya banka teminat mektubu sunmasını isteyin.',
-  'Teslim öncesinde tapu sicili üzerindeki şerh ve ipotekleri sorgulayın.',
-  'Cayma hakkınızı kullanma süresini (14 gün) kaçırmayın.',
+const CAYMA_SEKLI = [
+  'Cayma beyanı sözleşme tarihinden itibaren 14 takvim günü içinde yapılmalıdır.',
+  'Cayma beyanı iadeli taahhütlü posta veya noter kanalıyla iletilmelidir.',
+  'Cayma süresinde satıcı herhangi bir ödeme talep edemez; alınanlar iade edilir.',
+  'Cayma hakkı sözleşmede kısıtlanamaz veya kaldırılamaz — taraf aleyhine şartlar geçersiz.',
+  'Yabancı para cinsinden sözleşmelerde kur farkı alıcı aleyhine yansıtılamaz.',
 ];
 
-const PROCESS_STEPS = [
-  { step: '1', title: 'Ön Sözleşme Hazırlat', desc: 'Noterde ön satış sözleşmesi veya bağlayıcı satış vaadi düzenlenir.', duration: '1 gün' },
-  { step: '2', title: 'Ön Ödeme Yap', desc: 'Belirlenen peşinat/ön ödeme (genellikle %20-30) makbuzla ödenir.', duration: '1 gün' },
-  { step: '3', title: 'Taksit Takvimini Takip Et', desc: 'Her taksitin zamanında ödenmesi sözleşmeyi geçerli tutar; gecikmelerde faiz işler.', duration: 'Süregelen' },
-  { step: '4', title: 'İskan ve Teslim', desc: 'Müteahhit iskanı alır, bağımsız bölümü teslim eder.', duration: 'Proje süresine bağlı' },
-  { step: '5', title: 'Son Taksit ve Tapu', desc: 'Son ödeme yapılır, tapu noter veya tapu müdürlüğünde devredilir.', duration: '1-5 iş günü' },
+const BELGE_LISTESI = [
+  'Ön ödemeli konut satış sözleşmesi (noter onaylı)',
+  'Tapu şerh belgesi (tapu müdürlüğü)',
+  'İnşaat ruhsatı veya yapı kullanma izni fotokopisi',
+  'Taksit ödemelerine ait banka dekontları / makbuzlar',
+  'Projeye ait teknik şartname ve proje onayları',
+  'Müteahhit firma TOBB/ticaret sicil kaydı',
+  'Sigorta / teminat bilgileri (varsa)',
 ];
 
 export default function TaksitliSatisPage() {
@@ -61,27 +91,26 @@ export default function TaksitliSatisPage() {
       <section className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
         <div className="max-w-4xl mx-auto px-6 py-16">
           <div className="inline-flex items-center gap-2 bg-[#00C49F]/20 border border-[#00C49F]/30 text-[#00C49F] text-xs font-bold px-4 py-1.5 rounded-full mb-5">
-            <CreditCard size={13} /> Hukuki Rehber
+            <FileText size={13} /> Taksitli Satış Rehberi
           </div>
           <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-4">
-            Taksitli Gayrimenkul Satışı Rehberi
+            Taksitli Satış Rehberi
           </h1>
           <p className="text-gray-300 text-sm max-w-xl leading-relaxed mb-8">
-            Taksitli alım satımda alıcı ve satıcı hakları, sözleşme zorunlulukları, cayma hakkı,
-            temerrüt durumları ve tapu devri süreci.
+            Ön ödemeli konut satışı, 14 günlük cayma hakkı, temerrüt durumu ve tüketici koruma haklarınız.
           </p>
           <div className="flex flex-wrap gap-4">
             <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
-              <p className="text-2xl font-black text-[#00C49F]">14 gün</p>
-              <p className="text-xs text-gray-400">Cayma hakkı süresi</p>
+              <p className="text-2xl font-black text-[#00C49F]">14 Gün</p>
+              <p className="text-xs text-gray-400">Yasal cayma süresi</p>
             </div>
             <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
-              <p className="text-2xl font-black text-white">TKHK</p>
-              <p className="text-xs text-gray-400">Tüketici koruması</p>
+              <p className="text-2xl font-black text-white">Noterden</p>
+              <p className="text-xs text-gray-400">Zorunlu şekil</p>
             </div>
             <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
-              <p className="text-2xl font-black text-amber-400">Noter</p>
-              <p className="text-xs text-gray-400">Sözleşme zorunluluğu</p>
+              <p className="text-2xl font-black text-amber-400">TKHK 40</p>
+              <p className="text-xs text-gray-400">Tüketici kanunu maddesi</p>
             </div>
           </div>
         </div>
@@ -89,60 +118,26 @@ export default function TaksitliSatisPage() {
 
       <div className="max-w-4xl mx-auto px-6 py-12 space-y-12">
 
-        {/* Karşılaştırma */}
+        {/* Sözleşme Türleri */}
         <section>
-          <h2 className="text-xl font-black text-gray-900 mb-4">Taksitli vs Normal Satış</h2>
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs">
-                <thead className="bg-gray-50 border-b border-gray-100">
-                  <tr>
-                    <th className="text-left px-4 py-3 font-black text-gray-700">Özellik</th>
-                    <th className="text-left px-4 py-3 font-black text-[#00C49F]">Taksitli Satış</th>
-                    <th className="text-left px-4 py-3 font-black text-blue-600">Normal Satış</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {COMPARISON.map((c, i) => (
-                    <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                      <td className="px-4 py-3 font-bold text-gray-800">{c.aspect}</td>
-                      <td className="px-4 py-3 text-gray-600 leading-relaxed">{c.taksitli}</td>
-                      <td className="px-4 py-3 text-gray-600 leading-relaxed">{c.normal}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </section>
-
-        {/* Alıcı Hakları */}
-        <section>
-          <h2 className="text-xl font-black text-gray-900 mb-4">Alıcı Hakları</h2>
-          <div className="space-y-3">
-            {RIGHTS.map((r, i) => (
-              <div key={i} className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm flex items-start gap-3">
-                <CheckCircle size={14} className="text-[#00C49F] shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-xs font-black text-gray-900 mb-0.5">{r.title}</p>
-                  <p className="text-xs text-gray-600 leading-relaxed">{r.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Riskler ve Önlemler */}
-        <section>
-          <h2 className="text-xl font-black text-gray-900 mb-4">Riskler ve Önlemler</h2>
-          <div className="space-y-3">
-            {RISKS.map((r, i) => (
-              <div key={i} className="bg-white rounded-xl border border-amber-100 p-4 shadow-sm">
-                <div className="flex items-start gap-3">
-                  <AlertTriangle size={13} className="text-amber-500 shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-xs font-black text-gray-900 mb-1">{r.risk}</p>
-                    <p className="text-[10px] text-gray-600 leading-relaxed">{r.mitigation}</p>
+          <h2 className="text-xl font-black text-gray-900 mb-4">Taksitli Satış Türleri</h2>
+          <div className="space-y-4">
+            {SOZLESME_TURLERI.map((s, i) => (
+              <div key={i} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+                <p className="text-xs font-black text-gray-900 mb-1">{s.tur}</p>
+                <p className="text-[10px] text-gray-600 mb-3 leading-relaxed">{s.tanim}</p>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  <div className="bg-[#F0FDF8] rounded-lg p-2">
+                    <p className="text-[10px] text-[#00C49F] font-bold mb-0.5">Dayanak</p>
+                    <p className="text-[10px] text-gray-600">{s.dayanak}</p>
+                  </div>
+                  <div className="bg-blue-50 rounded-lg p-2">
+                    <p className="text-[10px] text-blue-600 font-bold mb-0.5">Cayma</p>
+                    <p className="text-[10px] text-gray-600">{s.cayma}</p>
+                  </div>
+                  <div className="col-span-2 bg-amber-50 rounded-lg p-2">
+                    <p className="text-[10px] text-amber-600 font-bold mb-0.5">Resmi Şekil</p>
+                    <p className="text-[10px] text-gray-600">{s.noterde}</p>
                   </div>
                 </div>
               </div>
@@ -150,64 +145,84 @@ export default function TaksitliSatisPage() {
           </div>
         </section>
 
-        {/* Süreç */}
-        <section>
-          <h2 className="text-xl font-black text-gray-900 mb-5">Taksitli Satış Süreci</h2>
-          <div className="space-y-3">
-            {PROCESS_STEPS.map(s => (
-              <div key={s.step} className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm flex items-start gap-4">
-                <div className="w-8 h-8 rounded-full bg-[#00C49F] text-white flex items-center justify-center text-xs font-black shrink-0">
-                  {s.step}
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between gap-3 mb-1">
-                    <h3 className="text-sm font-black text-gray-900">{s.title}</h3>
-                    <span className="flex items-center gap-1 text-[10px] text-gray-400 whitespace-nowrap">
-                      <Clock size={10} /> {s.duration}
-                    </span>
-                  </div>
-                  <p className="text-xs text-gray-600 leading-relaxed">{s.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Kontrol Listesi */}
+        {/* Sözleşme İçeriği */}
         <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
           <h2 className="text-sm font-black text-gray-900 mb-4 flex items-center gap-2">
-            <ShieldCheck size={14} className="text-[#00C49F]" /> Sözleşme Kontrol Listesi
+            <CheckCircle size={14} className="text-[#00C49F]" /> Sözleşmede Olması Gerekenler
           </h2>
-          <ul className="space-y-2.5">
-            {CHECKLIST.map((item, i) => (
-              <li key={i} className="flex items-start gap-2">
-                <span className="w-4 h-4 rounded border-2 border-[#00C49F] flex items-center justify-center shrink-0 mt-0.5">
-                  <CheckCircle size={10} className="text-[#00C49F]" />
-                </span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {SOZLESME_ICERIGI.map((item, i) => (
+              <div key={i} className="flex items-start gap-2">
+                <div className="w-4 h-4 rounded border-2 border-[#00C49F]/40 shrink-0 mt-0.5" />
                 <p className="text-xs text-gray-700 leading-relaxed">{item}</p>
-              </li>
+              </div>
             ))}
-          </ul>
+          </div>
+        </section>
+
+        {/* Temerrüt */}
+        <section>
+          <h2 className="text-xl font-black text-gray-900 mb-4">Temerrüt Durumları</h2>
+          <div className="space-y-4">
+            {TEMERRUT.map((t, i) => (
+              <div key={i} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+                <p className="text-xs font-black text-gray-900 mb-2">{t.durum}</p>
+                <p className="text-[10px] text-gray-600 mb-2 leading-relaxed">{t.detay}</p>
+                <div className="bg-rose-50 border border-rose-100 rounded-lg p-2">
+                  <p className="text-[10px] text-rose-600 font-bold mb-0.5">Risk</p>
+                  <p className="text-[10px] text-gray-600">{t.risk}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Cayma Şekli */}
+        <section>
+          <h2 className="text-xl font-black text-gray-900 mb-4">Cayma Hakkının Kullanımı</h2>
+          <div className="space-y-3">
+            {CAYMA_SEKLI.map((item, i) => (
+              <div key={i} className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm flex items-start gap-3">
+                <Scale size={13} className="text-blue-500 shrink-0 mt-0.5" />
+                <p className="text-xs text-gray-700 leading-relaxed">{item}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Belge Listesi */}
+        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+          <h2 className="text-sm font-black text-gray-900 mb-4 flex items-center gap-2">
+            <FileText size={14} className="text-amber-500" /> Gerekli Belgeler
+          </h2>
+          <div className="space-y-2">
+            {BELGE_LISTESI.map((item, i) => (
+              <div key={i} className="flex items-start gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0 mt-1.5" />
+                <p className="text-xs text-gray-700 leading-relaxed">{item}</p>
+              </div>
+            ))}
+          </div>
         </section>
 
         {/* Warning */}
         <section className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl p-4">
           <AlertTriangle size={14} className="text-amber-600 shrink-0 mt-0.5" />
-          <p className="text-xs text-amber-700 leading-relaxed">
-            <span className="font-black">Devre mülk satışında ekstra dikkat:</span> Devre mülk (timeshare) sözleşmeleri özel TKHK hükümlerine tabidir. Cayma hakkı 14 gündür ve satıcı bu süre içinde herhangi bir bedel talep edemez.
+          <p className="text-xs text-amber-800 leading-relaxed">
+            <span className="font-black">Önemli:</span> Ön ödemeli konut satışında müteahhit, sözleşme bedelinin %10'unu aşan tutarda teminat (banka teminat mektubu veya sigorta) göstermek zorundadır. Bu teminat alınmadan ödeme yapmaktan kaçının.
           </p>
         </section>
 
         {/* Related */}
         <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-          <h3 className="text-sm font-bold text-gray-900 mb-4">İlgili Araçlar</h3>
+          <h3 className="text-sm font-bold text-gray-900 mb-4">İlgili Rehberler</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {[
               { href: '/pismanlik-hakki', label: 'Pişmanlık Hakkı ve Cayma' },
+              { href: '/sozlesme-iptal', label: 'Sözleşme İptal ve Fesih' },
               { href: '/tapu-devir-sureci', label: 'Tapu Devir Süreci' },
-              { href: '/tapu-masrafi', label: 'Tapu Masrafı Hesaplayıcı' },
+              { href: '/kat-karsiligi', label: 'Kat Karşılığı Rehberi' },
               { href: '/odeme-plani', label: 'Ödeme Planı Simülatörü' },
-              { href: '/mortgage-simulatoru', label: 'Gelişmiş Mortgage Simülatörü' },
               { href: '/rehber/ev-satin-alma', label: 'Ev Satın Alma Rehberi' },
             ].map(l => (
               <Link key={l.href} href={l.href}
