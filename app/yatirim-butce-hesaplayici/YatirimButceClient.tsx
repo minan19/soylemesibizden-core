@@ -1,229 +1,165 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import Link from 'next/link';
-import { ArrowRight, Calculator } from 'lucide-react';
+
+const SEHIR_GETIRI: Record<string, number> = {
+  'İstanbul': 4.5,
+  'Ankara': 5.2,
+  'İzmir': 4.8,
+  'Antalya': 5.6,
+  'Bursa': 5.8,
+  'Bodrum': 3.9,
+  'Gaziantep': 6.3,
+  'Kocaeli': 5.5,
+};
 
 export default function YatirimButceClient() {
-  const [mlkDegeri, setMlkDegeri] = useState(3000000);
+  const [butce, setButce] = useState(2000000);
   const [pesinatOrani, setPesinatOrani] = useState(30);
-  const [krediVadesi, setKrediVadesi] = useState(120);
-  const [aylikFaizOrani, setAylikFaizOrani] = useState(3.9);
-  const [tapuHarci, setTapuHarci] = useState(4);
-  const [emlakciKomisyonu, setEmlakciKomisyonu] = useState(2);
-  const [tadilatButce, setTadilatButce] = useState(100000);
-  const [ilkYilAidat, setIlkYilAidat] = useState(18000);
-  const [sigortaYillik, setSigortaYillik] = useState(5000);
-  const [nakliyat, setNakliyat] = useState(20000);
+  const [sehir, setSehir] = useState('İstanbul');
+  const [yillikFiyatArtisi, setYillikFiyatArtisi] = useState(30);
+  const [kiraDoluluk, setKiraDoluluk] = useState(92);
+  const [alisGiderleri, setAlisGiderleri] = useState(4);
 
-  const sonuc = useMemo(() => {
-    const pesinat = mlkDegeri * (pesinatOrani / 100);
-    const krediTutari = mlkDegeri - pesinat;
-    const r = aylikFaizOrani / 100;
-    const n = krediVadesi;
-    const aylikTaksit = krediTutari > 0
-      ? Math.round(krediTutari * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1))
-      : 0;
+  const hesap = useMemo(() => {
+    const kiraSehirGetirisi = SEHIR_GETIRI[sehir] || 5.0;
+    const toplamMaliyet = butce * (1 + alisGiderleri / 100);
+    const pesinatTutari = butce * (pesinatOrani / 100);
+    const krediTutari = butce - pesinatTutari;
+    const aylikKira = (butce * (kiraSehirGetirisi / 100)) / 12;
+    const aylikKiraGeliri = aylikKira * (kiraDoluluk / 100);
+    const yillikKiraGeliri = aylikKiraGeliri * 12;
 
-    const tapuMasrafi = mlkDegeri * (tapuHarci / 100);
-    const donerSermaye = 3200;
-    const emlakciMasrafi = mlkDegeri * (emlakciKomisyonu / 100) * 1.20;
-    const dask = Math.round(mlkDegeri * 0.0008);
-    const ekMasraflar = tapuMasrafi + donerSermaye + emlakciMasrafi + dask + sigortaYillik + nakliyat;
-    const toplamBaslangiçOdeme = pesinat + ekMasraflar + tadilatButce;
-    const ilkYilToplamMaliyet = toplamBaslangiçOdeme + (aylikTaksit * 12) + ilkYilAidat;
-    const toplamKrediOdeme = aylikTaksit * krediVadesi;
-    const toplamFaiz = Math.max(0, toplamKrediOdeme - krediTutari);
+    // 5 yıllık projeksiyon
+    const yillar = [];
+    let mlkDegeri = butce;
+    let toplamKira = 0;
+    for (let y = 1; y <= 5; y++) {
+      mlkDegeri = mlkDegeri * (1 + yillikFiyatArtisi / 100);
+      toplamKira += yillikKiraGeliri * Math.pow(1.25, y - 1); // kira %25 artış varsayımı
+      const toplamGetiri = mlkDegeri - butce + toplamKira;
+      const roi = (toplamGetiri / toplamMaliyet) * 100;
+      yillar.push({ yil: y, mlkDegeri, toplamKira, toplamGetiri, roi });
+    }
 
-    return {
-      pesinat: Math.round(pesinat),
-      krediTutari: Math.round(krediTutari),
-      aylikTaksit,
-      tapuMasrafi: Math.round(tapuMasrafi),
-      donerSermaye,
-      emlakciMasrafi: Math.round(emlakciMasrafi),
-      dask,
-      ekMasraflar: Math.round(ekMasraflar),
-      toplamBaslangiçOdeme: Math.round(toplamBaslangiçOdeme),
-      ilkYilToplamMaliyet: Math.round(ilkYilToplamMaliyet),
-      toplamFaiz: Math.round(toplamFaiz),
-      toplamSahiplikMaliyeti: Math.round(mlkDegeri + toplamFaiz + ekMasraflar + tadilatButce),
-    };
-  }, [mlkDegeri, pesinatOrani, krediVadesi, aylikFaizOrani, tapuHarci, emlakciKomisyonu, tadilatButce, ilkYilAidat, sigortaYillik, nakliyat]);
+    const brut_kira_getirisi = (yillikKiraGeliri / butce) * 100;
+    const net_kira_getirisi = brut_kira_getirisi * 0.75; // gider tahmini %25
 
-  const masrafKalemleri = [
-    { kalem: 'Peşinat', tutar: sonuc.pesinat },
-    { kalem: 'Tapu Harcı', tutar: sonuc.tapuMasrafi },
-    { kalem: 'Döner Sermaye', tutar: sonuc.donerSermaye },
-    { kalem: 'Emlakçı Komisyonu', tutar: sonuc.emlakciMasrafi },
-    { kalem: 'DASK Sigortası', tutar: sonuc.dask },
-    { kalem: 'Konut Sigortası', tutar: sigortaYillik },
-    { kalem: 'Nakliye & Yerleşim', tutar: nakliyat },
-    { kalem: 'Tadilat Bütçesi', tutar: tadilatButce },
-  ];
-  const maxMasraf = Math.max(...masrafKalemleri.map(m => m.tutar));
+    return { toplamMaliyet, pesinatTutari, krediTutari, aylikKiraGeliri, yillikKiraGeliri, brut_kira_getirisi, net_kira_getirisi, yillar };
+  }, [butce, pesinatOrani, sehir, yillikFiyatArtisi, kiraDoluluk, alisGiderleri]);
 
   return (
-    <main className="min-h-screen bg-[#F8FAFC]">
-      <section className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
-        <div className="max-w-4xl mx-auto px-6 py-16">
-          <div className="inline-flex items-center gap-2 bg-[#00C49F]/20 border border-[#00C49F]/30 text-[#00C49F] text-xs font-bold px-4 py-1.5 rounded-full mb-5">
-            <Calculator size={13} /> Yatırım Bütçe Hesaplayıcı
+    <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
+
+      {/* Giriş */}
+      <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+        <h2 className="text-sm font-black text-gray-900 mb-5">Yatırım Parametreleri</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+
+          <div>
+            <label className="text-xs font-black text-gray-700 block mb-1">Mülk Değeri (₺)</label>
+            <input type="number" value={butce} onChange={e => setButce(Number(e.target.value))} step={100000} min={500000}
+              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm font-bold focus:outline-none focus:border-[#00C49F]" />
           </div>
-          <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-4">Gayrimenkul Yatırım Bütçe Hesaplayıcı</h1>
-          <p className="text-gray-300 text-sm max-w-xl leading-relaxed">
-            Peşinat, kredi taksiti, ek masraflar ve tadilat dahil toplam sahiplik maliyetini hesaplayın.
-          </p>
+
+          <div>
+            <label className="text-xs font-black text-gray-700 block mb-1">Peşinat Oranı: %{pesinatOrani}</label>
+            <input type="range" min={20} max={100} step={5} value={pesinatOrani} onChange={e => setPesinatOrani(Number(e.target.value))}
+              className="w-full accent-[#00C49F]" />
+          </div>
+
+          <div>
+            <label className="text-xs font-black text-gray-700 block mb-1">Şehir</label>
+            <select value={sehir} onChange={e => setSehir(e.target.value)}
+              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm font-bold focus:outline-none focus:border-[#00C49F]">
+              {Object.keys(SEHIR_GETIRI).map(s => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
+
+          <div>
+            <label className="text-xs font-black text-gray-700 block mb-1">Yıllık Fiyat Artışı: %{yillikFiyatArtisi}</label>
+            <input type="range" min={10} max={60} step={5} value={yillikFiyatArtisi} onChange={e => setYillikFiyatArtisi(Number(e.target.value))}
+              className="w-full accent-[#00C49F]" />
+          </div>
+
+          <div>
+            <label className="text-xs font-black text-gray-700 block mb-1">Kira Doluluk Oranı: %{kiraDoluluk}</label>
+            <input type="range" min={70} max={100} step={1} value={kiraDoluluk} onChange={e => setKiraDoluluk(Number(e.target.value))}
+              className="w-full accent-[#00C49F]" />
+          </div>
+
+          <div>
+            <label className="text-xs font-black text-gray-700 block mb-1">Alım Giderleri: %{alisGiderleri}</label>
+            <input type="range" min={2} max={8} step={0.5} value={alisGiderleri} onChange={e => setAlisGiderleri(Number(e.target.value))}
+              className="w-full accent-[#00C49F]" />
+          </div>
         </div>
-      </section>
-
-      <div className="max-w-4xl mx-auto px-6 py-12 space-y-8">
-
-        {/* Mülk & Kredi */}
-        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-          <h2 className="text-sm font-black text-gray-900 mb-5">Mülk ve Kredi Bilgileri</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-
-            <div>
-              <label className="block text-xs font-bold text-gray-700 mb-1">Mülk Değeri</label>
-              <p className="text-lg font-black text-[#00C49F] mb-2">{mlkDegeri.toLocaleString('tr-TR')} ₺</p>
-              <input type="range" min={500000} max={20000000} step={100000} value={mlkDegeri}
-                onChange={e => setMlkDegeri(Number(e.target.value))} className="w-full accent-[#00C49F]" />
-              <div className="flex justify-between text-[10px] text-gray-400 mt-1"><span>500K</span><span>20M</span></div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-gray-700 mb-1">Peşinat Oranı</label>
-              <p className="text-lg font-black text-[#00C49F] mb-2">%{pesinatOrani}</p>
-              <input type="range" min={20} max={100} step={5} value={pesinatOrani}
-                onChange={e => setPesinatOrani(Number(e.target.value))} className="w-full accent-[#00C49F]" />
-              <div className="flex justify-between text-[10px] text-gray-400 mt-1"><span>%20</span><span>%100</span></div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-gray-700 mb-1">Kredi Vadesi (Ay)</label>
-              <p className="text-lg font-black text-[#00C49F] mb-2">{krediVadesi} ay</p>
-              <input type="range" min={12} max={240} step={12} value={krediVadesi}
-                onChange={e => setKrediVadesi(Number(e.target.value))} className="w-full accent-[#00C49F]" />
-              <div className="flex justify-between text-[10px] text-gray-400 mt-1"><span>12</span><span>240</span></div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-gray-700 mb-1">Aylık Faiz Oranı</label>
-              <p className="text-lg font-black text-[#00C49F] mb-2">%{aylikFaizOrani}</p>
-              <input type="range" min={1} max={7} step={0.1} value={aylikFaizOrani}
-                onChange={e => setAylikFaizOrani(Number(e.target.value))} className="w-full accent-[#00C49F]" />
-              <div className="flex justify-between text-[10px] text-gray-400 mt-1"><span>%1</span><span>%7</span></div>
-            </div>
-
-          </div>
-        </section>
-
-        {/* Masraflar */}
-        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-          <h2 className="text-sm font-black text-gray-900 mb-5">Ek Masraflar ve Kurulum</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-
-            <div>
-              <label className="block text-xs font-bold text-gray-700 mb-1">Tapu Harcı Oranı</label>
-              <p className="text-lg font-black text-gray-700 mb-2">%{tapuHarci}</p>
-              <input type="range" min={3} max={4} step={0.5} value={tapuHarci}
-                onChange={e => setTapuHarci(Number(e.target.value))} className="w-full accent-[#00C49F]" />
-              <div className="flex justify-between text-[10px] text-gray-400 mt-1"><span>%3</span><span>%4</span></div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-gray-700 mb-1">Emlakçı Komisyonu</label>
-              <p className="text-lg font-black text-gray-700 mb-2">%{emlakciKomisyonu}</p>
-              <input type="range" min={0} max={3} step={0.5} value={emlakciKomisyonu}
-                onChange={e => setEmlakciKomisyonu(Number(e.target.value))} className="w-full accent-[#00C49F]" />
-              <div className="flex justify-between text-[10px] text-gray-400 mt-1"><span>0</span><span>%3</span></div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-gray-700 mb-1">Tadilat Bütçesi</label>
-              <p className="text-lg font-black text-gray-700 mb-2">{tadilatButce.toLocaleString('tr-TR')} ₺</p>
-              <input type="range" min={0} max={500000} step={10000} value={tadilatButce}
-                onChange={e => setTadilatButce(Number(e.target.value))} className="w-full accent-[#00C49F]" />
-              <div className="flex justify-between text-[10px] text-gray-400 mt-1"><span>0</span><span>500K</span></div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-gray-700 mb-1">Nakliye & Yerleşim</label>
-              <p className="text-lg font-black text-gray-700 mb-2">{nakliyat.toLocaleString('tr-TR')} ₺</p>
-              <input type="range" min={0} max={100000} step={5000} value={nakliyat}
-                onChange={e => setNakliyat(Number(e.target.value))} className="w-full accent-[#00C49F]" />
-              <div className="flex justify-between text-[10px] text-gray-400 mt-1"><span>0</span><span>100K</span></div>
-            </div>
-
-          </div>
-        </section>
-
-        {/* Özet */}
-        <section className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-          <div className="bg-[#F0FDF8] rounded-2xl border border-[#00C49F]/20 p-4 text-center">
-            <p className="text-xl font-black text-[#00C49F]">{sonuc.toplamBaslangiçOdeme.toLocaleString('tr-TR')} ₺</p>
-            <p className="text-xs text-gray-500 mt-1">Başlangıç Ödemesi</p>
-          </div>
-          <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm text-center">
-            <p className="text-xl font-black text-gray-900">{sonuc.aylikTaksit.toLocaleString('tr-TR')} ₺</p>
-            <p className="text-xs text-gray-500 mt-1">Aylık Kredi Taksiti</p>
-          </div>
-          <div className="bg-rose-50 rounded-2xl border border-rose-100 p-4 text-center col-span-2 sm:col-span-1">
-            <p className="text-xl font-black text-rose-600">{(sonuc.toplamSahiplikMaliyeti / 1000000).toFixed(2)} M ₺</p>
-            <p className="text-xs text-gray-500 mt-1">Toplam Sahiplik Maliyeti</p>
-          </div>
-        </section>
-
-        {/* Maliyet Dağılımı */}
-        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-          <h2 className="text-sm font-black text-gray-900 mb-4">Başlangıç Maliyet Dağılımı</h2>
-          <div className="space-y-3">
-            {masrafKalemleri.filter(m => m.tutar > 0).map((m, i) => (
-              <div key={i} className="space-y-1">
-                <div className="flex justify-between">
-                  <p className="text-xs font-bold text-gray-700">{m.kalem}</p>
-                  <p className="text-xs font-black text-gray-900">{m.tutar.toLocaleString('tr-TR')} ₺</p>
-                </div>
-                <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
-                  <div className="bg-[#00C49F] h-full rounded-full" style={{ width: `${(m.tutar / Math.max(1, maxMasraf)) * 100}%` }} />
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="mt-4 pt-3 border-t border-gray-100 flex justify-between">
-            <p className="text-xs font-black text-gray-700">Ek Masraflar Toplamı</p>
-            <p className="text-xs font-black text-rose-600">{sonuc.ekMasraflar.toLocaleString('tr-TR')} ₺</p>
-          </div>
-          <div className="mt-1 flex justify-between">
-            <p className="text-xs font-black text-gray-700">İlk Yıl Toplam Maliyeti</p>
-            <p className="text-xs font-black text-gray-900">{sonuc.ilkYilToplamMaliyet.toLocaleString('tr-TR')} ₺</p>
-          </div>
-        </section>
-
-        {/* Related */}
-        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-          <h3 className="text-sm font-bold text-gray-900 mb-4">İlgili Araçlar</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {[
-              { href: '/pesinat-hesaplayici', label: 'Peşinat Hesaplayıcı' },
-              { href: '/mortgage-simulatoru', label: 'Mortgage Simülatörü' },
-              { href: '/satinalma-maliyeti', label: 'Satın Alma Maliyeti' },
-              { href: '/tapu-masrafi', label: 'Tapu Masrafı Hesaplayıcı' },
-              { href: '/odeme-plani', label: 'Ödeme Planı Simülatörü' },
-              { href: '/net-kira-hesaplayici', label: 'Net Kira Geliri Hesaplayıcı' },
-            ].map(l => (
-              <Link key={l.href} href={l.href}
-                className="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-[#F0FDF8] border border-transparent hover:border-[#00C49F]/20 transition-all group"
-              >
-                <ArrowRight size={12} className="text-gray-300 group-hover:text-[#00C49F] transition-colors shrink-0" />
-                <span className="text-xs text-gray-700 group-hover:text-[#00C49F] font-medium transition-colors">{l.label}</span>
-              </Link>
-            ))}
-          </div>
-        </section>
-
       </div>
-    </main>
+
+      {/* Özet Kartlar */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {[
+          { label: 'Toplam Maliyet', value: `${Math.round(hesap.toplamMaliyet).toLocaleString('tr-TR')} ₺`, sub: 'Alım giderleri dahil' },
+          { label: 'Peşinat', value: `${Math.round(hesap.pesinatTutari).toLocaleString('tr-TR')} ₺`, sub: `%${pesinatOrani} peşinat` },
+          { label: 'Aylık Kira Geliri', value: `${Math.round(hesap.aylikKiraGeliri).toLocaleString('tr-TR')} ₺`, sub: `%${kiraDoluluk} dolulukla` },
+          { label: 'Net Kira Getirisi', value: `%${hesap.net_kira_getirisi.toFixed(1)}`, sub: 'Giderler sonrası' },
+        ].map((k, i) => (
+          <div key={i} className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm text-center">
+            <p className="text-[10px] text-gray-500 mb-1">{k.label}</p>
+            <p className="text-sm font-black text-[#00C49F]">{k.value}</p>
+            <p className="text-[10px] text-gray-400 mt-0.5">{k.sub}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* 5 Yıl Projeksiyon */}
+      <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm overflow-x-auto">
+        <h2 className="text-sm font-black text-gray-900 mb-4">5 Yıllık Yatırım Projeksiyonu</h2>
+        <table className="w-full text-[10px] min-w-[500px]">
+          <thead>
+            <tr className="border-b border-gray-100">
+              <th className="text-left py-2 font-black text-gray-500">Yıl</th>
+              <th className="text-right py-2 font-black text-gray-500">Mülk Değeri</th>
+              <th className="text-right py-2 font-black text-gray-500">Kira Geliri</th>
+              <th className="text-right py-2 font-black text-gray-500">Toplam Getiri</th>
+              <th className="text-right py-2 font-black text-[#00C49F]">ROI</th>
+            </tr>
+          </thead>
+          <tbody>
+            {hesap.yillar.map((y, i) => (
+              <tr key={i} className="border-b border-gray-50">
+                <td className="py-2 font-black text-gray-900">{y.yil}. Yıl</td>
+                <td className="py-2 text-right font-bold text-gray-700">{Math.round(y.mlkDegeri).toLocaleString('tr-TR')} ₺</td>
+                <td className="py-2 text-right font-bold text-blue-600">{Math.round(y.toplamKira).toLocaleString('tr-TR')} ₺</td>
+                <td className="py-2 text-right font-bold text-gray-700">{Math.round(y.toplamGetiri).toLocaleString('tr-TR')} ₺</td>
+                <td className="py-2 text-right font-black text-[#00C49F]">%{y.roi.toFixed(0)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <p className="text-[10px] text-gray-400 mt-2">* Kira artışı yıllık %25 varsayılmıştır. Gerçek değerler piyasa koşullarına göre değişir.</p>
+      </div>
+
+      {/* Getiri Bar Chart */}
+      <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+        <h2 className="text-sm font-black text-gray-900 mb-4">ROI Projeksiyonu</h2>
+        <div className="space-y-2">
+          {hesap.yillar.map((y, i) => {
+            const maxRoi = hesap.yillar[hesap.yillar.length - 1].roi;
+            const pct = Math.min((y.roi / maxRoi) * 100, 100);
+            return (
+              <div key={i} className="flex items-center gap-3">
+                <span className="text-[10px] font-black text-gray-500 w-10 shrink-0">{y.yil}. Yıl</span>
+                <div className="flex-1 bg-gray-100 rounded-full h-3">
+                  <div className="bg-[#00C49F] h-3 rounded-full transition-all" style={{ width: `${pct}%` }} />
+                </div>
+                <span className="text-[10px] font-black text-[#00C49F] w-12 text-right shrink-0">%{y.roi.toFixed(0)}</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+    </div>
   );
 }
