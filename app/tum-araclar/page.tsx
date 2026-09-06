@@ -77,6 +77,7 @@ const CATEGORIES: Category[] = [
       { href: '/faiz-gecmisi', icon: TrendingUp, label: 'Faiz Geçmişi', desc: 'Tarihsel mortgage faiz oranları 2015-2024', badge: 'Yeni' },
       { href: '/istatistikler', icon: BarChart2, label: 'Platform İstatistikleri', desc: 'Kapsamlı piyasa istatistikleri' },
       { href: '/mahalle-analizi', icon: MapPin, label: 'Mahalle Analizi', desc: 'Aktivite skoru ve ₺/m² verisi', badge: 'Yeni' },
+      { href: '/kira-haritasi', icon: MapPin, label: 'Kira Fiyat Rehberi', desc: '12 şehir kira ortalama ve YoY artış', badge: 'Yeni' },
       { href: '/sehir', icon: MapPin, label: 'Şehir Sayfaları', desc: 'Her şehir için detaylı analiz' },
     ],
   },
