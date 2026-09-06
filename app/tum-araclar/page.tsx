@@ -54,6 +54,7 @@ const CATEGORIES: Category[] = [
     tools: [
       { href: '/valuation', icon: Home, label: 'Değerleme Aracı', desc: 'Bölge bazlı fiyat analizi' },
       { href: '/yatirim-analizi', icon: TrendingUp, label: 'Yatırım ROI Analizi', desc: 'Getiri, al/kirala, projeksiyon', badge: 'Yeni' },
+      { href: '/kira-getiri-hesaplayici', icon: TrendingUp, label: 'Kira Getiri Hesaplayıcı', desc: 'Brüt/net getiri, cap rate, geri ödeme', badge: 'Yeni' },
       { href: '/portfoy', icon: PieChart, label: 'Portföy Takibi', desc: 'Gayrimenkul portföy yönetimi', badge: 'Yeni' },
       { href: '/market-radar', icon: BarChart2, label: 'Piyasa Radarı', desc: 'Canlı piyasa analitik' },
       { href: '/karsilastir', icon: Scale, label: 'Bölge Karşılaştırma', desc: 'İki şehir/ilçeyi karşılaştır' },
