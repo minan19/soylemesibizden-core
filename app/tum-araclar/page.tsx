@@ -112,6 +112,7 @@ const CATEGORIES: Category[] = [
       { href: '/sss', icon: BookOpen, label: 'Sıkça Sorulan Sorular', desc: 'Tüm platform soruları' },
       { href: '/miras-ve-gayrimenkul', icon: FileText, label: 'Miras ve Gayrimenkul', desc: 'Veraset, intikal, mirasçı hakları', badge: 'Yeni' },
       { href: '/kira-sozlesmesi', icon: Key, label: 'Kira Sözleşmesi Rehberi', desc: 'Zorunlu maddeler, depozito, haklar', badge: 'Yeni' },
+      { href: '/tapu-devir-sureci', icon: FileText, label: 'Tapu Devir Süreci', desc: '7 adım, belgeler, maliyet dökümü', badge: 'Yeni' },
     ],
   },
   {
