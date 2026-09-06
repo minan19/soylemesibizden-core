@@ -251,6 +251,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/kira-sozlesmesi-iptal-rehberi`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.78 },
     { url: `${baseUrl}/satilik-daire-ankara`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.90 },
     { url: `${baseUrl}/ev-degerleme-raporu`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.79 },
+    { url: `${baseUrl}/kiralik-daire-istanbul`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.90 },
+    { url: `${baseUrl}/bina-yasi-hesaplayici`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.80 },
   ];
 
   const listingPages: MetadataRoute.Sitemap = listings.map(l => ({
