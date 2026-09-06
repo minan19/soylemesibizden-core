@@ -3,7 +3,7 @@ import Link from 'next/link';
 import {
   Calculator, TrendingUp, Home, MapPin, BarChart2, FileText,
   Landmark, PieChart, Building2, Scale, Star, ArrowRight,
-  Search, Key, ShieldCheck, Users, BookOpen,
+  Search, Key, ShieldCheck, Users, BookOpen, Globe,
 } from 'lucide-react';
 
 export const metadata: Metadata = {
@@ -104,6 +104,7 @@ const CATEGORIES: Category[] = [
       { href: '/gayrimenkul-sozlugu', icon: BookOpen, label: 'Gayrimenkul Sözlüğü', desc: '25 terim ve tanım', badge: 'Yeni' },
       { href: '/imar-durumu', icon: MapPin, label: 'İmar Durumu Rehberi', desc: 'TAKS, KAKS, ruhsat süreci', badge: 'Yeni' },
       { href: '/kentsel-donusum', icon: Building2, label: 'Kentsel Dönüşüm Rehberi', desc: 'Haklar, süreç, 2/3 kuralı', badge: 'Yeni' },
+      { href: '/yabanci-gayrimenkul', icon: Globe, label: 'Yabancı Alıcı Rehberi', desc: 'DAB, vatandaşlık, vergi', badge: 'Yeni' },
       { href: '/sss', icon: BookOpen, label: 'Sıkça Sorulan Sorular', desc: 'Tüm platform soruları' },
     ],
   },
