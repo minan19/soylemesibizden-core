@@ -487,7 +487,7 @@ git push https://minan19:<GITHUB_TOKEN>@github.com/minan19/soylemesibizden-core.
 
 ---
 
-*Son güncelleme: 2026-09-06 — Oturum 21: FAZ 375-396 tamamlandı. Bodrum gayrimenkul, ₺/m² fiyat hesaplayıcı, Bursa gayrimenkul, kira tespit davası hesaplayıcı, İzmir satılık/kiralık daire landing, apartman yönetimi rehberi, kiralık villa, gayrimenkul amortisman hesaplayıcı, tapu iptal davası rehberi, fiyat sezon analizi, kira endeksi takip, İstanbul Avrupa/Anadolu yakası sayfaları, konut finansman/danışmanlık rehberleri, kira borçlanma hesaplayıcı, konut alım maliyet rehberi, Ankara Çankaya/İzmir Karşıyaka bölge sayfaları, tapu sicil sorgulama, yabancı oturma izni rehberi. Toplam 270+ araç ve sayfa.*
+*Son güncelleme: 2026-09-06 — Oturum 22: FAZ 397-416 tamamlandı. Antalya Konyaaltı, 2024 kira fiyat endeksi, Ankara Keçiören, konut kredisi uygunluk puanlama, Antalya kiralık daire landing, kira müzakere rehberi, İzmir Bornova, ev alım kontrol listesi, İstanbul Şişli, 2025 kira artış hesaplayıcı, Bursa satılık daire, konut kira-satış oranı hesaplayıcı, İzmir büyükşehir rehberi, enerji verimliliği hesaplayıcı, İstanbul Beşiktaş, kiralama süreci rehberi, Ankara büyükşehir rehberi, kira eşdeğer değer hesaplayıcı, İstanbul Kadıköy, satılık konut değer analizi. Toplam 290+ araç ve sayfa.*
 
 ### Oturum 11 (FAZ 185-196) — Tamamlananlar
 - [x] **FAZ-185:** Arsa yatırımı rehberi — imar türleri, kontrol listesi, hisseli arsa (/arsa-yatirimi)
