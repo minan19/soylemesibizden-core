@@ -146,6 +146,7 @@ const CATEGORIES: Category[] = [
       { href: '/gayrimenkul-yatirim-fonu', icon: TrendingUp, label: 'GYO ve GYF Rehberi', desc: 'Borsa GYO, temettü, direkt karşılaştırma', badge: 'Yeni' },
       { href: '/sehir-planlama', icon: MapPin, label: 'Şehir Planlama ve İmar', desc: 'TAKS, KAKS, ruhsat süreci, kaçak yapı', badge: 'Yeni' },
       { href: '/tasinmaz-degerleme', icon: Scale, label: 'Taşınmaz Değerleme', desc: 'Emsal, gelir, maliyet, DCF yöntemleri', badge: 'Yeni' },
+      { href: '/kira-sozlesmesi-ornegi', icon: FileText, label: 'Kira Sözleşmesi Örneği', desc: 'Zorunlu maddeler, örnek metinler, depozito', badge: 'Yeni' },
     ],
   },
   {
