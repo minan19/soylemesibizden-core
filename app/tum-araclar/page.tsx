@@ -123,6 +123,7 @@ const CATEGORIES: Category[] = [
       { href: '/belediye-hizmetleri', icon: Building2, label: 'Belediye Hizmetleri', desc: 'Emlak vergisi, imar, iskan', badge: 'Yeni' },
       { href: '/arsa-yatirimi', icon: MapPin, label: 'Arsa Yatırımı Rehberi', desc: 'İmar türleri, kontrol listesi, riskler', badge: 'Yeni' },
       { href: '/pismanlik-hakki', icon: FileText, label: 'Pişmanlık Hakkı ve Cayma', desc: 'Kapora, BK md. 177, hukuki süreç', badge: 'Yeni' },
+      { href: '/ekspertiz-raporu', icon: FileText, label: 'Ekspertiz Raporu Rehberi', desc: 'SPK lisanslı değerleme, süreç, maliyet', badge: 'Yeni' },
     ],
   },
   {
