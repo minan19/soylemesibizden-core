@@ -112,6 +112,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/kira-endeksi`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.78 },
     { url: `${baseUrl}/konut-kredisi-rehberi`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.78 },
     { url: `${baseUrl}/net-gelir-hesaplayici`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.78 },
+    { url: `${baseUrl}/gayrimenkul-yatirim-fonu`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.72 },
   ];
 
   const listingPages: MetadataRoute.Sitemap = listings.map(l => ({
