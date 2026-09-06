@@ -487,7 +487,7 @@ git push https://minan19:<GITHUB_TOKEN>@github.com/minan19/soylemesibizden-core.
 
 ---
 
-*Son güncelleme: 2026-09-06 — Oturum 17: FAZ 285-299 tamamlandı. Ev taşınma rehberi, faiz oranı karşılaştırıcı, amortisman hesaplayıcı, kira tespit davası rehberi, tahliye süreci rehberi, konut kredisi simülatörü (24 ay ödeme planı), kira değer artışı simülatörü, ev satışa hazırlama, kredi notu rehberi, ilk ev alma rehberi, aidat hesaplayıcı, kira zam tablosu, konut değer tahmini, kentsel dönüşüm rehberi. Toplam 175+ araç ve sayfa.*
+*Son güncelleme: 2026-09-06 — Oturum 18: FAZ 309-323 tamamlandı. Sözleşme iptal/cayma rehberi, kooperatif konut rehberi, mortgage danışmanı rehberi, depozito yönetimi rehberi, yatırım bütçe hesaplayıcı (ROI 5 yıl), gayrimenkul vergi optimizasyon, tapu devir rehberi, net kira geliri hesaplayıcı, yabancı yatırımcı rehberi, bölge getiri karşılaştırma (5 bölge), kira sözleşmesi hazırlama, deprem sigorta hesaplayıcı, kiracı hakları, mal sahibi hakları, yeni konut projeleri rehberi. Toplam 190+ araç ve sayfa.*
 
 ### Oturum 11 (FAZ 185-196) — Tamamlananlar
 - [x] **FAZ-185:** Arsa yatırımı rehberi — imar türleri, kontrol listesi, hisseli arsa (/arsa-yatirimi)
