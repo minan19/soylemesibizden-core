@@ -111,6 +111,7 @@ const CATEGORIES: Category[] = [
       { href: '/enflasyon-korumasi', icon: TrendingUp, label: 'Enflasyon Koruması', desc: 'Gayrimenkul ile enflasyon hedging', badge: 'Yeni' },
       { href: '/sss', icon: BookOpen, label: 'Sıkça Sorulan Sorular', desc: 'Tüm platform soruları' },
       { href: '/miras-ve-gayrimenkul', icon: FileText, label: 'Miras ve Gayrimenkul', desc: 'Veraset, intikal, mirasçı hakları', badge: 'Yeni' },
+      { href: '/kira-sozlesmesi', icon: Key, label: 'Kira Sözleşmesi Rehberi', desc: 'Zorunlu maddeler, depozito, haklar', badge: 'Yeni' },
     ],
   },
   {
