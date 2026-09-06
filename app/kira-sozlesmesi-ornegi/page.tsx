@@ -1,97 +1,160 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import {
-  FileText, CheckCircle, AlertTriangle, ArrowRight, Scale,
-} from 'lucide-react';
+import { FileText, CheckCircle, AlertTriangle, ArrowRight, Scale } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Kira Sözleşmesi Örnek Şablonu ve Madde Rehberi | Söylemesi Bizden',
+  title: 'Kira Sözleşmesi Örneği 2024 | Madde Madde Şablon | Söylemesi Bizden',
   description:
-    'Konut ve işyeri kira sözleşmesi zorunlu maddeleri, örnek hükümler, depozito kuralları ve geçersiz kılınabilecek maddeler rehberi.',
+    'Türk Borçlar Kanunu\'na uygun kira sözleşmesi örneği. Zorunlu maddeler, depozito, fesih koşulları ve sık yapılan hatalar.',
 };
 
+const SOZLESME_TARAFLARI = [
+  {
+    taraf: 'Kiraya Veren (Mal Sahibi)',
+    bilgiler: ['Ad Soyad / Unvan', 'TC Kimlik No / Vergi No', 'İkametgah / Tescilli Adres', 'İletişim Bilgileri'],
+    not: 'Şirket ise imza yetkisi olan kişi imzalamalı; yetki belgesi eklenmeli.',
+  },
+  {
+    taraf: 'Kiracı',
+    bilgiler: ['Ad Soyad (tüm ortak kiracılar)', 'TC Kimlik No', 'İş Yeri / İkametgah Adresi', 'Telefon ve E-posta'],
+    not: 'Birden fazla kiracı varsa hepsi imzalamalı; müşterek borç hükmü eklenebilir.',
+  },
+  {
+    taraf: 'Kefil (varsa)',
+    bilgiler: ['Ad Soyad', 'TC Kimlik No', 'İmza (noter onaylı önerilir)', 'Kefaletinin üst sınırı'],
+    not: 'TBK 603: kefalet eşin yazılı rızası olmadan geçersizdir.',
+  },
+];
+
 const ZORUNLU_MADDELER = [
-  { madde: 'Taraflar', aciklama: 'Kiraya veren ve kiracının tam adı, TC kimlik numarası veya vergi numarası, adresi.' },
-  { madde: 'Kira Konusu', aciklama: 'Kiralanan taşınmazın adresi, niteliği (konut/işyeri), tapu ada-parsel bilgisi ve kullanım amacı.' },
-  { madde: 'Kira Bedeli ve Ödeme', aciklama: 'Aylık kira tutarı (rakam ve yazıyla), ödeme günü ve ödeme yöntemi (banka kanalı zorunlu).' },
-  { madde: 'Kira Süresi', aciklama: 'Başlangıç ve bitiş tarihi; belirtilmemişse belirsiz süreli sayılır.' },
-  { madde: 'Depozito', aciklama: 'En fazla 3 aylık kira; geri iade koşulları ve süresi (6 ay kural).' },
-  { madde: 'Kira Artışı', aciklama: 'Artış oranı veya endeksi; kanuni sınırı aşan maddeler geçersizdir.' },
-  { madde: 'Teslim Tutanağı', aciklama: 'Taşınmazın teslim tarihindeki durumunu gösteren ve imzalanan tutanak.' },
-  { madde: 'Kullanım Koşulları', aciklama: 'Alt kiralama, evcil hayvan, tadilatlar gibi kullanım kısıtlamaları.' },
-];
-
-const GECERSIZ_HUKUMLER = [
-  { hüküm: 'Kiracıdan 3 aydan fazla depozito istenmesi', dayanak: 'TBK md. 342 — fazlası kendiliğinden geçersiz.' },
-  { hüküm: 'Yıllık artışı TÜFE\'yi aşan oran', dayanak: 'TBK md. 344 — fazlası uygulanamaz; yasal sınır geçerlidir.' },
-  { hüküm: 'Kiracıya önceden ihtarsız tahliye hakkı', dayanak: 'TBK md. 352 — yazılı tahliye taahhüdü şartları belirlidir.' },
-  { hüküm: 'Sözleşme yenilenmesini engelleyen hüküm', dayanak: 'TBK md. 347 — konut kiralarında kira ilişkisi otomatik uzar.' },
-  { hüküm: 'Kiracının haklarından önceden feragat etmesi', dayanak: 'TBK md. 346 — kanunun kiracıya tanıdığı haklardan peşin feragat geçersiz.' },
-];
-
-const DEPOZITO_KURALLARI = [
-  'Depozito en fazla 3 aylık kira bedeli olabilir (TBK md. 342).',
-  'Kiracı depozitoyu nakit ödüyorsa ev sahibi bankada bloke hesap açmalıdır.',
-  'Kira ilişkisi sona erince 3 ay içinde iade edilmelidir; hasar yoksa faizle birlikte.',
-  'Ev sahibi hasarı ispat etmekle yükümlüdür; ispatlamazsa iade etmek zorundadır.',
-  'Bloke hesap yerine kefalet senedi de kabul edilebilir.',
-];
-
-const TAHLIYE_DAVALARI = [
-  { neden: 'Kira Ödememe', sure: 'Yazılı bildirimden 30 gün sonra', aciklama: '2 haklı ihtar durumunda dönem sonunda tahliye davası açılabilir.' },
-  { neden: 'Kiracının Taahhüdü', sure: 'Taahhüt tarihinde', aciklama: 'Kiracı kendi isteğiyle belirli tarihte boşaltacağını noter veya yazılı taahhüt etmişse.' },
-  { neden: 'Ev Sahibinin Zorunlu İhtiyacı', sure: 'Sözleşme bitişinde', aciklama: 'Ev sahibi kendisi/eşi/çocuğu için konutu kullanacaksa; gerçek ihtiyaç belgeli olmalı.' },
-  { neden: 'Yeniden İnşa/Esaslı Tamir', sure: 'Dönem sonunda', aciklama: 'Binanın yıkılıp yeniden yapılması veya kullanımı engelleyen büyük tamirat.' },
-  { neden: 'Sözleşmeye Aykırılık', sure: 'İhbardan sonra', aciklama: 'Kiracının sözleşmede yasaklanan kullanım, alt kiralama veya ciddi zarar verme durumu.' },
-];
-
-const ORNEK_MADDELER = [
   {
-    baslik: 'Kira Artışı',
-    ornek: '"İşbu sözleşme kapsamında kira artışı; her kira yılı sonunda, Türkiye İstatistik Kurumu (TÜİK) tarafından açıklanan bir önceki 12 aylık tüketici fiyatları genel endeksi (TÜFE) değişim oranını geçmeyecek şekilde uygulanacaktır."',
-    neden: 'TBK md. 344 uyumlu; yasal sınırı açıkça yansıtır.',
+    madde: '1. Kiralanan Taşınmaz',
+    icerik: 'Adres, bağımsız bölüm no, tapu bilgileri (ada/parsel), brüt ve net alan, kat, cephe bilgisi.',
+    onemi: 'Zorunlu',
   },
   {
-    baslik: 'Depozito İadesi',
-    ornek: '"Kiralananın tahliyesinde kiracı, mevcut durumun teslim tutanağındaki durumla aynı olması kaydıyla depozitosunu faizi ile birlikte 3 (üç) ay içinde iade alacaktır."',
-    neden: 'İade süresini ve koşulunu netleştirir; uyuşmazlık riskini azaltır.',
+    madde: '2. Kira Bedeli ve Ödeme',
+    icerik: 'Aylık kira tutarı, ödeme günü (örn: her ayın 5\'i), ödeme şekli (IBAN / nakit), geç ödeme faizi.',
+    onemi: 'Zorunlu',
   },
   {
-    baslik: 'Alt Kiralama Yasağı',
-    ornek: '"Kiracı, kiraya verenin yazılı izni olmaksızın kiralananı kısmen veya tamamen başka bir kişiye kiralayamaz, devredemez veya kullandıramaz."',
-    neden: 'Yasal dayanak TBK md. 322; alt kiralama için açık yazılı izin şartı.',
+    madde: '3. Kira Süresi',
+    icerik: 'Başlangıç ve bitiş tarihi. 1 yıllık sözleşme konut kirasında standarttır; iş yeri kirası farklı süre alabilir.',
+    onemi: 'Zorunlu',
+  },
+  {
+    madde: '4. Depozito (Güvence Bedeli)',
+    icerik: 'Miktarı (en fazla 3 aylık kira — TBK 342) ve nereye yatırılacağı (vadeli hesap / kefalet senedi).',
+    onemi: 'Zorunlu',
+  },
+  {
+    madde: '5. Kira Artışı',
+    icerik: 'TÜFE endeksi üst sınır; yüzde veya endeks bazlı artış. 2024 konut kirasında %25 tavan uygulaması devam eder.',
+    onemi: 'Zorunlu',
+  },
+  {
+    madde: '6. Kullanım Amacı',
+    icerik: 'Konut mu, işyeri mi? Alt kiralama yasak/serbest? Hayvan bulundurma izni? Ticari faaliyet izni?',
+    onemi: 'Önemli',
+  },
+  {
+    madde: '7. Bakım ve Onarım',
+    icerik: 'Olağan bakım kiracıya, büyük onarım kiraya verene ait (TBK 317–319). İstisnaların sözleşmede belirtilmesi.',
+    onemi: 'Önemli',
+  },
+  {
+    madde: '8. Taşınmazın Teslim Durumu',
+    icerik: 'Demirbaş listesi, fotoğraflı teslim tutanağı, sayaç endeksleri. İade anında karşılaştırma belgesi olur.',
+    onemi: 'Kritik',
+  },
+  {
+    madde: '9. Sözleşmenin Sona Ermesi',
+    icerik: 'Kiracı bildirim süresi (konut: 15 gün; iş yeri: 3 ay). Mal sahibi hangi koşullarda feshedebilir (TBK 347–356).',
+    onemi: 'Önemli',
+  },
+  {
+    madde: '10. Uyuşmazlık Çözümü',
+    icerik: 'Arabuluculuk zorunluluğu (2023 sonrası). Yetkili mahkeme: kiralananın bulunduğu yer sulh hukuk mahkemesi.',
+    onemi: 'Önemli',
   },
 ];
 
-export default function KiraSozlesmesiOrnegiPage() {
+const YANLIS_MADDELER = [
+  {
+    hata: '"Kiraya veren istediği zaman tahliye edebilir"',
+    neden: 'TBK 347: kiraya veren ancak Kanun\'da sayılan nedenlerle fesih yapabilir. Bu madde geçersiz sayılır.',
+    sonuc: 'Geçersiz',
+  },
+  {
+    hata: '"5 aylık depozito alınacaktır"',
+    neden: 'TBK 342 azami 3 aylık kira bedeli sınırı koyar. Fazla alınan kısmı kiracı geri isteyebilir.',
+    sonuc: 'Geçersiz',
+  },
+  {
+    hata: '"Kira artışı %50 olarak kararlaştırılmıştır"',
+    neden: 'Konut kiralarında TÜFE üst sınırı. 2024 itibarıyla ek %25 tavan. Aşan kısım uygulanamaz.',
+    sonuc: 'Kısmen Geçersiz',
+  },
+  {
+    hata: '"Kiracı izinsiz tadilat yapabilir"',
+    neden: 'TBK 321: kiracı tadilat için kiraya verenin yazılı iznini almak zorunda. Bu madde haklar kaybına yol açabilir.',
+    sonuc: 'Riskli',
+  },
+  {
+    hata: '"Alt kiralama serbesttir"',
+    neden: 'TBK 322: izinsiz alt kiralama yasak. "Serbesttir" yazmak kiraya verenin rızasını belgelemek açısından önemli.',
+    sonuc: 'Dikkat',
+  },
+];
+
+const KONTROL_LISTESI = [
+  'Tapu fotokopisi alındı ve adres doğrulandı',
+  'Fotoğraflı teslim tutanağı imzalandı',
+  'Sayaç (elektrik/su/doğalgaz) endeksleri kaydedildi',
+  'Demirbaş listesi (klima, ankastre vb.) oluşturuldu',
+  'Depozito vadeli hesaba yatırıldı (banka dekontu alındı)',
+  'Her iki taraf nüfus cüzdanı fotokopisi eklendi',
+  'Sözleşme iki nüsha imzalandı (her tarafa bir nüsha)',
+  'Varsa kefalet noter onaylı alındı',
+  'Aidat, yakıt, ortak gider sorumluluğu netleştirildi',
+];
+
+const SURE_BILGISI = [
+  { konu: 'Konut kirasında kiracı fesih bildirimi', sure: '15 gün', kanal: 'TBK 347' },
+  { konu: 'İşyeri kirasında kiracı fesih bildirimi', sure: '3 ay', kanal: 'TBK 347' },
+  { konu: 'Mal sahibi ihtiyaç nedeniyle fesih', sure: '6 ay önceden', kanal: 'TBK 350' },
+  { konu: 'Depozito iadesi (iade koşulları oluştuktan sonra)', sure: 'En fazla 3 ay', kanal: 'TBK 342' },
+  { konu: 'Kira artış bildirimi önceden yapılmalı', sure: 'Dönem başında', kanal: 'Uygulama' },
+  { konu: 'Arabuluculuk (dava öncesi zorunlu)', sure: 'Dava öncesi', kanal: 'HMK + 2023 düzenleme' },
+];
+
+export default function KiraSozlesmesiOrnekPage() {
   return (
     <main className="min-h-screen bg-[#F8FAFC]">
 
-      {/* Hero */}
       <section className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
         <div className="max-w-4xl mx-auto px-6 py-16">
           <div className="inline-flex items-center gap-2 bg-[#00C49F]/20 border border-[#00C49F]/30 text-[#00C49F] text-xs font-bold px-4 py-1.5 rounded-full mb-5">
-            <FileText size={13} /> Sözleşme Şablonu
+            <FileText size={13} /> Kira Sözleşmesi Rehberi
           </div>
           <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-4">
-            Kira Sözleşmesi Örnek Maddeleri
+            Kira Sözleşmesi Örneği 2024
           </h1>
           <p className="text-gray-300 text-sm max-w-xl leading-relaxed mb-8">
-            Zorunlu maddeler, geçersiz hükümler, depozito kuralları, tahliye nedenleri
-            ve örnek sözleşme metinleri.
+            TBK&apos;ya uygun kira sözleşmesi için zorunlu maddeler, taraf bilgileri, depozito koşulları ve kaçınılması gereken hatalar.
           </p>
           <div className="flex flex-wrap gap-4">
             <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
-              <p className="text-2xl font-black text-[#00C49F]">8</p>
+              <p className="text-2xl font-black text-[#00C49F]">10</p>
               <p className="text-xs text-gray-400">Zorunlu madde</p>
             </div>
             <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
               <p className="text-2xl font-black text-white">3 Ay</p>
-              <p className="text-xs text-gray-400">Max depozito</p>
+              <p className="text-xs text-gray-400">Maks. depozito</p>
             </div>
             <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
-              <p className="text-2xl font-black text-amber-400">TBK</p>
-              <p className="text-xs text-gray-400">Borçlar Kanunu dayanağı</p>
+              <p className="text-2xl font-black text-amber-400">TBK 342</p>
+              <p className="text-xs text-gray-400">Temel kanun maddesi</p>
             </div>
           </div>
         </div>
@@ -99,118 +162,119 @@ export default function KiraSozlesmesiOrnegiPage() {
 
       <div className="max-w-4xl mx-auto px-6 py-12 space-y-12">
 
+        {/* Taraflar */}
+        <section>
+          <h2 className="text-xl font-black text-gray-900 mb-4">Sözleşme Tarafları</h2>
+          <div className="space-y-4">
+            {SOZLESME_TARAFLARI.map((t, i) => (
+              <div key={i} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+                <p className="text-xs font-black text-gray-900 mb-3">{t.taraf}</p>
+                <div className="grid grid-cols-2 gap-2 mb-3">
+                  {t.bilgiler.map((b, j) => (
+                    <div key={j} className="flex items-center gap-2">
+                      <CheckCircle size={12} className="text-[#00C49F] shrink-0" />
+                      <p className="text-[10px] text-gray-700">{b}</p>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-[10px] text-amber-700 bg-amber-50 rounded-lg px-3 py-2">{t.not}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
         {/* Zorunlu Maddeler */}
         <section>
-          <h2 className="text-xl font-black text-gray-900 mb-4">Zorunlu Sözleşme Maddeleri</h2>
+          <h2 className="text-xl font-black text-gray-900 mb-4">Zorunlu ve Önemli Maddeler</h2>
           <div className="space-y-3">
             {ZORUNLU_MADDELER.map((m, i) => (
-              <div key={i} className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm flex items-start gap-3">
-                <CheckCircle size={13} className="text-[#00C49F] shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-xs font-black text-gray-900 mb-0.5">{m.madde}</p>
-                  <p className="text-[10px] text-gray-600 leading-relaxed">{m.aciklama}</p>
+              <div key={i} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+                <div className="flex items-start justify-between mb-2">
+                  <p className="text-xs font-black text-gray-900">{m.madde}</p>
+                  <span className={`text-[10px] font-black px-2 py-0.5 rounded ml-2 shrink-0 ${
+                    m.onemi === 'Zorunlu' ? 'bg-rose-50 text-rose-600' :
+                    m.onemi === 'Kritik' ? 'bg-purple-50 text-purple-600' :
+                    'bg-amber-50 text-amber-600'
+                  }`}>{m.onemi}</span>
                 </div>
+                <p className="text-[10px] text-gray-600 leading-relaxed">{m.icerik}</p>
               </div>
             ))}
           </div>
         </section>
 
-        {/* Geçersiz Hükümler */}
+        {/* Yanlış Maddeler */}
         <section>
-          <h2 className="text-xl font-black text-gray-900 mb-4">Geçersiz Sayılan Sözleşme Hükümleri</h2>
+          <h2 className="text-xl font-black text-gray-900 mb-4">Geçersiz ve Riskli Maddeler</h2>
           <div className="space-y-3">
-            {GECERSIZ_HUKUMLER.map((h, i) => (
-              <div key={i} className="bg-rose-50 border border-rose-200 rounded-xl p-4 flex items-start gap-3">
-                <AlertTriangle size={13} className="text-rose-500 shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-xs font-black text-rose-800 mb-0.5">{h.hüküm}</p>
-                  <p className="text-[10px] text-rose-700 leading-relaxed">{h.dayanak}</p>
+            {YANLIS_MADDELER.map((y, i) => (
+              <div key={i} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+                <div className="flex items-start justify-between mb-2">
+                  <p className="text-xs font-bold text-gray-800 italic">&ldquo;{y.hata}&rdquo;</p>
+                  <span className={`text-[10px] font-black px-2 py-0.5 rounded ml-2 shrink-0 ${
+                    y.sonuc === 'Geçersiz' ? 'bg-rose-50 text-rose-600' :
+                    y.sonuc === 'Kısmen Geçersiz' ? 'bg-orange-50 text-orange-600' :
+                    'bg-amber-50 text-amber-600'
+                  }`}>{y.sonuc}</span>
                 </div>
+                <p className="text-[10px] text-gray-600 leading-relaxed">{y.neden}</p>
               </div>
             ))}
           </div>
         </section>
 
-        {/* Depozito Kuralları */}
+        {/* Süre Bilgisi */}
         <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
           <h2 className="text-sm font-black text-gray-900 mb-4 flex items-center gap-2">
-            <Scale size={14} className="text-[#00C49F]" /> Depozito Kuralları
+            <Scale size={14} className="text-[#00C49F]" /> Yasal Süreler
           </h2>
-          <ul className="space-y-2.5">
-            {DEPOZITO_KURALLARI.map((r, i) => (
-              <li key={i} className="flex items-start gap-2">
-                <CheckCircle size={11} className="text-[#00C49F] shrink-0 mt-0.5" />
-                <p className="text-[10px] text-gray-600 leading-relaxed">{r}</p>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        {/* Tahliye Nedenleri */}
-        <section>
-          <h2 className="text-xl font-black text-gray-900 mb-4">Tahliye Nedenleri</h2>
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs">
-                <thead className="bg-gray-50 border-b border-gray-100">
-                  <tr>
-                    <th className="text-left px-4 py-3 font-black text-gray-700">Neden</th>
-                    <th className="text-left px-4 py-3 font-black text-gray-700">Süre</th>
-                    <th className="text-left px-4 py-3 font-black text-gray-500">Açıklama</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {TAHLIYE_DAVALARI.map((r, i) => (
-                    <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                      <td className="px-4 py-3 font-bold text-gray-800">{r.neden}</td>
-                      <td className="px-4 py-3 text-gray-600">{r.sure}</td>
-                      <td className="px-4 py-3 text-gray-500 leading-relaxed">{r.aciklama}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </section>
-
-        {/* Örnek Maddeler */}
-        <section>
-          <h2 className="text-xl font-black text-gray-900 mb-4">Örnek Sözleşme Madde Metinleri</h2>
-          <div className="space-y-4">
-            {ORNEK_MADDELER.map((o, i) => (
-              <div key={i} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
-                <p className="text-xs font-black text-gray-900 mb-2">{o.baslik}</p>
-                <blockquote className="bg-gray-50 border-l-4 border-[#00C49F] rounded-r-lg p-3 mb-2">
-                  <p className="text-[10px] text-gray-700 leading-relaxed italic">{o.ornek}</p>
-                </blockquote>
-                <div className="flex items-start gap-2">
-                  <CheckCircle size={11} className="text-[#00C49F] shrink-0 mt-0.5" />
-                  <p className="text-[10px] text-gray-600">{o.neden}</p>
+          <div className="space-y-2">
+            {SURE_BILGISI.map((s, i) => (
+              <div key={i} className="grid grid-cols-3 gap-2 py-2 border-b border-gray-50 last:border-0">
+                <p className="text-[10px] text-gray-800 col-span-2 leading-relaxed">{s.konu}</p>
+                <div className="text-right">
+                  <span className="text-[10px] bg-[#F0FDF8] text-[#00C49F] font-black px-2 py-0.5 rounded">{s.sure}</span>
+                  <p className="text-[9px] text-gray-400 mt-0.5">{s.kanal}</p>
                 </div>
               </div>
             ))}
           </div>
         </section>
 
-        {/* Warning */}
+        {/* Kontrol Listesi */}
+        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+          <h2 className="text-sm font-black text-gray-900 mb-4 flex items-center gap-2">
+            <CheckCircle size={14} className="text-[#00C49F]" /> İmza Öncesi Kontrol Listesi
+          </h2>
+          <div className="grid grid-cols-1 gap-2">
+            {KONTROL_LISTESI.map((k, i) => (
+              <div key={i} className="flex items-center gap-3 py-2 border-b border-gray-50 last:border-0">
+                <div className="w-5 h-5 rounded border-2 border-[#00C49F]/40 shrink-0" />
+                <p className="text-xs text-gray-700">{k}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Uyarı */}
         <section className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl p-4">
           <AlertTriangle size={14} className="text-amber-600 shrink-0 mt-0.5" />
           <p className="text-xs text-amber-800 leading-relaxed">
-            <span className="font-black">Uyarı:</span> Bu maddeler örnek niteliğindedir. Kira sözleşmenizi imzalamadan önce bir gayrimenkul hukukçusuna incelettirmenizi öneririz. Özellikle uzun süreli veya yüksek bedellli kiralarda hukuki danışmanlık kritik önem taşır.
+            <span className="font-black">Önemli:</span> Bu örnek genel bilgi amaçlıdır. Sözleşmenizdeki özel koşullar için avukat veya gayrimenkul danışmanından destek almanız tavsiye edilir. Kira mevzuatı sık değişir; imzalamadan önce güncel TBK hükümlerini kontrol edin.
           </p>
         </section>
 
         {/* Related */}
         <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-          <h3 className="text-sm font-bold text-gray-900 mb-4">İlgili Rehberler</h3>
+          <h3 className="text-sm font-bold text-gray-900 mb-4">İlgili Araçlar</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {[
               { href: '/kira-sozlesmesi', label: 'Kira Sözleşmesi Rehberi' },
-              { href: '/kira-endeksi', label: 'Kira Endeksi ve TÜFE' },
-              { href: '/sozlesme-iptal', label: 'Sözleşme İptal ve Fesih' },
+              { href: '/depozito', label: 'Depozito Rehberi' },
+              { href: '/tahliye-davasi', label: 'Tahliye Davası' },
+              { href: '/kira-tespit-davasi', label: 'Kira Tespit Davası' },
               { href: '/kira-artis-hesaplama', label: 'Kira Artış Hesaplayıcı' },
-              { href: '/stopaj-vergisi', label: 'Kira Stopaj Vergisi' },
-              { href: '/pismanlik-hakki', label: 'Cayma ve Pişmanlık Hakkı' },
+              { href: '/kira-geliri-vergisi', label: 'Kira Geliri Vergisi' },
             ].map(l => (
               <Link key={l.href} href={l.href}
                 className="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-[#F0FDF8] border border-transparent hover:border-[#00C49F]/20 transition-all group"
