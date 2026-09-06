@@ -1,91 +1,78 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import {
-  Users, CheckCircle, AlertTriangle, ArrowRight, Scale, FileText,
-} from 'lucide-react';
+import { CheckCircle, AlertTriangle, ArrowRight, Users } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Hisseli Tapu Rehberi | Şufa Hakkı, Ortaklık Giderme, Riskler | Söylemesi Bizden',
+  title: 'Hisseli Tapu Rehberi | Şufa Hakkı, Ortaklık Giderme | Söylemesi Bizden',
   description:
-    'Hisseli tapu nedir, nasıl satılır? Şufa (önalım) hakkı, ortaklığın giderilmesi davası, kira geliri paylaşımı ve riskler.',
+    'Hisseli tapu nedir? Şufa (önalım) hakkı, ortaklığın giderilmesi davası, hisseli mülk satışı ve yönetimi hakkında kapsamlı rehber.',
 };
 
-const HISSELI_TAPU_ACIKLAMA = {
-  tanim: 'Birden fazla kişinin belirli pay oranlarıyla (1/2, 1/3, 1/4 gibi) aynı tapu kaydında malik olduğu taşınmaz.',
-  medeniKanun: 'Medeni Kanun 688–695. maddeleri — paylı mülkiyet.',
-  ornekler: ['Miras yoluyla intikal', 'Birlikte satın alınan gayrimenkul', 'Arazi kadastrosundan doğan hisseler', 'Tüzel kişi ortaklıkları'],
-};
-
-const SUFA_HAKKI = [
-  { madde: 'Tanımı', detay: 'Paylı mülkiyette paydaşlardan birinin payını üçüncü kişiye satmak istemesi halinde, diğer paydaşların o payı aynı bedel ve koşullarla satın alma hakkı.' },
-  { madde: 'Yasal Dayanak', detay: 'Medeni Kanun md. 732 — zorunlu önalım hakkı. Sözleşmeden doğan önalım ise md. 735.' },
-  { madde: 'Kullanım Süresi', detay: 'Satışın öğrenilmesinden itibaren 3 ay; satıştan itibaren her durumda 2 yıl.' },
-  { madde: 'Başvuru Yeri', detay: 'Tapu sicil müdürlüğü (satıcı tarafından önce bildirim yapılırsa) veya taşınmazın bulunduğu Sulh Hukuk Mahkemesi.' },
-  { madde: 'Kaldırılması', detay: 'Paydaşların noterce imzaladığı ön alım hakkından feragat sözleşmesi; tapu siciline şerh düşülür.' },
-  { madde: 'Yabancı Paydaş', detay: 'Yabancı uyruklu paydaşın payı da şufaya tabidir; uyrukluğa göre ayrım yapılmaz.' },
+const HISSELI_TAPU_NEDIR = [
+  { baslik: 'Paylı Mülkiyet', aciklama: 'Birden fazla kişinin aynı taşınmaz üzerinde belirli pay oranlarıyla birlikte mülkiyet hakkına sahip olmasıdır. Her hissedar tapuda payı oranında malik görünür.' },
+  { baslik: 'Nasıl Oluşur?', aciklama: 'Miras yoluyla (en yaygın), ortaklaşa satın alma, tapu ifrazı veya mahkeme kararıyla oluşabilir. Kooperatif tapuları da hisseli olabilir.' },
+  { baslik: 'Tapu Belgesi', aciklama: 'Hisseli tapuda her hissedarın payı kesirle gösterilir (örn. 1/3, 2/5). Tapu senedinde "paylı mülkiyet" ibaresi ve pay oranı yer alır.' },
+  { baslik: 'Fiziksel Bölünme Yok', aciklama: 'Hisseli tapuda taşınmazın fiziksel olarak bölünmüş kısmı değil, soyut pay oranı sahipliği söz konusudur. Belirli bölümün kimde olduğu tapu kütüğünde yazmaz.' },
 ];
 
-const ORTAKLIK_GIDERME = [
-  { adim: 'Uzlaşı Girişimi', detay: 'Paydaşların kendi aralarında satış veya taksim anlaşması yapması en hızlı çözümdür.' },
-  { adim: 'Dava Açma', detay: 'Herhangi bir paydaş Sulh Hukuk Mahkemesi\'ne ortaklığın giderilmesi (izale-i şüyu) davası açabilir.' },
-  { adim: 'Bilirkişi Değerlemesi', detay: 'Mahkeme taşınmazı bilirkişiye değerlettir; tapu değeri esas alınır.' },
-  { adim: 'Paydaşlara Tercih Hakkı', detay: 'Satış öncesi diğer paydaşlara teklif sunulur; ayni taksim mümkünse önceliklidir.' },
-  { adim: 'İcra Satışı', detay: 'Anlaşılmazsa mahkeme kararıyla açık artırma; gelir arsa payı oranında dağıtılır.' },
-  { adim: 'Süre', detay: 'Ortalama 12–36 ay; mahkeme yoğunluğu ve itirazlara bağlı değişir.' },
+const HAKLAR_VE_YUKUMLULUKLER = [
+  { konu: 'Kendi Payını Satma', aciklama: 'Her hissedar, diğer hissedarların onayına gerek kalmaksızın kendi payını üçüncü kişilere satabilir. Ancak satış öncesi şufa hakkı bildirimi zorunludur.' },
+  { konu: 'Şufa (Önalım) Hakkı', aciklama: 'Bir hissedar payını satmak istediğinde, diğer hissedarlar 3 ay içinde aynı bedel ve koşullarda öncelikli satın alma hakkına sahiptir (TMK md. 732–735).' },
+  { konu: 'Kullanım Hakkı', aciklama: 'Her hissedar, payı oranında taşınmazı kullanma hakkına sahiptir. Ortak kullanım kuralları hissedarlar arasında yazılı sözleşmeyle belirlenebilir.' },
+  { konu: 'Kira Geliri Paylaşımı', aciklama: 'Kiraya verilen hisseli taşınmazda kira geliri hisse oranında paylaşılır. Bu kararı hissedarların çoğunluğu alabilir.' },
+  { konu: 'Masraf Paylaşımı', aciklama: 'Taşınmazın bakım, onarım, vergi ve sigorta masrafları hisse oranında tüm hissedarlar tarafından paylaşılır.' },
+  { konu: 'Önemli Kararlar', aciklama: 'Yapı onarımı, ipotek kurulması, kiraya verme gibi önemli kararlar oyçokluğuyla (pay oranına göre) alınır. Olağanüstü kararlar (yıkım, satış) oybirliği gerektirir.' },
 ];
 
-const KIRA_GELIRI = [
-  { konu: 'Oy Çokluğu ile Kiraya Verme', detay: 'Taşınmazın kiraya verilmesi için paydaşların pay ve sayı çoğunluğu yeterli (MK md. 690).' },
-  { konu: 'Kira Gelirinin Paylaşımı', detay: 'Her paydaş arsa payı oranında kira geliri alır; yönetim giderleri de aynı oranda paylaşılır.' },
-  { konu: 'Paydaşın Taşınmazı Kullanımı', detay: 'Bir paydaş taşınmazı fiilen kullanıyorsa diğerleri ecrimisil (haksız işgal tazminatı) talep edebilir.' },
-  { konu: 'Kira Sözleşmesi Tarafı', detay: 'Yönetimi üstlenen paydaş veya ortak yönetim kurulu kira sözleşmesini imzalar.' },
+const ORTAKLIK_GIDERILMESI = [
+  { adim: 'Anlaşarak Bölüşme', aciklama: 'Hissedarlar kendi aralarında anlaşarak taşınmazı bölüştürebilir veya bir hissedar diğerlerinin payını satın alabilir.', sure: 'En Hızlı' },
+  { adim: 'Dava Açma', aciklama: 'Anlaşma sağlanamazsa herhangi bir hissedar "ortaklığın giderilmesi (izale-i şuyu)" davası açabilir. Dava açmak için gerekçe gösterme zorunluluğu yoktur.', sure: '6–18 Ay' },
+  { adim: 'Mahkeme Kararı', aciklama: 'Mahkeme, taşınmazın aynen taksiminin mümkün olup olmadığını inceler. Mümkünse aynen böler; değilse açık artırmayla satışına karar verir.', sure: 'Duruşma Süresi' },
+  { adim: 'Açık Artırma', aciklama: 'Taşınmaz icra yoluyla satışa çıkarılır. Satış bedeli hissedar sayısına ve pay oranına göre paylaştırılır.', sure: '1–6 Ay' },
+  { adim: 'Kesinleşme', aciklama: 'Satış tamamlandıktan sonra tapu yeni alıcı adına tescil edilir; hisseli mülkiyet sona erer.', sure: 'İşlem Bitişi' },
 ];
 
-const RISKLER = [
-  { risk: 'Karar Alamama', onlem: 'Paydaşlar oy çoğunluğu sağlayamazsa mahkeme yolu veya kayyum atanması.' },
-  { risk: 'Bilinmeyen Hissedar', onlem: 'Tapu devrinde tüm paydaşların şufa hakkı olduğundan bildirim zorunluluğu; gizli hissedar riski.' },
-  { risk: 'Hisseli Arsa İnşaatı', onlem: 'İnşaat ruhsatı için tüm paydaşların onayı veya kat irtifakı kurulması şarttır.' },
-  { risk: 'Satış Güçlüğü', onlem: 'Hisseli tapu satışında kredi bulunması güçtür; alıcı havuzu daralmış demektir.' },
-  { risk: 'Miras Anlaşmazlığı', onlem: 'Mirasçıların hepsi paydaş olduğunda dava riski yüksek; uzlaşı belgesi noterde yapılmalı.' },
+const SIK_SORUNLAR = [
+  { sorun: 'Bilinmeyen Hissedar', cozum: 'Miras yoluyla defalarca el değiştiren mülklerde bazı hissedarlar bilinmeyebilir. Tapu müdürlüğünden ve nüfus kayıtlarından araştırma yapılır.' },
+  { sorun: 'İletişim Yokluğu', cozum: 'Hissedarlar arasında iletişim kurulamazsa noter aracılığıyla tebligat yapılır; bilinen son adrese yazılı bildirim gönderilir.' },
+  { sorun: 'Miras Borcları', cozum: 'Hisseli tapuya dahil varlıkta borç varsa, ortaklık giderilmesi davası öncesinde borç durumu tapu sicilinden araştırılmalıdır.' },
+  { sorun: 'Satışa Engel Hissedar', cozum: 'Diğer hissedarların satışı engellemesi hukuken mümkün değildir; herhangi bir hissedar payını satabilir veya ortaklık giderimi davası açabilir.' },
 ];
 
-const ALICI_DIKKAT = [
-  'Satın almadan önce tüm paydaşları ve paylarını tapu kaydından teyit edin.',
-  'Diğer paydaşların şufa hakkını kullanıp kullanmayacağını öğrenin.',
-  'Banka konut kredisi onayını önceden alın (hisseli tapuya kredi çıkmayabilir).',
-  'Taşınmazda fiilen kim oturuyor? Ecrimisil riski var mı?',
-  'İzale davası açılıp açılmadığını tapuya şerh sorgulayarak kontrol edin.',
-  'Hisseli arsa ise imar durumu ve bölünme imkânını araştırın.',
+const PRATIK_BILGILER = [
+  { bilgi: 'Şufa Hakkı Süresi', detay: '3 ay kesin süre; bu süre içinde kullanılmayan şufa hakkı düşer. Satışın öğrenilmesinden itibaren süre başlar.' },
+  { bilgi: 'Noterden Satış Bildirimi', detay: 'Şufa hakkı kullandırmak için payın satılacağını noter aracılığıyla diğer hissedarlara bildirmek iyi uygulama olarak önerilir.' },
+  { bilgi: 'Hisseli Kredi', detay: 'Bankalar hisseli tapuya ipotek koymaktan kaçınır. Tüm hissedarların onayı olmadan kredi kullanmak oldukça güçtür.' },
+  { bilgi: 'İmar Durumu', detay: 'Hisseli tapuda imar planı ve yapılaşma haklarından da ortak yararlanılır; bağımsız kat inşası için yönetim planı ve tüm hissedarların onayı gerekir.' },
 ];
 
 export default function HisseliTapuPage() {
   return (
     <main className="min-h-screen bg-[#F8FAFC]">
 
-      {/* Hero */}
       <section className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
         <div className="max-w-4xl mx-auto px-6 py-16">
           <div className="inline-flex items-center gap-2 bg-[#00C49F]/20 border border-[#00C49F]/30 text-[#00C49F] text-xs font-bold px-4 py-1.5 rounded-full mb-5">
-            <Users size={13} /> Hisseli Tapu Rehberi
+            <Users size={13} /> Hisseli Tapu
           </div>
           <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-4">
             Hisseli Tapu Rehberi
           </h1>
           <p className="text-gray-300 text-sm max-w-xl leading-relaxed mb-8">
-            Paylı mülkiyet, şufa (önalım) hakkı, ortaklığın giderilmesi davası ve alıcı riskleri.
+            Paylı mülkiyet hakları, şufa hakkı, ortaklığın giderilmesi davası ve hisseli mülk yönetimi hakkında kapsamlı rehber.
           </p>
           <div className="flex flex-wrap gap-4">
             <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
               <p className="text-2xl font-black text-[#00C49F]">3 Ay</p>
-              <p className="text-xs text-gray-400">Şufa kullanım süresi</p>
+              <p className="text-xs text-gray-400">Şufa hakkı süresi</p>
             </div>
             <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
-              <p className="text-2xl font-black text-white">MK 732</p>
-              <p className="text-xs text-gray-400">Önalım hakkı maddesi</p>
+              <p className="text-2xl font-black text-white">TMK 732</p>
+              <p className="text-xs text-gray-400">Yasal dayanak</p>
             </div>
             <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
-              <p className="text-2xl font-black text-amber-400">İzale</p>
-              <p className="text-xs text-gray-400">Son çare dava</p>
+              <p className="text-2xl font-black text-amber-400">6–18 Ay</p>
+              <p className="text-xs text-gray-400">Dava süresi</p>
             </div>
           </div>
         </div>
@@ -93,31 +80,27 @@ export default function HisseliTapuPage() {
 
       <div className="max-w-4xl mx-auto px-6 py-12 space-y-12">
 
-        {/* Tanım */}
+        {/* Hisseli Tapu Nedir */}
         <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-          <h2 className="text-sm font-black text-gray-900 mb-3">Hisseli Tapu Nedir?</h2>
-          <p className="text-xs text-gray-700 leading-relaxed mb-4">{HISSELI_TAPU_ACIKLAMA.tanim}</p>
-          <p className="text-[10px] text-gray-400 mb-3"><span className="font-bold">Yasal Dayanak:</span> {HISSELI_TAPU_ACIKLAMA.medeniKanun}</p>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {HISSELI_TAPU_ACIKLAMA.ornekler.map((o, i) => (
-              <div key={i} className="bg-[#F0FDF8] rounded-lg p-2 text-center">
-                <p className="text-[10px] text-[#00C49F] font-bold">{o}</p>
+          <h2 className="text-sm font-black text-gray-900 mb-4">Hisseli Tapu Nedir?</h2>
+          <div className="space-y-3">
+            {HISSELI_TAPU_NEDIR.map((h, i) => (
+              <div key={i} className="grid grid-cols-3 gap-2 py-2 border-b border-gray-50 last:border-0">
+                <p className="text-xs font-black text-[#00C49F]">{h.baslik}</p>
+                <p className="text-[10px] text-gray-600 leading-relaxed col-span-2">{h.aciklama}</p>
               </div>
             ))}
           </div>
         </section>
 
-        {/* Şufa Hakkı */}
+        {/* Haklar ve Yükümlülükler */}
         <section>
-          <h2 className="text-xl font-black text-gray-900 mb-4">Şufa (Önalım) Hakkı</h2>
+          <h2 className="text-xl font-black text-gray-900 mb-4">Hissedar Hakları ve Yükümlülükleri</h2>
           <div className="space-y-3">
-            {SUFA_HAKKI.map((s, i) => (
-              <div key={i} className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm flex items-start gap-3">
-                <Scale size={13} className="text-blue-500 shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-xs font-black text-gray-900 mb-0.5">{s.madde}</p>
-                  <p className="text-[10px] text-gray-600 leading-relaxed">{s.detay}</p>
-                </div>
+            {HAKLAR_VE_YUKUMLULUKLER.map((h, i) => (
+              <div key={i} className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
+                <p className="text-xs font-black text-[#00C49F] mb-1">{h.konu}</p>
+                <p className="text-[10px] text-gray-600 leading-relaxed">{h.aciklama}</p>
               </div>
             ))}
           </div>
@@ -125,85 +108,70 @@ export default function HisseliTapuPage() {
 
         {/* Ortaklığın Giderilmesi */}
         <section>
-          <h2 className="text-xl font-black text-gray-900 mb-4">Ortaklığın Giderilmesi (İzale-i Şüyu)</h2>
+          <h2 className="text-xl font-black text-gray-900 mb-4">Ortaklığın Giderilmesi (İzale-i Şuyu)</h2>
           <div className="space-y-3">
-            {ORTAKLIK_GIDERME.map((s, i) => (
-              <div key={i} className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm flex items-start gap-3">
-                <div className="bg-[#F0FDF8] text-[#00C49F] text-[10px] font-black px-2 py-1 rounded-lg shrink-0">{i + 1}</div>
-                <div>
-                  <p className="text-xs font-black text-gray-900 mb-0.5">{s.adim}</p>
-                  <p className="text-[10px] text-gray-600 leading-relaxed">{s.detay}</p>
+            {ORTAKLIK_GIDERILMESI.map((a, i) => (
+              <div key={i} className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
+                <div className="flex items-start justify-between mb-1">
+                  <div className="flex items-start gap-2">
+                    <div className="w-5 h-5 rounded-full bg-[#00C49F] text-white text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">{i + 1}</div>
+                    <p className="text-xs font-black text-gray-900">{a.adim}</p>
+                  </div>
+                  <span className="text-[10px] bg-amber-50 text-amber-600 font-black px-2 py-0.5 rounded shrink-0">{a.sure}</span>
                 </div>
+                <p className="text-[10px] text-gray-600 leading-relaxed mt-1 ml-7">{a.aciklama}</p>
               </div>
             ))}
           </div>
         </section>
 
-        {/* Kira Geliri */}
+        {/* Sık Sorunlar */}
+        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+          <h2 className="text-sm font-black text-gray-900 mb-4">Sık Karşılaşılan Sorunlar</h2>
+          <div className="space-y-3">
+            {SIK_SORUNLAR.map((s, i) => (
+              <div key={i} className="grid grid-cols-3 gap-2 py-2 border-b border-gray-50 last:border-0">
+                <p className="text-xs font-black text-rose-500">{s.sorun}</p>
+                <p className="text-[10px] text-gray-600 leading-relaxed col-span-2">{s.cozum}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Pratik Bilgiler */}
         <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
           <h2 className="text-sm font-black text-gray-900 mb-4 flex items-center gap-2">
-            <FileText size={14} className="text-[#00C49F]" /> Kira Geliri ve Kullanım Hakları
+            <CheckCircle size={14} className="text-[#00C49F]" /> Pratik Bilgiler
           </h2>
           <div className="space-y-3">
-            {KIRA_GELIRI.map((k, i) => (
-              <div key={i} className="bg-[#F0FDF8] rounded-xl p-3">
-                <p className="text-xs font-black text-gray-900 mb-0.5">{k.konu}</p>
-                <p className="text-[10px] text-gray-600 leading-relaxed">{k.detay}</p>
+            {PRATIK_BILGILER.map((p, i) => (
+              <div key={i} className="grid grid-cols-3 gap-2 py-2 border-b border-gray-50 last:border-0">
+                <p className="text-xs font-black text-[#00C49F]">{p.bilgi}</p>
+                <p className="text-[10px] text-gray-600 leading-relaxed col-span-2">{p.detay}</p>
               </div>
             ))}
           </div>
         </section>
 
-        {/* Riskler */}
-        <section>
-          <h2 className="text-xl font-black text-gray-900 mb-4">Riskler ve Önlemler</h2>
-          <div className="space-y-3">
-            {RISKLER.map((r, i) => (
-              <div key={i} className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
-                <div className="flex items-start gap-2 mb-1">
-                  <AlertTriangle size={12} className="text-amber-500 shrink-0 mt-0.5" />
-                  <p className="text-xs font-black text-gray-900">{r.risk}</p>
-                </div>
-                <p className="text-[10px] text-gray-600 leading-relaxed ml-5">{r.onlem}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Alıcı Dikkat */}
-        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-          <h2 className="text-sm font-black text-gray-900 mb-4 flex items-center gap-2">
-            <CheckCircle size={14} className="text-[#00C49F]" /> Hisseli Tapu Alırken Dikkat Edilecekler
-          </h2>
-          <div className="space-y-2">
-            {ALICI_DIKKAT.map((item, i) => (
-              <div key={i} className="flex items-start gap-2">
-                <div className="w-4 h-4 rounded border-2 border-[#00C49F]/40 shrink-0 mt-0.5" />
-                <p className="text-xs text-gray-700 leading-relaxed">{item}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Warning */}
+        {/* Uyarı */}
         <section className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl p-4">
           <AlertTriangle size={14} className="text-amber-600 shrink-0 mt-0.5" />
           <p className="text-xs text-amber-800 leading-relaxed">
-            <span className="font-black">Önemli:</span> Hisseli tapu alım kararı, tüm paydaşların profilini ve niyetini anlamadan verilmemelidir. Satış sonrası şufa davası veya izale davası ile karşılaşmak mümkündür.
+            <span className="font-black">Önemli:</span> Hisseli tapu ile ilgili hukuki süreçlerde (şufa hakkı kullanımı, ortaklık giderimi davası) gayrimenkul hukuku alanında uzman bir avukattan destek almanız zaman ve maliyet tasarrufu sağlar.
           </p>
         </section>
 
         {/* Related */}
         <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-          <h3 className="text-sm font-bold text-gray-900 mb-4">İlgili Rehberler</h3>
+          <h3 className="text-sm font-bold text-gray-900 mb-4">İlgili Araçlar</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {[
-              { href: '/ortak-mulkiyet', label: 'Ortak Mülkiyet Rehberi' },
-              { href: '/miras-ve-gayrimenkul', label: 'Miras ve Gayrimenkul' },
-              { href: '/tapu-devir-sureci', label: 'Tapu Devir Süreci' },
-              { href: '/sozlesme-iptal', label: 'Sözleşme İptal ve Fesih' },
-              { href: '/arsa-yatirimi', label: 'Arsa Yatırımı Rehberi' },
-              { href: '/ekspertiz-raporu', label: 'Ekspertiz Raporu' },
+              { href: '/miras-ve-gayrimenkul', label: 'Miras ve Gayrimenkul Rehberi' },
+              { href: '/tapu-devir-rehberi', label: 'Tapu Devir Rehberi' },
+              { href: '/tapu-masrafi', label: 'Tapu Masrafı Hesaplayıcı' },
+              { href: '/gayrimenkul-vergi-optimizasyon', label: 'Vergi Optimizasyonu' },
+              { href: '/sozlesme-iptal-cayma', label: 'Sözleşme İptal Rehberi' },
+              { href: '/rehber', label: 'Konut Rehberi' },
             ].map(l => (
               <Link key={l.href} href={l.href}
                 className="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-[#F0FDF8] border border-transparent hover:border-[#00C49F]/20 transition-all group"
