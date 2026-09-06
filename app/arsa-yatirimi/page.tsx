@@ -1,121 +1,83 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import {
-  MapPin, TrendingUp, AlertTriangle, CheckCircle,
-  ArrowRight, FileText, Scale, Home,
+  MapPin, CheckCircle, AlertTriangle, ArrowRight, Scale, TrendingUp,
 } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Arsa Yatırımı Rehberi | Nasıl Alınır, Ne Dikkat Edilmeli? | Söylemesi Bizden',
+  title: 'Arsa Yatırımı Rehberi | İmar Türleri, Kontrol Listesi, Riskler | Söylemesi Bizden',
   description:
-    'Türkiye\'de arsa yatırımı: imar durumu türleri, arazi alımında kontrol listesi, hisseli arsa riskleri, değer artışı dinamikleri ve yasal yükümlülükler.',
+    'Arsa yatırımı nasıl yapılır? İmar durumu kontrolü, arsa türleri, getiri potansiyeli, yasal riskler ve alım öncesi kontrol listesi.',
 };
 
-const ZONING_TYPES = [
+const ARSA_TURLERI = [
   {
-    type: 'Konut İmarlı',
-    desc: 'Üzerine konut inşa edilebilir. TAKS/KAKS oranları belediye planında belirlenmiştir.',
-    value: 'Yüksek',
-    risk: 'Düşük',
-    icon: '🏠',
-    note: 'En değerli arsa tipi. Alım öncesi imar planı detayı mutlaka incelenmeli.',
+    tip: 'İmarlı Konut Arsası',
+    tanim: 'Uygulama imar planında konut alanı olarak belirlenmiş; inşaat ruhsatı alınabilir.',
+    getiri: 'Yüksek — fiyat bölgeye göre m² değeri en yüksek arsa tipi.',
+    risk: 'Düşük-Orta — altyapı durumu, imar şartları değişim riski.',
+    dikkat: 'TAKS ve KAKS değerleri sözlü değil yazılı imar durumuna göre kontrol edilmeli.',
   },
   {
-    type: 'Ticari İmarlı',
-    desc: 'Ofis, otel, AVM gibi ticari yapılar yapılabilir. Merkez konumlarda çok değerli.',
-    value: 'Çok Yüksek',
-    risk: 'Orta',
-    icon: '🏢',
-    note: 'Kira getirisi konutun üzerinde olabilir. Proje maliyeti yüksektir.',
+    tip: 'İmarlı Ticari Arsa',
+    tanim: 'Ticaret veya karma kullanım alanında; iş merkezi, mağaza, depo yapılabilir.',
+    getiri: 'Çok Yüksek — kira geliri potansiyeli yüksek.',
+    risk: 'Orta — talep bölge ekonomisine bağımlı.',
+    dikkat: 'Müstakil ya da AVM projesi için imar izni ve çevre trafik raporu gerekebilir.',
   },
   {
-    type: 'Tarım Arazisi',
-    desc: 'Tarımsal amaçlı kullanım. Yapılaşma kısıtlıdır; izinsiz yapı yıkılır.',
-    value: 'Düşük',
-    risk: 'Yüksek',
-    icon: '🌾',
-    note: 'İmar dönüşümü zordur. "İmara açılacak" vaatlerine karşı dikkatli olun.',
+    tip: 'İmarsız/Tarım Arazisi',
+    tanim: 'Tarımsal üretim alanı; konut/ticaret yapılaşmasına kapalı.',
+    getiri: 'Düşük-Orta — imar kazanımı beklentisiyle değerlenebilir.',
+    risk: 'Yüksek — imar planı değişmeyebilir; uzun vadeli belirsizlik.',
+    dikkat: 'Tarım dışı kullanım izni (TDİ) şartları zorludur; uzmanla danışılmalı.',
   },
   {
-    type: 'Orman / Hazine',
-    desc: 'Devlet ya da Orman İdaresi mülkiyetinde. Satış yasaktır, tapu düzenlenemez.',
-    value: 'Geçersiz',
-    risk: 'Çok Yüksek',
-    icon: '🌲',
-    note: 'Bu arazilerin satışını öneren tekliflere kesinlikle yanıt vermeyin.',
+    tip: 'Sanayi Arsası',
+    tanim: 'Sanayi bölgesi veya OSB sınırında; fabrika, depo, atölye.',
+    getiri: 'Orta-Yüksek — kira bağımlı; bölge OSB mi bağımsız mi?',
+    risk: 'Orta — sanayi doluluk oranı ve altyapı kritik.',
+    dikkat: 'OSB içi arsalar ayrı kurallara tabidir; satış OSB yönetimi onayı gerektirebilir.',
   },
   {
-    type: 'Hisseli Arsa',
-    desc: 'Birden fazla maliki olan arazi. Her malik kendi hissesini serbestçe satabilir.',
-    value: 'Orta',
-    risk: 'Yüksek',
-    icon: '🤝',
-    note: 'Diğer maliklerle anlaşmazlık hâlinde ortaklığın giderilmesi davası açılabilir.',
-  },
-  {
-    type: 'Sit Alanı',
-    desc: 'Kültürel veya doğal sit alanında kalan arazi. Yapılaşma çok kısıtlı ya da yasak.',
-    value: 'Düşük',
-    risk: 'Yüksek',
-    icon: '🏛',
-    note: 'Koruma kurulundan izin gerekmektedir. Değer artışı potansiyeli çok sınırlıdır.',
+    tip: 'Turizm/Korunan Alan',
+    tanim: 'Turizm bölgesi veya sit alanı; sınırlı yapılaşma imkânı.',
+    getiri: 'Yüksek potansiyel — doğru izin alınırsa butik otel/tatil konutu.',
+    risk: 'Çok Yüksek — izin süreci uzun, belirsiz; sit alanı kısıtları.',
+    dikkat: 'Kültür ve Turizm Bakanlığı veya çevre planı onayı zorunludur.',
   },
 ];
 
-const CHECKLIST = [
-  { group: 'İmar ve Hukuki Kontrol', items: [
-    'Belediyeden imar durumu belgesi alın (TAKS, KAKS, kullanım amacı)',
-    'Tapu müdürlüğünden parsel kütük kaydını sorgulayın (ipotek, haciz, şerh)',
-    'Kadastro koordinatlarını kontrol edin — tapuyla arazinin örtüştüğünü doğrulayın',
-    'Hisseli arsada diğer hissedarlar ve hisse oranları araştırılmalı',
-    'İfraz/tevhid (bölme/birleştirme) kısıtı var mı kontrol edin',
-  ]},
-  { group: 'Fiziksel ve Çevre Kontrol', items: [
-    'Arsayı yerinde ziyaret edin; çevre yapılaşmasını gözlemleyin',
-    'Altyapı (elektrik, su, yol, kanalizasyon) varlığını kontrol edin',
-    'Sel, heyelan, fay hattı yakınlığı araştırılmalı',
-    'Komşu parsellere ait yapıların arsa sınırına tecavüzü var mı kontrol edin',
-  ]},
-  { group: 'Finansal Kontrol', items: [
-    'Son 12 ayda bölgede gerçekleşen emsal satışlar araştırılmalı',
-    'Geliştirme maliyeti (altyapı, temel, inşaat) hesaplanmalı',
-    'Arsa vergisi + Çevre temizlik vergisi borcu sorgulanmalı',
-    'Bankaların bu arsa için kredi verip vermeyeceği kontrol edilmeli',
-  ]},
+const GETIRI_FAKTORU = [
+  { faktör: 'Konum ve Ulaşım', etki: 'Ana yola mesafe, çevre yatırımları, yeni altyapı projeleri (metro, OSB, üniversite) fiyatı doğrudan etkiler.' },
+  { faktör: 'İmar Durumu', etki: 'İmarsız → imarlı geçiş tarihsel olarak 3–10x değer artışı sağlamıştır.' },
+  { faktör: 'Parsel Büyüklüğü', etki: 'Küçük parseller (250–1000 m²) daha likit; büyük parseller (10 dönüm+) daha yüksek getiri ama çıkış süresi uzun.' },
+  { faktör: 'Cephe ve Şekil', etki: 'Düzgün dikdörtgen/kare parsel en verimli; düzensiz veya dere yatağı yakını düşük değer.' },
+  { faktör: 'Altyapı', etki: 'Yol, elektrik, su, kanalizasyon bağlı parsel; bağlı olmayan için ek maliyet.' },
+  { faktör: 'Bölge Gelişim Hızı', etki: 'Yeni OSB, üniversite, hastane veya AVM projeleri çevre arsa değerini hızlandırır.' },
 ];
 
-const APPRECIATION_FACTORS = [
-  { factor: 'Ulaşım Yatırımı', detail: 'Metro, otoyol, köprü duyurusu bölge değerini %20–60 artırabilir', icon: '🚇' },
-  { factor: 'İmar Değişikliği', detail: 'Tarım → konut imara açılma, değeri 5–10 kat yükseltebilir', icon: '📋' },
-  { factor: 'Kentsel Dönüşüm', detail: 'Çevre yapıların yenilenmesi bölge ortalama değerini yukarı çeker', icon: '🏗' },
-  { factor: 'Nüfus Artışı', detail: 'Büyüyen nüfus bölgelerinde konut talebi arsayı değerlendirir', icon: '👥' },
-  { factor: 'OSB / Üniversite', detail: 'Yakın sanayi bölgesi veya kampüs işçi ve öğrenci konutu talebini artırır', icon: '🏭' },
-  { factor: 'Turizm Gelişimi', detail: 'Tatil bölgelerinde arsa değerleri turistik talep ve dolar bazlı büyür', icon: '🏖' },
+const RISKLER = [
+  { risk: 'İmar Planı Değişmeyebilir', onlem: 'Değerleme raporunu beklemeden spekülatif alım yapmayın; belediye planlarına bakın.' },
+  { risk: 'Hisseli Arsa', onlem: 'Tüm hissedarlara bildirim yapılmazsa izale davası açılabilir. Şufa hakkı 3 ay süre.' },
+  { risk: 'Hazine Şerhi / İfraz Sorunu', onlem: 'Tapu müdürlüğünde şerh kontrolü; Hazine arsasıyla sınır komşuluğu riskli.' },
+  { risk: 'Dere Yatağı / Heyelan', onlem: 'DSİ dere taşkın haritası ve zemin etüdü olmadan konut arsası almayın.' },
+  { risk: 'Enerji Nakil Hattı Koridoru', onlem: 'Yüksek gerilim hattı altında veya yakınında yapılaşma engeli.' },
+  { risk: 'Uzun Satış Süresi', onlem: 'Arsa likiditesi konut kadar yüksek değil; çıkış planını önceden belirleyin.' },
 ];
 
-const RISKS = [
-  '"İmara açılacak" vaadi gerçekleşmeyebilir — yalnızca mevcut belgelenmiş imar değeri güvenilirdir.',
-  'Hisseli arsa; diğer hissedara tanınan ön alım hakkı (şufa) satışı geciktirebilir.',
-  'Arsa değer artışı likiditenin düşük olmasından dolayı gerçekleşmeden boşa çıkabilir.',
-  'Köy/kırsal alanlarda fiktif satışlar ve tapusuz taşınmazlar yaygındır — kadastro kontrolü şart.',
-  'Yabancılara tarım arazisi satışı toplam 30 hektarla sınırlıdır.',
-  'Sit alanı, orman alanı veya askeri yasak bölgedeki arsa alımı hukuki müeyyideye yol açabilir.',
+const KONTROL_LISTESI = [
+  'Tapu ve kadastro durumu (hisse, şerh, ipotek)',
+  'İmar durumu belgesi (belediyeden resmi yazıyla)',
+  'TAKS, KAKS, yükseklik, ön bahçe — yazılı teyit',
+  'Parselasyon (18. madde uygulaması) yapılmış mı?',
+  'Kamulaştırma ve yol genişletme planı var mı?',
+  'Dere yatağı / heyelan bölgesi kontrolü (DSİ, AFAD)',
+  'Enerji nakil hattı veya doğalgaz boru hattı koridoru',
+  'Altyapı: yol, elektrik, su, kanalizasyon var mı?',
+  'Çevre güncel satış emsalleri karşılaştırıldı mı?',
+  'Komşu parsellerde yapılaşma ve kullanım nedir?',
 ];
-
-const valueColors: Record<string, string> = {
-  'Yüksek': 'text-[#00C49F]',
-  'Çok Yüksek': 'text-blue-600',
-  'Orta': 'text-amber-500',
-  'Düşük': 'text-rose-500',
-  'Geçersiz': 'text-rose-700',
-};
-
-const riskColors: Record<string, string> = {
-  'Düşük': 'text-[#00C49F]',
-  'Orta': 'text-amber-500',
-  'Yüksek': 'text-rose-500',
-  'Çok Yüksek': 'text-rose-700',
-};
 
 export default function ArsaYatirimiPage() {
   return (
@@ -125,27 +87,26 @@ export default function ArsaYatirimiPage() {
       <section className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
         <div className="max-w-4xl mx-auto px-6 py-16">
           <div className="inline-flex items-center gap-2 bg-[#00C49F]/20 border border-[#00C49F]/30 text-[#00C49F] text-xs font-bold px-4 py-1.5 rounded-full mb-5">
-            <MapPin size={13} /> Arsa Rehberi
+            <MapPin size={13} /> Arsa Yatırımı Rehberi
           </div>
           <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-4">
             Arsa Yatırımı Rehberi
           </h1>
           <p className="text-gray-300 text-sm max-w-xl leading-relaxed mb-8">
-            İmar türleri, kontrol listesi, değer artışı dinamikleri ve hisseli arsa riskleri dahil
-            Türkiye&apos;de arsa alımının eksiksiz rehberi.
+            İmar türleri, arsa türleri, getiri faktörleri, yasal riskler ve alım öncesi kapsamlı kontrol listesi.
           </p>
           <div className="flex flex-wrap gap-4">
             <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
-              <p className="text-2xl font-black text-[#00C49F]">6</p>
-              <p className="text-xs text-gray-400">İmar türü</p>
+              <p className="text-2xl font-black text-[#00C49F]">3–10x</p>
+              <p className="text-xs text-gray-400">İmar kazanımı potansiyeli</p>
             </div>
             <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
-              <p className="text-2xl font-black text-white">30 dk</p>
-              <p className="text-xs text-gray-400">Okuma süresi</p>
+              <p className="text-2xl font-black text-white">%0</p>
+              <p className="text-xs text-gray-400">Kira getirisi (çoğunlukla)</p>
             </div>
             <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
-              <p className="text-2xl font-black text-amber-400">6 Risk</p>
-              <p className="text-xs text-gray-400">Dikkat edilmesi gereken</p>
+              <p className="text-2xl font-black text-amber-400">Uzun</p>
+              <p className="text-xs text-gray-400">Yatırım ufku</p>
             </div>
           </div>
         </div>
@@ -153,123 +114,127 @@ export default function ArsaYatirimiPage() {
 
       <div className="max-w-4xl mx-auto px-6 py-12 space-y-12">
 
-        {/* Zoning types */}
+        {/* Arsa Türleri */}
         <section>
-          <h2 className="text-xl font-black text-gray-900 mb-5">Arsa/Arazi Türleri ve İmar Durumları</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {ZONING_TYPES.map(z => (
-              <div key={z.type} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
-                <div className="flex items-start gap-3 mb-3">
-                  <span className="text-2xl">{z.icon}</span>
-                  <div>
-                    <h3 className="text-sm font-black text-gray-900">{z.type}</h3>
-                    <div className="flex gap-3 mt-0.5">
-                      <span className="text-[10px]">Değer: <strong className={valueColors[z.value]}>{z.value}</strong></span>
-                      <span className="text-[10px]">Risk: <strong className={riskColors[z.risk]}>{z.risk}</strong></span>
-                    </div>
+          <h2 className="text-xl font-black text-gray-900 mb-4">Arsa Türleri</h2>
+          <div className="space-y-4">
+            {ARSA_TURLERI.map((a, i) => (
+              <div key={i} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+                <p className="text-xs font-black text-gray-900 mb-1">{a.tip}</p>
+                <p className="text-[10px] text-gray-600 mb-3 leading-relaxed">{a.tanim}</p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  <div className="bg-[#F0FDF8] rounded-lg p-2">
+                    <p className="text-[10px] text-[#00C49F] font-bold mb-0.5">Getiri</p>
+                    <p className="text-[10px] text-gray-600">{a.getiri}</p>
+                  </div>
+                  <div className="bg-rose-50 rounded-lg p-2">
+                    <p className="text-[10px] text-rose-600 font-bold mb-0.5">Risk</p>
+                    <p className="text-[10px] text-gray-600">{a.risk}</p>
+                  </div>
+                  <div className="bg-amber-50 rounded-lg p-2">
+                    <p className="text-[10px] text-amber-600 font-bold mb-0.5">Dikkat</p>
+                    <p className="text-[10px] text-gray-600">{a.dikkat}</p>
                   </div>
                 </div>
-                <p className="text-xs text-gray-600 leading-relaxed mb-2">{z.desc}</p>
-                <div className="flex items-start gap-2 bg-amber-50 rounded-lg p-2">
-                  <AlertTriangle size={11} className="text-amber-500 shrink-0 mt-0.5" />
-                  <p className="text-[10px] text-amber-700">{z.note}</p>
-                </div>
               </div>
             ))}
           </div>
         </section>
 
-        {/* Checklist */}
+        {/* Getiri Faktörleri */}
         <section>
-          <h2 className="text-xl font-black text-gray-900 mb-5">Alım Öncesi Kontrol Listesi</h2>
-          <div className="space-y-5">
-            {CHECKLIST.map(c => (
-              <div key={c.group} className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
-                <h3 className="text-sm font-black text-gray-900 mb-3 flex items-center gap-2">
-                  <FileText size={14} className="text-[#00C49F]" /> {c.group}
-                </h3>
-                <div className="space-y-2">
-                  {c.items.map((item, i) => (
-                    <div key={i} className="flex items-start gap-2">
-                      <CheckCircle size={13} className="text-[#00C49F] shrink-0 mt-0.5" />
-                      <p className="text-xs text-gray-600 leading-relaxed">{item}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Appreciation factors */}
-        <section>
-          <h2 className="text-xl font-black text-gray-900 mb-5">Değer Artışını Tetikleyen Faktörler</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {APPRECIATION_FACTORS.map(f => (
-              <div key={f.factor} className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm flex items-start gap-3">
-                <span className="text-xl">{f.icon}</span>
+          <h2 className="text-xl font-black text-gray-900 mb-4">Değer Artışını Belirleyen Faktörler</h2>
+          <div className="space-y-3">
+            {GETIRI_FAKTORU.map((f, i) => (
+              <div key={i} className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm flex items-start gap-3">
+                <TrendingUp size={13} className="text-[#00C49F] shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-xs font-bold text-gray-900 mb-0.5">{f.factor}</p>
-                  <p className="text-[10px] text-gray-500 leading-relaxed">{f.detail}</p>
+                  <p className="text-xs font-black text-gray-900 mb-0.5">{f.faktör}</p>
+                  <p className="text-[10px] text-gray-600 leading-relaxed">{f.etki}</p>
                 </div>
               </div>
             ))}
           </div>
         </section>
 
-        {/* Risks */}
+        {/* Riskler */}
         <section>
-          <h2 className="text-xl font-black text-gray-900 mb-4">Riskler ve Dikkat Noktaları</h2>
-          <div className="space-y-2">
-            {RISKS.map((r, i) => (
-              <div key={i} className="flex items-start gap-3 bg-white rounded-xl border border-amber-100 p-4 shadow-sm">
-                <AlertTriangle size={14} className="text-amber-500 shrink-0 mt-0.5" />
-                <p className="text-xs text-gray-600 leading-relaxed">{r}</p>
+          <h2 className="text-xl font-black text-gray-900 mb-4">Riskler ve Önlemler</h2>
+          <div className="space-y-3">
+            {RISKLER.map((r, i) => (
+              <div key={i} className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
+                <div className="flex items-start gap-2 mb-1">
+                  <AlertTriangle size={12} className="text-amber-500 shrink-0 mt-0.5" />
+                  <p className="text-xs font-black text-gray-900">{r.risk}</p>
+                </div>
+                <p className="text-[10px] text-gray-600 leading-relaxed ml-5">{r.onlem}</p>
               </div>
             ))}
           </div>
         </section>
 
-        {/* Hisseli arsa detail */}
-        <section className="bg-[#F0FDF8] border border-[#00C49F]/20 rounded-2xl p-6">
-          <h2 className="text-lg font-black text-gray-900 mb-3">Hisseli Arsa: Bilmeniz Gerekenler</h2>
-          <div className="space-y-3 text-xs text-gray-600 leading-relaxed">
-            <p>Hisseli arsa; birden fazla kişi adına kayıtlı taşınmazdır. Her malik kendi hissesini satabilir ancak diğer malikler <strong>şufa hakkı</strong> (ön alım hakkı) kullanabilir — yani aynı fiyattan almayı talep edebilir.</p>
-            <p>Tüm malikler ortaklaşa inşaat yapabilir veya arazi kullanımında anlaşabilir. Anlaşmazlık hâlinde sulh hukuk mahkemesine <strong>ortaklığın giderilmesi</strong> davası açılabilir.</p>
-            <div className="flex items-start gap-2 mt-2">
-              <Scale size={14} className="text-[#00C49F] shrink-0 mt-0.5" />
-              <p className="font-bold text-[#00C49F]">Tavsiye: Hisseli arsa alımında noter onaylı ortaklık sözleşmesi yapılmasını şiddetle tavsiye ederiz.</p>
-            </div>
+        {/* Kontrol Listesi */}
+        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+          <h2 className="text-sm font-black text-gray-900 mb-4 flex items-center gap-2">
+            <CheckCircle size={14} className="text-[#00C49F]" /> Alım Öncesi Kontrol Listesi
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {KONTROL_LISTESI.map((item, i) => (
+              <div key={i} className="flex items-start gap-2">
+                <div className="w-4 h-4 rounded border-2 border-[#00C49F]/40 shrink-0 mt-0.5" />
+                <p className="text-xs text-gray-700 leading-relaxed">{item}</p>
+              </div>
+            ))}
           </div>
         </section>
 
-        {/* CTAs */}
-        <section>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <Link href="/imar-durumu" className="group bg-white rounded-2xl border border-gray-100 p-5 hover:shadow-md transition-all flex flex-col gap-3">
-              <MapPin size={20} className="text-[#00C49F]" />
-              <div>
-                <p className="text-sm font-bold text-gray-900 mb-1">İmar Durumu Rehberi</p>
-                <p className="text-xs text-gray-500">TAKS, KAKS, ruhsat</p>
+        {/* Vergi */}
+        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+          <h2 className="text-sm font-black text-gray-900 mb-4 flex items-center gap-2">
+            <Scale size={14} className="text-[#00C49F]" /> Arsa Alım-Satımında Vergi
+          </h2>
+          <div className="space-y-3">
+            {[
+              { kalem: 'Tapu Harcı', detay: 'Alıcı ve satıcı %2\'şer, toplam %4. Beyan değeri üzerinden hesaplanır.' },
+              { kalem: 'Değer Artış Kazancı Vergisi', detay: '5 yıldan önce satışta kazanç üzerinden %15–40 gelir vergisi. 5 yıl sonra muafiyet.' },
+              { kalem: 'Emlak Vergisi', detay: 'Arsa için %0.3 (konut %0.2). Büyükşehirlerde 2 kat uygulanır.' },
+              { kalem: 'İnşaat Sonrası KDV', detay: 'Arsa üzerine bina inşa edip satılırsa %4 KDV (150 m² altı konut için).' },
+            ].map((v, i) => (
+              <div key={i} className="flex items-start gap-3 bg-[#F0FDF8] rounded-xl p-3">
+                <div className="text-[10px] font-black text-[#00C49F] shrink-0 min-w-[80px]">{v.kalem}</div>
+                <p className="text-[10px] text-gray-600 leading-relaxed">{v.detay}</p>
               </div>
-              <ArrowRight size={13} className="text-gray-300 group-hover:text-gray-600 transition-colors mt-auto" />
-            </Link>
-            <Link href="/emlak-vergisi" className="group bg-white rounded-2xl border border-gray-100 p-5 hover:shadow-md transition-all flex flex-col gap-3">
-              <FileText size={20} className="text-blue-600" />
-              <div>
-                <p className="text-sm font-bold text-gray-900 mb-1">Arsa Vergisi Hesapla</p>
-                <p className="text-xs text-gray-500">Arsa emlak vergisi oranları</p>
-              </div>
-              <ArrowRight size={13} className="text-gray-300 group-hover:text-gray-600 transition-colors mt-auto" />
-            </Link>
-            <Link href="/yatirim-bolgesi" className="group bg-gradient-to-br from-[#00C49F] to-[#00a882] rounded-2xl p-5 hover:shadow-md transition-all flex flex-col gap-3">
-              <TrendingUp size={20} className="text-white" />
-              <div>
-                <p className="text-sm font-bold text-white mb-1">En İyi Yatırım Bölgeleri</p>
-                <p className="text-xs text-white/70">Bölge analiz skorlaması</p>
-              </div>
-              <ArrowRight size={13} className="text-white/60 group-hover:text-white transition-colors mt-auto" />
-            </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* Warning */}
+        <section className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl p-4">
+          <AlertTriangle size={14} className="text-amber-600 shrink-0 mt-0.5" />
+          <p className="text-xs text-amber-800 leading-relaxed">
+            <span className="font-black">Önemli:</span> İmarsız arsa yatırımı yüksek risk taşır. İmar değişikliği yasal bir hak değil, belediye takdir yetkisindedir. Kısa vadeli planlarla imarsız arsa almaktan kaçınılmalıdır.
+          </p>
+        </section>
+
+        {/* Related */}
+        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+          <h3 className="text-sm font-bold text-gray-900 mb-4">İlgili Rehberler</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {[
+              { href: '/imar-durumu', label: 'İmar Durumu Rehberi' },
+              { href: '/sehir-planlama', label: 'Şehir Planlama ve İmar' },
+              { href: '/deger-artis-vergisi', label: 'Değer Artış Vergisi' },
+              { href: '/tapu-devir-sureci', label: 'Tapu Devir Süreci' },
+              { href: '/yatirim-analizi', label: 'Yatırım ROI Analizi' },
+              { href: '/yatirim-bolgesi', label: 'En İyi Yatırım Bölgeleri' },
+            ].map(l => (
+              <Link key={l.href} href={l.href}
+                className="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-[#F0FDF8] border border-transparent hover:border-[#00C49F]/20 transition-all group"
+              >
+                <ArrowRight size={12} className="text-gray-300 group-hover:text-[#00C49F] transition-colors shrink-0" />
+                <span className="text-xs text-gray-700 group-hover:text-[#00C49F] font-medium transition-colors">{l.label}</span>
+              </Link>
+            ))}
           </div>
         </section>
 
