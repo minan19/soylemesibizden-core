@@ -140,6 +140,7 @@ const CATEGORIES: Category[] = [
       { href: '/kat-karsiligi', icon: Building2, label: 'Kat Karşılığı Rehberi', desc: 'Pay oranları, sözleşme, riskler', badge: 'Yeni' },
       { href: '/sozlesme-iptal', icon: Scale, label: 'Sözleşme İptal ve Fesih', desc: 'Tazminat, ihtarname, hukuki süreç', badge: 'Yeni' },
       { href: '/kira-endeksi', icon: TrendingUp, label: 'Kira Endeksi ve TÜFE', desc: '2024 aylık TÜFE, %25 tavan, yasal haklar', badge: 'Yeni' },
+      { href: '/konut-kredisi-rehberi', icon: Home, label: 'Konut Kredisi Rehberi', desc: 'Şartlar, belgeler, banka karşılaştırması', badge: 'Yeni' },
     ],
   },
   {
