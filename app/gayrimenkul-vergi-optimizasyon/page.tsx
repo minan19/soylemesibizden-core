@@ -1,71 +1,57 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { Scale, CheckCircle, AlertTriangle, ArrowRight } from 'lucide-react';
+import { CheckCircle, AlertTriangle, ArrowRight, TrendingDown } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Gayrimenkul Vergi Optimizasyonu Rehberi 2024 | Yasal İndirim Yolları | Söylemesi Bizden',
+  title: 'Gayrimenkul Vergi Optimizasyonu | Yasal Tasarruf Yöntemleri | Söylemesi Bizden',
   description:
-    'Gayrimenkul alım-satım ve kira gelirinde yasal vergi avantajları: değer artış kazancı muafiyeti, götürü gider, enflasyon indekslemesi ve TOKÎ istisnalar.',
+    'Gayrimenkul yatırımlarında yasal vergi optimizasyonu: istisna ve muafiyetler, gider indirimleri, en uygun satış zamanlaması rehberi.',
 };
 
-const DEGER_ARTIS_KAZANCI = [
+const MUAFIYET_VE_ISTISNALAR = [
   {
-    durum: '5 Yıl Muafiyeti',
-    aciklama: '1 Ocak 2022\'den önce edinilen konutlar için 5 yıl sonra satılan mülklerden elde edilen değer artış kazancı vergi dışıdır.',
+    baslik: '5 Yıl Elde Tutma İstisnası',
+    aciklama: 'Konut veya işyerini edindikten 5 yıl sonra satarsanız değer artış kazancı vergisinden tamamen muafsınız. Bu süre, tapu tescil tarihinden itibaren hesaplanır.',
+    tasarruf: 'Tam Muafiyet',
   },
   {
-    durum: 'Enflasyon Düzeltmesi',
-    aciklama: 'Alış maliyeti, elde tutma süresindeki ÜFE/TÜFE artışı oranında artırılabilir; bu, matrahı önemli ölçüde düşürür.',
+    baslik: 'Birinci Konut İstisnası (KDV)',
+    aciklama: '150 m² ve altındaki konutlarda (ilk alımda) %1 indirimli KDV uygulanır; 150 m² üzerinde %20 standart oran geçerlidir.',
+    tasarruf: '%1 KDV (150 m²↓)',
   },
   {
-    durum: '2024 İstisna Tutarı',
-    aciklama: 'Yıllık 87.000 ₺\'ye kadar değer artış kazancı vergiden müstesnadır (her yıl güncellenir).',
+    baslik: 'GYO / GYF Vergi Avantajı',
+    aciklama: 'GYO hisselerini 2 yıldan uzun süre tutarsanız değer artış kazancı vergisinden muafsınız. GYO temettüsünde yalnızca %10 stopaj kesilir.',
+    tasarruf: '2 Yıl Sonra Muaf',
   },
   {
-    durum: 'Gider Mahsubu',
-    aciklama: 'Alım masrafları (tapu harcı, emlakçı, noter), tadilat ve iyileştirme harcamaları matrahtan indirilebilir.',
-  },
-];
-
-const KIRA_GELIRI_OPTIMIZASYON = [
-  {
-    yontem: 'Götürü Gider Yöntemi',
-    aciklama: 'Net kira gelirinin %15\'i herhangi bir belge aranmaksızın gider olarak indirilebilir. Giderlerin düşük olduğu durumlarda avantajlı.',
-  },
-  {
-    yontem: 'Gerçek Gider Yöntemi',
-    aciklama: 'Aidat, sigorta, vergi, bakım-onarım, kredi faizi gibi gerçek giderler belgeli olarak matrahtan düşülür. Yüksek giderli mülklerde tercih edilmeli.',
-  },
-  {
-    yontem: 'Konut Kira İstisnası',
-    aciklama: '2024\'te 33.000 ₺\'ye kadar konut kira geliri beyan dışıdır. Eşler ayrı beyan verirse her biri bu istisnadan yararlanır.',
-  },
-  {
-    yontem: 'Kredi Faizi İndirimi',
-    aciklama: 'Kiralık mülk için kullanılan konut kredisi faizi, gerçek gider yönteminde gider olarak gösterilebilir.',
+    baslik: 'Miras Yoluyla Edinim',
+    aciklama: 'Miras yoluyla edinilen taşınmazlarda elde tutma süresi yasal mirasçıya geçer; ödenen veraset vergisi maliyet bedeline eklenerek vergi matrahı düşürülür.',
+    tasarruf: 'Maliyet Yükseltme',
   },
 ];
 
-const TAPU_HARCI_OPTIMIZASYON = [
-  'Belediye rayiç değerinin altında satış bedeli beyanı vergi ziyaı cezasına yol açar — yasal değildir.',
-  'İlk konut alımında tapu harcı %3\'e indirilebilir (normal %4); özellikle yüksek bedellerinde fark önemli.',
-  'Eş veya çocuğa bağış yoluyla tapu devri farklı harç rejimine tabi olabilir — danışın.',
-  'Bazı kentsel dönüşüm projelerinde harç muafiyeti veya indirimi uygulanabilmektedir.',
+const GIDER_INDIRIMLERI = [
+  { gider: 'Tapu Harcı ve Masrafları', aciklama: 'Alım sırasında ödenen tapu harcı, döner sermaye ve noter masrafları maliyet bedeline eklenir; vergi matrahını düşürür.' },
+  { gider: 'Emlakçı Komisyonu', aciklama: 'Satış sırasında ödenen emlakçı komisyonu (alıcı veya satıcı payı) vergiden düşülebilir.' },
+  { gider: 'Tadilat ve Onarım', aciklama: 'Taşınmazın değerini artıran tadilat masrafları belgelenmesi koşuluyla maliyet bedeline eklenir.' },
+  { gider: 'Banka Faizi', aciklama: 'Konut kredisi faizi, "gerçek gider" yöntemi seçilmesi halinde kira gelirinden düşülebilir.' },
+  { gider: 'Sigorta Primleri', aciklama: 'DASK ve konut sigortası primleri gerçek gider yönteminde kira gelirinden indirilebilir.' },
+  { gider: 'Amortisman', aciklama: 'Kiraya verilen bina için yıllık %2 amortisman gideri düşülebilir (arsa değeri hariç).' },
 ];
 
-const SIRKETSELLESTIRME = [
-  { avantaj: 'KDV indirim hakkı', aciklama: 'Ticari mülk edinimlerinde giriş KDV\'sini indirebilirsiniz' },
-  { avantaj: 'Gider mahsubu', aciklama: 'Şirket adına kira giderleri vergi matrahından düşülür' },
-  { avantaj: 'Kurumlar vergisi', aciklama: '2024\'te %25; bireysel gelir vergisi üst dilimi %40 — kıyaslayın' },
-  { avantaj: 'Portföy GYO', aciklama: '5+ mülk için Gayrimenkul Yatırım Ortaklığı kurumu kurumlar vergisi istisnası sağlar' },
+const ZAMANLAMA_STRATEJISI = [
+  { strateji: '5. Yıl Dolduktan Sonra Sat', aciklama: 'Tapu tescil tarihinden 5 tam yıl geçmeden satış yapmayın; değer artış kazancı vergisi %15\'e kadar çıkabilir.' },
+  { strateji: 'Düşük Gelir Yılında Sat', aciklama: 'Emeklilik, ücretsiz izin veya düşük gelirli bir yılda satış yaparak vergi dilimini düşürün.' },
+  { strateji: 'Götürü Gider vs Gerçek Gider Hesabı', aciklama: 'Kira gelirinizden her yıl %15 götürü gider veya gerçek giderleri seçin; yüksek gider varsa gerçek yöntem avantajlıdır.' },
+  { strateji: 'Yıl Sonu Satışı', aciklama: 'Aralık yerine Ocak\'ta satış yapmak, bir yıl sonraki enflasyon endeksinden yararlanmanızı sağlar.' },
 ];
 
 const DIKKAT_NOKTALAR = [
-  'Vergi avantajlarından yararlanmak için beyanname zamanında verilmeli (Mart ayı son günü).',
-  'Götürü ↔ gerçek gider yöntemi değişikliği bir sonraki yıldan itibaren uygulanır; yıl içinde değiştirilmez.',
-  'İstisna tutarları her yıl güncellenir; bulunduğunuz yılın rakamlarını GİB sitesinden doğrulayın.',
-  'Birden fazla kiralık mülkünüz varsa her biri için ayrı gelir takibi yapın.',
-  'Yurt dışı kaynaklı kira geliri de beyan yükümlülüğü doğurabilir; çifte vergilendirme anlaşmalarını inceleyin.',
+  { uyari: 'Geriye Dönük Tarhiyat', aciklama: 'Beyan dışı kira geliri 5 yıl geriye dönük vergi ve ceza getirebilir; pişmanlıkla beyan daha az cezalıdır.' },
+  { uyari: 'Emsal Kira Bedeli', aciklama: 'Emsalin altında kira gösterilirse vergi dairesi emsal kira bedelini esas alır (Gelir Vergisi Kanunu m.73).' },
+  { uyari: 'Enflasyon Endekslemesi', aciklama: 'Değer artış kazancında maliyet bedeli yeniden değerleme katsayısıyla (ÜFE) artırılabilir; bu matrahı düşürür.' },
+  { uyari: 'Vergi Danışmanı Zorunluluğu', aciklama: 'Birden fazla mülk, yüksek değerli satış veya miras gibi durumlarda mutlaka YMM veya mali müşavirden destek alın.' },
 ];
 
 export default function GayrimenkulVergiOptimizasyonPage() {
@@ -75,26 +61,26 @@ export default function GayrimenkulVergiOptimizasyonPage() {
       <section className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
         <div className="max-w-4xl mx-auto px-6 py-16">
           <div className="inline-flex items-center gap-2 bg-[#00C49F]/20 border border-[#00C49F]/30 text-[#00C49F] text-xs font-bold px-4 py-1.5 rounded-full mb-5">
-            <Scale size={13} /> Vergi Optimizasyonu
+            <TrendingDown size={13} /> Vergi Optimizasyon
           </div>
           <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-4">
-            Gayrimenkul Vergi Optimizasyonu Rehberi 2024
+            Gayrimenkul Vergi Optimizasyonu
           </h1>
           <p className="text-gray-300 text-sm max-w-xl leading-relaxed mb-8">
-            Yasal vergi avantajlarını öğrenin: değer artış kazancı muafiyeti, kira istisnaları, gider indirimleri.
+            Yasal muafiyet ve istisnalar, gider indirimleri ve satış zamanlaması stratejileri ile vergi yükünüzü minimize edin.
           </p>
           <div className="flex flex-wrap gap-4">
             <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
               <p className="text-2xl font-black text-[#00C49F]">5 Yıl</p>
-              <p className="text-xs text-gray-400">Değer artış muafiyeti</p>
+              <p className="text-xs text-gray-400">Tam muafiyet eşiği</p>
             </div>
             <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
-              <p className="text-2xl font-black text-white">33K ₺</p>
-              <p className="text-xs text-gray-400">Kira istisnası 2024</p>
+              <p className="text-2xl font-black text-white">%15</p>
+              <p className="text-xs text-gray-400">Götürü gider oranı</p>
             </div>
             <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
-              <p className="text-2xl font-black text-amber-400">%15</p>
-              <p className="text-xs text-gray-400">Götürü gider</p>
+              <p className="text-2xl font-black text-amber-400">%2</p>
+              <p className="text-xs text-gray-400">Bina amortismanı</p>
             </div>
           </div>
         </div>
@@ -102,66 +88,61 @@ export default function GayrimenkulVergiOptimizasyonPage() {
 
       <div className="max-w-4xl mx-auto px-6 py-12 space-y-12">
 
-        {/* Değer Artış Kazancı */}
+        {/* Muafiyet ve İstisnalar */}
         <section>
-          <h2 className="text-xl font-black text-gray-900 mb-4">Değer Artış Kazancı Vergisi Optimizasyonu</h2>
+          <h2 className="text-xl font-black text-gray-900 mb-4">Muafiyet ve İstisnalar</h2>
           <div className="space-y-3">
-            {DEGER_ARTIS_KAZANCI.map((d, i) => (
+            {MUAFIYET_VE_ISTISNALAR.map((m, i) => (
               <div key={i} className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
-                <p className="text-xs font-black text-[#00C49F] mb-1">{d.durum}</p>
-                <p className="text-[10px] text-gray-600 leading-relaxed">{d.aciklama}</p>
+                <div className="flex items-start justify-between mb-1">
+                  <p className="text-xs font-black text-gray-900">{m.baslik}</p>
+                  <span className="text-[10px] bg-[#F0FDF8] text-[#00C49F] font-black px-2 py-0.5 rounded shrink-0">{m.tasarruf}</span>
+                </div>
+                <p className="text-[10px] text-gray-600 leading-relaxed">{m.aciklama}</p>
               </div>
             ))}
           </div>
         </section>
 
-        {/* Kira Geliri */}
-        <section>
-          <h2 className="text-xl font-black text-gray-900 mb-4">Kira Geliri Vergi Optimizasyonu</h2>
-          <div className="space-y-4">
-            {KIRA_GELIRI_OPTIMIZASYON.map((k, i) => (
-              <div key={i} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
-                <p className="text-xs font-black text-gray-900 mb-2">{k.yontem}</p>
-                <p className="text-[10px] text-gray-600 leading-relaxed">{k.aciklama}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Tapu Harcı */}
+        {/* Gider İndirimleri */}
         <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-          <h2 className="text-sm font-black text-gray-900 mb-4">Tapu Harcı Optimizasyonu</h2>
+          <h2 className="text-sm font-black text-gray-900 mb-4 flex items-center gap-2">
+            <CheckCircle size={14} className="text-[#00C49F]" /> İndirilebilir Giderler
+          </h2>
           <div className="space-y-2">
-            {TAPU_HARCI_OPTIMIZASYON.map((t, i) => (
-              <div key={i} className="flex items-start gap-2 py-2 border-b border-gray-50 last:border-0">
+            {GIDER_INDIRIMLERI.map((g, i) => (
+              <div key={i} className="flex items-start gap-3 py-2 border-b border-gray-50 last:border-0">
                 <CheckCircle size={12} className="text-[#00C49F] shrink-0 mt-0.5" />
-                <p className="text-xs text-gray-700 leading-relaxed">{t}</p>
+                <div>
+                  <p className="text-xs font-black text-gray-900">{g.gider}</p>
+                  <p className="text-[10px] text-gray-500 mt-0.5">{g.aciklama}</p>
+                </div>
               </div>
             ))}
           </div>
         </section>
 
-        {/* Şirketleştirme */}
-        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-          <h2 className="text-sm font-black text-gray-900 mb-4">Şirket veya GYO ile Yatırım Avantajları</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {SIRKETSELLESTIRME.map((s, i) => (
-              <div key={i} className="bg-[#F0FDF8] rounded-xl p-3">
-                <p className="text-xs font-black text-[#00C49F] mb-1">{s.avantaj}</p>
-                <p className="text-[10px] text-gray-600 leading-relaxed">{s.aciklama}</p>
+        {/* Zamanlama Stratejisi */}
+        <section>
+          <h2 className="text-xl font-black text-gray-900 mb-4">Zamanlama Stratejileri</h2>
+          <div className="space-y-3">
+            {ZAMANLAMA_STRATEJISI.map((z, i) => (
+              <div key={i} className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
+                <p className="text-xs font-black text-[#00C49F] mb-1">{z.strateji}</p>
+                <p className="text-[10px] text-gray-600 leading-relaxed">{z.aciklama}</p>
               </div>
             ))}
           </div>
         </section>
 
         {/* Dikkat Noktaları */}
-        <section>
-          <h2 className="text-xl font-black text-gray-900 mb-4">Dikkat Edilmesi Gerekenler</h2>
+        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+          <h2 className="text-sm font-black text-gray-900 mb-4">Dikkat Edilmesi Gereken Noktalar</h2>
           <div className="space-y-3">
             {DIKKAT_NOKTALAR.map((d, i) => (
-              <div key={i} className="flex items-start gap-3 bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
-                <div className="w-5 h-5 rounded-full bg-amber-100 text-amber-600 text-[10px] font-black flex items-center justify-center shrink-0">{i + 1}</div>
-                <p className="text-xs text-gray-700 leading-relaxed">{d}</p>
+              <div key={i} className="grid grid-cols-3 gap-2 py-2 border-b border-gray-50 last:border-0">
+                <p className="text-xs font-black text-rose-500">{d.uyari}</p>
+                <p className="text-[10px] text-gray-600 leading-relaxed col-span-2">{d.aciklama}</p>
               </div>
             ))}
           </div>
@@ -171,7 +152,7 @@ export default function GayrimenkulVergiOptimizasyonPage() {
         <section className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl p-4">
           <AlertTriangle size={14} className="text-amber-600 shrink-0 mt-0.5" />
           <p className="text-xs text-amber-800 leading-relaxed">
-            <span className="font-black">Önemli:</span> Bu rehber genel bilgi amaçlıdır; vergi danışmanlığı yerine geçmez. Vergi oranları ve istisna tutarları her yıl değişebilir. Büyük tutarlı işlemler için bir mali müşavir veya vergi avukatına danışın.
+            <span className="font-black">Önemli:</span> Bu rehber genel bilgi amaçlıdır. Kişisel durumunuza uygun vergi optimizasyonu için yeminli mali müşavir (YMM) veya serbest muhasebeci mali müşavirden (SMMM) destek alın.
           </p>
         </section>
 
@@ -181,11 +162,11 @@ export default function GayrimenkulVergiOptimizasyonPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {[
               { href: '/kira-geliri-vergisi', label: 'Kira Geliri Vergisi Hesaplayıcı' },
-              { href: '/emlak-vergisi', label: 'Emlak Vergisi Hesaplayıcı' },
+              { href: '/stopaj-vergisi-rehberi', label: 'Stopaj Vergisi Rehberi' },
               { href: '/deger-artis-vergisi', label: 'Değer Artış Vergisi' },
-              { href: '/stopaj-vergisi', label: 'Stopaj Vergisi Rehberi' },
-              { href: '/net-kira-hesaplayici', label: 'Net Kira Geliri Hesaplayıcı' },
-              { href: '/gayrimenkul-yatirim-fonu', label: 'Gayrimenkul Yatırım Fonu (GYO)' },
+              { href: '/emlak-vergisi', label: 'Emlak Vergisi Hesaplayıcı' },
+              { href: '/amortisman-hesaplayici', label: 'Amortisman Hesaplayıcı' },
+              { href: '/yatirim-analizi', label: 'Yatırım ROI Hesaplayıcı' },
             ].map(l => (
               <Link key={l.href} href={l.href}
                 className="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-[#F0FDF8] border border-transparent hover:border-[#00C49F]/20 transition-all group"

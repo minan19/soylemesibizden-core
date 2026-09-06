@@ -1,99 +1,46 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { Key, CheckCircle, AlertTriangle, ArrowRight } from 'lucide-react';
+import { CheckCircle, AlertTriangle, ArrowRight, FileText } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Tapu Devir Süreci Rehberi 2024 | Tapu Harcı, Randevu, İşlem | Söylemesi Bizden',
+  title: 'Tapu Devir Rehberi | Adım Adım İşlem, Masraflar, Belgeler | Söylemesi Bizden',
   description:
-    'Tapu devir süreci nasıl işler? Randevu alma, gerekli belgeler, tapu harcı, döner sermaye ve sıkça yapılan hatalar hakkında kapsamlı rehber.',
+    'Tapu devri nasıl yapılır? Gerekli belgeler, tapu harcı hesaplama, randevu alma ve tapu müdürlüğünde işlem adımları rehberi.',
 };
 
-const TAPU_ADIMLARI = [
-  {
-    baslik: '1. Belgeleri Hazırla',
-    sure: '1–3 gün',
-    adimlar: [
-      'Kimlik belgesi (T.C. nüfus cüzdanı veya pasaport)',
-      'Alıcı ve satıcının 1 adet biyometrik fotoğrafı',
-      'Tapu fotokopisi (satıcıdan)',
-      'Banka kredi kullanılıyorsa kredi onay yazısı',
-      'Konut için DASK poliçesi ve konut sigortası poliçesi',
-    ],
-  },
-  {
-    baslik: '2. Beyan Değerini Belirle',
-    sure: '1 gün',
-    adimlar: [
-      'Belediyeden o yıla ait emlak rayiç değeri öğrenilir',
-      'Tapu harcı beyan edilen satış değeri üzerinden hesaplanır; rayiç değerin altında beyan hukuka aykırıdır',
-      'Satış fiyatı > rayiç değer ise satış fiyatı üzerinden harç alınır',
-    ],
-  },
-  {
-    baslik: '3. Harç ve Masrafları Öde',
-    sure: '1 gün',
-    adimlar: [
-      'Tapu harcı: satış bedelinin %4\'ü (alıcı + satıcı paylaşabilir; pratikte genellikle alıcı öder)',
-      'Döner sermaye: yıllık güncellenen sabit tutar (2024: yaklaşık 3.200 ₺)',
-      'Ödeme bankayla veya e-Devlet üzerinden yapılabilir',
-      'Tapu Müdürlüğü\'ne ödeme makbuzu ibraz edilir',
-    ],
-  },
-  {
-    baslik: '4. Tapu Müdürlüğü\'nden Randevu Al',
-    sure: '1–5 gün bekleme',
-    adimlar: [
-      'webtapu.tkgm.gov.tr üzerinden online randevu alın',
-      'İki taraf aynı randevuya gelmeli; vekalet varsa noter onaylı olmalı',
-      'Yoğun dönemlerde (yaz/dönem sonu) randevu 1–2 hafta gecikebilir',
-    ],
-  },
-  {
-    baslik: '5. Tapu Müdürlüğü\'nde İşlem',
-    sure: 'Yarım gün',
-    adimlar: [
-      'Memur tapu kaydını inceler, tarafları tanımlar',
-      'Satış sözleşmesi tapu memuru önünde imzalanır',
-      'Yeni tapu alıcı adına düzenlenir ve teslim edilir',
-      'Tapu Sicil Gazetesi yerine artık SMS/e-posta bildirimi gelir',
-    ],
-  },
-  {
-    baslik: '6. Devir Sonrası Bildirimler',
-    sure: '1 hafta',
-    adimlar: [
-      'Belediyeye yeni mülk sahibi bildirimi: emlak vergisi güncellenmeli',
-      'DASK ve konut sigortası poliçelerini kendi adınıza yenileyin',
-      'Elektrik, su, doğalgaz aboneliklerini devralın',
-      'Apartman yönetimine yeni mülkiyet bildirin',
-    ],
-  },
+const GEREKLI_BELGELER = [
+  { belge: 'Nüfus Cüzdanı / Pasaport', taraf: 'Alıcı + Satıcı', zorunlu: true },
+  { belge: 'Tapu Senedi (Aslı)', taraf: 'Satıcı', zorunlu: true },
+  { belge: 'DASK Poliçesi', taraf: 'Satıcı', zorunlu: true },
+  { belge: 'Belediyeden Rayiç Değer Belgesi', taraf: 'Alıcı', zorunlu: true },
+  { belge: 'Fotoğraf (2 adet)', taraf: 'Alıcı + Satıcı', zorunlu: true },
+  { belge: 'Vekaletname (varsa)', taraf: 'İlgili Taraf', zorunlu: false },
+  { belge: 'Tapu Harcı Dekontu', taraf: 'Alıcı', zorunlu: true },
+  { belge: 'Döner Sermaye Makbuzu', taraf: 'Alıcı', zorunlu: true },
 ];
 
-const HARÇ_TABLOSU = [
-  { kalem: 'Tapu Harcı (Alıcı)', oran: '%2', aciklama: 'Satış bedeli üzerinden; taraflarca paylaşılabilir' },
-  { kalem: 'Tapu Harcı (Satıcı)', oran: '%2', aciklama: 'Satış bedeli üzerinden; toplamda %4' },
-  { kalem: 'Döner Sermaye', oran: 'Sabit ~3.200 ₺', aciklama: '2024 yılı tapu sicil hizmet bedeli' },
-  { kalem: 'KDV', oran: '%20 (proje)', aciklama: 'Sadece müteahhit/proje satışlarında; net 150 m² altı konut %10' },
-  { kalem: 'Banka Komisyonu', oran: 'Değişken', aciklama: 'Kredi kullanılıyorsa ipotek tesis ücreti' },
+const ISLEM_ADIMLARI = [
+  { adim: 'Randevu Alın', aciklama: 'ALO 181 veya e-Randevu sistemi üzerinden Tapu Müdürlüğü randevusu alın. Büyük şehirlerde 1–2 hafta önceden alınması gerekebilir.', sure: '1–14 Gün Önce' },
+  { adim: 'Belediye Rayiç Belgesi', aciklama: 'Alıcı, taşınmazın bağlı olduğu belediyeden "Emlak Rayiç Değeri" belgesi alır. Bu belge tapu harcı matrahını belirler.', sure: '1–3 Gün' },
+  { adim: 'DASK Poliçesi Yenileme', aciklama: 'Satıcının mevcut DASK poliçesi yoksa veya süresi dolmuşsa, satış öncesi yenilenmesi zorunludur.', sure: 'Aynı Gün' },
+  { adim: 'Harç Ödemesi', aciklama: 'Tapu harcı (alım değerinin %4\'ü + döner sermaye) İnteraktif Vergi Dairesi veya bankadan ödenir.', sure: 'Randevu Günü' },
+  { adim: 'Tapu Müdürlüğünde İşlem', aciklama: 'Her iki taraf (veya vekilleri) randevu saatinde hazır olur; belgeler incelenir, beyan alınır, tapu sicil müdürü devri onaylar.', sure: '30–60 Dk' },
+  { adim: 'Yeni Tapu Teslimi', aciklama: 'İşlem tamamlandıktan sonra alıcıya yeni tapu senedi verilir. e-Tapu uygulamasından da dijital tapu görüntülenebilir.', sure: 'Aynı Gün' },
 ];
 
-const HATA_LISTESI = [
-  { hata: 'Tapuyu görmeden kapora vermek', sonuc: 'İpotekli/hacizli mülk satın alınabilir' },
-  { hata: 'Düşük beyan değeri yazmak', sonuc: 'Vergi ziyaı cezası + faiz' },
-  { hata: 'Vekalet olmadan taraf adına işlem', sonuc: 'İşlem geçersiz sayılır' },
-  { hata: 'Harçları son gün ödemek', sonuc: 'Randevu iptali, süre kaybı' },
-  { hata: 'Devir sonrası belediyeye bildirmemek', sonuc: 'Eski malik adına vergi tahakkuk etmeye devam eder' },
+const MASRAF_TABLOSU = [
+  { masraf: 'Tapu Harcı', oran: '%4 (alıcı + satıcı %2+%2)', aciklama: 'Satış bedelinin veya rayiç değerin yüksek olanı esas alınır.' },
+  { masraf: 'Döner Sermaye', oran: '1.500–3.000 ₺', aciklama: 'Her yıl yeniden belirlenir; Hazine ve Maliye Bakanlığı tarifesi geçerli.' },
+  { masraf: 'DASK Poliçesi', oran: '500–2.500 ₺', aciklama: 'Bina yaşı ve yüzölçümüne göre değişir; alım öncesi yenilenmelidir.' },
+  { masraf: 'Emlakçı Komisyonu', oran: '%2 + KDV (alıcı + satıcı)', aciklama: 'Yasal tavan %2; toplam %4 + KDV iki taraftan alınır.' },
+  { masraf: 'Banka Masrafları (Kredi)', oran: 'Banka tarifesine göre', aciklama: 'Ekspertiz (500–2.000 ₺), ipotek tesis (1.000–3.000 ₺).' },
 ];
 
-const KONTROL_LISTESI = [
-  'Tapu sicil kaydında ipotek/haciz/şerh yok mu? (e-Devlet veya Tapu Müd.)',
-  'Kat mülkiyeti tapusu mu (kat irtifakından üstün)?',
-  'İskan belgesi (yapı kullanım izni) mevcut mu?',
-  'Satıcının kimliği tapudaki isimle eşleşiyor mu?',
-  'Tapu harcı doğru hesaplandı mı (%4)?',
-  'DASK poliçesi güncel mi?',
-  'İki taraf randevu için hazır mı?',
+const DIKKAT_NOKTALAR = [
+  { baslik: 'Rayiç Altında Beyan', aciklama: 'Tapu harcını azaltmak amacıyla düşük bedel beyan etmek cezai işleme yol açabilir; vergi dairesi gerçek değeri tespit edebilir.' },
+  { baslik: 'İpotek ve Haciz Araştırması', aciklama: 'Satın almadan önce tapu müdürlüğünden veya e-Devlet\'ten tapu kaydını sorgulayın; ipotek, haciz veya şerh olup olmadığını kontrol edin.' },
+  { baslik: 'Veraset İlamı', aciklama: 'Miras yoluyla gelen taşınmazlarda satıcının veraset ilamı ve intikal işleminin tamamlanmış olması gerekir.' },
+  { baslik: 'Kat Mülkiyeti', aciklama: 'Satın aldığınız dairenin bağımsız bölüm numarasını ve tapuyu kontrol edin; arsa paylı tapuyla kat mülkiyeti tapusu farklıdır.' },
 ];
 
 export default function TapuDevirRehberiPage() {
@@ -103,26 +50,26 @@ export default function TapuDevirRehberiPage() {
       <section className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
         <div className="max-w-4xl mx-auto px-6 py-16">
           <div className="inline-flex items-center gap-2 bg-[#00C49F]/20 border border-[#00C49F]/30 text-[#00C49F] text-xs font-bold px-4 py-1.5 rounded-full mb-5">
-            <Key size={13} /> Tapu Devir Rehberi
+            <FileText size={13} /> Tapu Devri
           </div>
           <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-4">
-            Tapu Devir Süreci Rehberi 2024
+            Tapu Devir Rehberi
           </h1>
           <p className="text-gray-300 text-sm max-w-xl leading-relaxed mb-8">
-            Belge hazırlığından tapu teslimine 6 adımda eksiksiz süreç rehberi.
+            Tapu devri adım adım: gerekli belgeler, masraflar, randevu alma ve tapu müdürlüğünde işlem süreci.
           </p>
           <div className="flex flex-wrap gap-4">
             <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
               <p className="text-2xl font-black text-[#00C49F]">%4</p>
-              <p className="text-xs text-gray-400">Tapu harcı</p>
+              <p className="text-xs text-gray-400">Tapu harcı oranı</p>
             </div>
             <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
               <p className="text-2xl font-black text-white">6 Adım</p>
               <p className="text-xs text-gray-400">Devir süreci</p>
             </div>
             <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
-              <p className="text-2xl font-black text-amber-400">e-Devlet</p>
-              <p className="text-xs text-gray-400">Tapu kontrolü</p>
+              <p className="text-2xl font-black text-amber-400">ALO 181</p>
+              <p className="text-xs text-gray-400">Randevu hattı</p>
             </div>
           </div>
         </div>
@@ -130,66 +77,76 @@ export default function TapuDevirRehberiPage() {
 
       <div className="max-w-4xl mx-auto px-6 py-12 space-y-12">
 
-        {/* Adımlar */}
-        <section>
-          <h2 className="text-xl font-black text-gray-900 mb-4">Tapu Devir Adımları</h2>
-          <div className="space-y-4">
-            {TAPU_ADIMLARI.map((a, i) => (
-              <div key={i} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
-                <div className="flex items-center justify-between mb-3">
-                  <p className="text-xs font-black text-gray-900">{a.baslik}</p>
-                  <span className="text-[10px] bg-[#F0FDF8] text-[#00C49F] font-black px-2 py-0.5 rounded">{a.sure}</span>
-                </div>
-                <div className="space-y-2">
-                  {a.adimlar.map((ad, j) => (
-                    <div key={j} className="flex items-start gap-2">
-                      <CheckCircle size={12} className="text-[#00C49F] shrink-0 mt-0.5" />
-                      <p className="text-[10px] text-gray-700 leading-relaxed">{ad}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Harç Tablosu */}
-        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-          <h2 className="text-sm font-black text-gray-900 mb-4">Tapu Harç ve Masrafları</h2>
-          <div className="space-y-2">
-            {HARÇ_TABLOSU.map((h, i) => (
-              <div key={i} className="grid grid-cols-3 gap-2 py-2 border-b border-gray-50 last:border-0">
-                <p className="text-xs font-black text-gray-900">{h.kalem}</p>
-                <p className="text-xs font-black text-[#00C49F]">{h.oran}</p>
-                <p className="text-[10px] text-gray-500 leading-relaxed">{h.aciklama}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Kontrol Listesi */}
+        {/* Gerekli Belgeler */}
         <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
           <h2 className="text-sm font-black text-gray-900 mb-4 flex items-center gap-2">
-            <CheckCircle size={14} className="text-[#00C49F]" /> Tapu Kontrol Listesi
+            <CheckCircle size={14} className="text-[#00C49F]" /> Gerekli Belgeler
           </h2>
           <div className="space-y-2">
-            {KONTROL_LISTESI.map((k, i) => (
-              <div key={i} className="flex items-start gap-3 py-2 border-b border-gray-50 last:border-0">
-                <div className="w-5 h-5 rounded border-2 border-[#00C49F]/40 shrink-0" />
-                <p className="text-xs text-gray-700 leading-relaxed">{k}</p>
+            {GEREKLI_BELGELER.map((b, i) => (
+              <div key={i} className="flex items-center justify-between py-1.5 border-b border-gray-50 last:border-0">
+                <div className="flex items-center gap-2">
+                  <CheckCircle size={11} className={b.zorunlu ? 'text-[#00C49F]' : 'text-gray-300'} />
+                  <p className="text-xs font-bold text-gray-900">{b.belge}</p>
+                </div>
+                <span className={`text-[10px] px-2 py-0.5 rounded font-black shrink-0 ${b.zorunlu ? 'bg-[#F0FDF8] text-[#00C49F]' : 'bg-gray-50 text-gray-400'}`}>
+                  {b.taraf}
+                </span>
               </div>
             ))}
           </div>
         </section>
 
-        {/* Hata Listesi */}
+        {/* İşlem Adımları */}
         <section>
-          <h2 className="text-xl font-black text-gray-900 mb-4">Sık Yapılan Hatalar</h2>
+          <h2 className="text-xl font-black text-gray-900 mb-4">İşlem Adımları</h2>
           <div className="space-y-3">
-            {HATA_LISTESI.map((h, i) => (
-              <div key={i} className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm flex items-center justify-between gap-3">
-                <p className="text-xs text-gray-800">{h.hata}</p>
-                <span className="text-[10px] bg-rose-50 text-rose-600 font-black px-2 py-0.5 rounded shrink-0">{h.sonuc}</span>
+            {ISLEM_ADIMLARI.map((a, i) => (
+              <div key={i} className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
+                <div className="flex items-start justify-between mb-1">
+                  <div className="flex items-start gap-2">
+                    <div className="w-5 h-5 rounded-full bg-[#00C49F] text-white text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">{i + 1}</div>
+                    <p className="text-xs font-black text-gray-900">{a.adim}</p>
+                  </div>
+                  <span className="text-[10px] bg-amber-50 text-amber-600 font-black px-2 py-0.5 rounded shrink-0">{a.sure}</span>
+                </div>
+                <p className="text-[10px] text-gray-600 leading-relaxed mt-1 ml-7">{a.aciklama}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Masraf Tablosu */}
+        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm overflow-x-auto">
+          <h2 className="text-sm font-black text-gray-900 mb-4">Tapu Devir Masrafları</h2>
+          <table className="w-full text-[10px] min-w-[400px]">
+            <thead>
+              <tr className="border-b border-gray-100">
+                <th className="text-left py-2 font-black text-gray-500">Masraf</th>
+                <th className="text-center py-2 font-black text-[#00C49F]">Oran / Tutar</th>
+                <th className="text-left py-2 font-black text-gray-500">Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              {MASRAF_TABLOSU.map((m, i) => (
+                <tr key={i} className="border-b border-gray-50">
+                  <td className="py-2 font-black text-gray-900">{m.masraf}</td>
+                  <td className="py-2 text-center font-black text-[#00C49F]">{m.oran}</td>
+                  <td className="py-2 text-gray-600">{m.aciklama}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+
+        {/* Dikkat Noktaları */}
+        <section>
+          <h2 className="text-xl font-black text-gray-900 mb-4">Dikkat Edilmesi Gerekenler</h2>
+          <div className="space-y-3">
+            {DIKKAT_NOKTALAR.map((d, i) => (
+              <div key={i} className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
+                <p className="text-xs font-black text-rose-500 mb-1">{d.baslik}</p>
+                <p className="text-[10px] text-gray-600 leading-relaxed">{d.aciklama}</p>
               </div>
             ))}
           </div>
@@ -199,7 +156,7 @@ export default function TapuDevirRehberiPage() {
         <section className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl p-4">
           <AlertTriangle size={14} className="text-amber-600 shrink-0 mt-0.5" />
           <p className="text-xs text-amber-800 leading-relaxed">
-            <span className="font-black">Önemli:</span> Tapu devri öncesi e-Devlet üzerinden tapu sicil kaydını kontrol edin. İpotek, haciz veya şerh bulunan bir mülkü devretmek kısıtlıdır; bu durumda işlem öncesi borçların ödenmesi veya kaldırılması gerekir.
+            <span className="font-black">Önemli:</span> Tapu devri öncesinde taşınmazın üzerindeki ipotek, haciz veya şerhleri e-Devlet ya da tapu müdürlüğü aracılığıyla sorgulamayı unutmayın.
           </p>
         </section>
 
@@ -209,11 +166,11 @@ export default function TapuDevirRehberiPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {[
               { href: '/tapu-masrafi', label: 'Tapu Masrafı Hesaplayıcı' },
-              { href: '/ev-alma-rehberi', label: 'Ev Alma Rehberi' },
-              { href: '/satinalma-maliyeti', label: 'Satın Alma Maliyeti' },
+              { href: '/ilk-ev-alma-rehberi', label: 'İlk Ev Alma Rehberi' },
               { href: '/dask-hesaplayici', label: 'DASK Prim Hesaplayıcı' },
-              { href: '/konut-kredisi-basvuru', label: 'Konut Kredisi Başvurusu' },
-              { href: '/kat-mulkiyeti', label: 'Kat Mülkiyeti Rehberi' },
+              { href: '/sozlesme-iptal-cayma', label: 'Sözleşme İptal Rehberi' },
+              { href: '/konut-kredisi-simulatoru', label: 'Konut Kredisi Simülatörü' },
+              { href: '/hisseli-tapu', label: 'Hisseli Tapu Rehberi' },
             ].map(l => (
               <Link key={l.href} href={l.href}
                 className="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-[#F0FDF8] border border-transparent hover:border-[#00C49F]/20 transition-all group"
