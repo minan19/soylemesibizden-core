@@ -139,6 +139,7 @@ const CATEGORIES: Category[] = [
       { href: '/gayrimenkul-komisyoncusu', icon: Users, label: 'Komisyoncu Rehberi', desc: 'Seçim, komisyon, haklar, sözleşme', badge: 'Yeni' },
       { href: '/kat-karsiligi', icon: Building2, label: 'Kat Karşılığı Rehberi', desc: 'Pay oranları, sözleşme, riskler', badge: 'Yeni' },
       { href: '/sozlesme-iptal', icon: Scale, label: 'Sözleşme İptal ve Fesih', desc: 'Tazminat, ihtarname, hukuki süreç', badge: 'Yeni' },
+      { href: '/kira-endeksi', icon: TrendingUp, label: 'Kira Endeksi ve TÜFE', desc: '2024 aylık TÜFE, %25 tavan, yasal haklar', badge: 'Yeni' },
     ],
   },
   {
