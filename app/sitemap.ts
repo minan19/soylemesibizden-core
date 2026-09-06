@@ -283,6 +283,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/gayrimenkul-danismanlik-rehberi`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.78 },
     { url: `${baseUrl}/kira-borclanma-hesaplayici`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.82 },
     { url: `${baseUrl}/konut-alim-maliyeti`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.82 },
+    { url: `${baseUrl}/ankara-cankaya`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.88 },
+    { url: `${baseUrl}/gayrimenkul-sicil-sorgulama`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.80 },
   ];
 
   const listingPages: MetadataRoute.Sitemap = listings.map(l => ({
