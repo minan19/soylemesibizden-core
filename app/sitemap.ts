@@ -180,6 +180,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/yatirim-butce-hesaplayici`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.80 },
     { url: `${baseUrl}/emlak-danismani-secme`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.73 },
     { url: `${baseUrl}/fiyat-muzakere-stratejileri`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
+    { url: `${baseUrl}/kira-butce-planlayici`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.78 },
+    { url: `${baseUrl}/tadilat-maliyet-hesaplayici`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.78 },
   ];
 
   const listingPages: MetadataRoute.Sitemap = listings.map(l => ({
