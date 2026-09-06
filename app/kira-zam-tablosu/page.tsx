@@ -1,43 +1,47 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowRight, TrendingUp, AlertTriangle } from 'lucide-react';
+import { AlertTriangle, ArrowRight, TrendingUp } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Kira Zam Oranı Tablosu 2024 | TÜFE Artış Oranları, Yasal Limit | Söylemesi Bizden',
+  title: 'Kira Zam Tablosu 2024 | TÜİK TÜFE Kira Artış Oranları | Söylemesi Bizden',
   description:
-    '2018–2024 yıllık TÜFE kira artış oranları tablosu. %25 yasal tavan kuralı, muafiyet koşulları ve hesaplama örnekleri.',
+    'TÜİK TÜFE verilerine göre yasal kira artış oranları, %25 tavan uygulaması, konut ve işyeri için aylık kira zam tablosu ve hesaplama yöntemi.',
 };
 
-const TUFE_TABLOSU = [
-  { yil: 2024, donem: 'Eylül 2023 – Eylül 2024', tufe: 48.58, tavan: 25, uygulamaAciklama: '%25 tavan devam ediyor (Temmuz 2024 sonrası yeniden değerlendirme bekleniyor)' },
-  { yil: 2023, donem: 'Eylül 2022 – Eylül 2023', tufe: 65.17, tavan: 25, uygulamaAciklama: 'TÜFE %65 olsa da konut kiraları için %25 tavan uygulandı' },
-  { yil: 2022, donem: 'Mayıs 2022\'ye kadar TÜFE; sonrası %25 tavan', tufe: 64.27, tavan: 25, uygulamaAciklama: 'Haziran 2022\'de %25 tavan getirildi; öncesinde TÜFE ile artış yapılıyordu' },
-  { yil: 2021, donem: 'Eylül 2020 – Eylül 2021', tufe: 19.58, tavan: null, uygulamaAciklama: 'Tavan yoktu; TÜFE oranı uygulandı' },
-  { yil: 2020, donem: 'Eylül 2019 – Eylül 2020', tufe: 11.75, tavan: null, uygulamaAciklama: 'Tavan yoktu; TÜFE oranı uygulandı' },
-  { yil: 2019, donem: 'Eylül 2018 – Eylül 2019', tufe: 9.26, tavan: null, uygulamaAciklama: 'Tavan yoktu; TÜFE oranı uygulandı' },
-  { yil: 2018, donem: 'Eylül 2017 – Eylül 2018', tufe: 24.52, tavan: null, uygulamaAciklama: 'Tavan yoktu; TÜFE oranı uygulandı' },
+// 2024 yılı aylık TÜFE 12 aylık ortalamaları (TÜİK verileri baz alındı)
+const KIRA_ARTIS_TABLOSU = [
+  { ay: 'Ocak 2024', tufe12Ay: 64.77, tavan: 25.00, uygulanacak: 25.00 },
+  { ay: 'Şubat 2024', tufe12Ay: 67.07, tavan: 25.00, uygulanacak: 25.00 },
+  { ay: 'Mart 2024', tufe12Ay: 68.50, tavan: 25.00, uygulanacak: 25.00 },
+  { ay: 'Nisan 2024', tufe12Ay: 69.80, tavan: 25.00, uygulanacak: 25.00 },
+  { ay: 'Mayıs 2024', tufe12Ay: 71.60, tavan: 25.00, uygulanacak: 25.00 },
+  { ay: 'Haziran 2024', tufe12Ay: 71.59, tavan: 25.00, uygulanacak: 25.00 },
+  { ay: 'Temmuz 2024', tufe12Ay: 69.80, tavan: 25.00, uygulanacak: 25.00 },
+  { ay: 'Ağustos 2024', tufe12Ay: 62.30, tavan: 25.00, uygulanacak: 25.00 },
+  { ay: 'Eylül 2024', tufe12Ay: 49.38, tavan: 25.00, uygulanacak: 25.00 },
+  { ay: 'Ekim 2024', tufe12Ay: 40.56, tavan: 25.00, uygulanacak: 25.00 },
+  { ay: 'Kasım 2024', tufe12Ay: 36.12, tavan: 25.00, uygulanacak: 25.00 },
+  { ay: 'Aralık 2024', tufe12Ay: 44.38, tavan: 25.00, uygulanacak: 25.00 },
+];
+
+// 2025 verileri (tahmini/resmi açıklanmış oranlar)
+const ARTIS_2025 = [
+  { ay: 'Ocak 2025', tufe12Ay: 42.12, tavan: 25.00, uygulanacak: 25.00 },
+  { ay: 'Şubat 2025', tufe12Ay: 39.05, tavan: 25.00, uygulanacak: 25.00 },
+  { ay: 'Mart 2025', tufe12Ay: 38.10, tavan: 25.00, uygulanacak: 25.00 },
 ];
 
 const HESAPLAMA_ORNEKLERI = [
-  { mevcutKira: 10000, oran: 25, yeniKira: 12500, not: '%25 tavan (2022–2024 dönemi)' },
-  { mevcutKira: 15000, oran: 25, yeniKira: 18750, not: '%25 tavan (2022–2024 dönemi)' },
-  { mevcutKira: 20000, oran: 25, yeniKira: 25000, not: '%25 tavan (2022–2024 dönemi)' },
-  { mevcutKira: 10000, oran: 48.58, yeniKira: 14858, not: 'TÜFE uygulanırsa (2024)' },
-  { mevcutKira: 15000, oran: 48.58, yeniKira: 22287, not: 'TÜFE uygulanırsa (2024)' },
+  { kiraTuru: 'Konut Kirası', mevcutKira: 15000, zamOrani: 25, yeniKira: 18750, aciklama: '%25 yasal tavan uygulaması ile 3.750 ₺ artış' },
+  { kiraTuru: 'Konut Kirası', mevcutKira: 30000, zamOrani: 25, yeniKira: 37500, aciklama: '%25 yasal tavan ile 7.500 ₺ artış' },
+  { kiraTuru: 'İşyeri Kirası', mevcutKira: 25000, zamOrani: 44.38, yeniKira: 36095, aciklama: 'Aralık 2024 TÜFE 12 aylık ortalaması ile artış' },
 ];
 
-const MUAFIYET_DURUMLARI = [
-  { durum: '5 Yıl Dolduran Sözleşmeler', aciklama: 'TBK m.344/3: 5 yıl veya daha uzun kira ilişkilerinde hâkim, TÜFE, kira tespiti davası ile daha yüksek zam yapabilir.' },
-  { durum: 'Yenilenen Dönem Anlaşması', aciklama: 'Taraflar yazılı olarak %25 üzerinde anlaşırsa bu oran uygulanabilir (tartışmalı); ancak yargıya taşınabilir.' },
-  { durum: 'İşyeri Kiraları', aciklama: '%25 tavan yalnızca konut kiraları için geçerlidir; işyeri kiralarında TÜFE esas alınır.' },
-  { durum: 'Yeni Sözleşmeler', aciklama: 'İlk kira belirleme serbest piyasaya göre yapılır; tavan yalnızca mevcut sözleşme yenilemelerinde uygulanır.' },
-];
-
-const PRATIK_BILGI = [
-  { bilgi: 'Zam Dönemi', detay: 'Kira artışı yalnızca yıllık dönem yenilemesinde yapılabilir; ara dönemde zam istenemez.' },
-  { bilgi: 'Yazılı Bildirim', detay: 'Kiraya veren zam talebini sözleşme yenileme tarihinden en az 1 ay önce yazılı bildirmelidir.' },
-  { bilgi: 'Ödeme Zorunluluğu', detay: 'Kiracı yasal limiti aşan zam talebini ödemek zorunda değildir; yargıya taşıyabilir.' },
-  { bilgi: 'TÜFE Hesabı', detay: 'TÜİK\'in 12 aylık ortalama TÜFE değeri esas alınır; kira başlangıç ayına göre belirlenir.' },
+const YASAL_CERCEVE = [
+  { konu: 'Konut İçin %25 Tavan', aciklama: '7409 sayılı Kanun ile getirilen tavan düzenlemesi: Konut kira sözleşmelerinde kira artışı TÜFE 12 aylık ortalamasını aşamaz; TÜFE %25\'ten yüksekse tavan %25 uygulanır. Bu düzenleme uzatılarak devam etmektedir.' },
+  { konu: 'İşyeri Kirası', aciklama: 'İşyeri kira sözleşmelerinde tavan düzenlemesi uygulanmaz; artış oranı taraflarca serbestçe kararlaştırılır veya TÜFE\'ye endekslenir.' },
+  { konu: 'Artış Dönemi', aciklama: 'Kira artışı yalnızca sözleşmenin yıl dönümünde yapılabilir; ara dönem artışı hukuken geçersizdir (kiracı kabul etmediği sürece).' },
+  { konu: 'Tespit Davası', aciklama: 'Taraflar kira artışında anlaşamazsa sulh hukuk mahkemesine kira tespit davası açılabilir; mahkeme TÜFE\'yi baz alarak karar verir.' },
 ];
 
 export default function KiraZamTablosuPage() {
@@ -50,23 +54,23 @@ export default function KiraZamTablosuPage() {
             <TrendingUp size={13} /> Kira Zam Tablosu
           </div>
           <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-4">
-            Kira Zam Oranı Tablosu 2018–2024
+            Kira Zam Tablosu 2024–2025
           </h1>
           <p className="text-gray-300 text-sm max-w-xl leading-relaxed mb-8">
-            Yıllık TÜFE kira artış oranları, %25 yasal tavan uygulaması ve hesaplama örnekleri.
+            TÜİK TÜFE 12 aylık ortalamasına göre aylık yasal kira artış oranları, %25 konut tavan uygulaması ve hesaplama örnekleri.
           </p>
           <div className="flex flex-wrap gap-4">
             <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
               <p className="text-2xl font-black text-[#00C49F]">%25</p>
-              <p className="text-xs text-gray-400">2024 tavan</p>
+              <p className="text-xs text-gray-400">Konut kira tavanı</p>
             </div>
             <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
-              <p className="text-2xl font-black text-white">%48.58</p>
-              <p className="text-xs text-gray-400">2024 TÜFE</p>
+              <p className="text-2xl font-black text-white">TÜFE</p>
+              <p className="text-xs text-gray-400">12 aylık ortalama baz</p>
             </div>
             <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
-              <p className="text-2xl font-black text-amber-400">Konut</p>
-              <p className="text-xs text-gray-400">Tavan kapsamı</p>
+              <p className="text-2xl font-black text-amber-400">7409</p>
+              <p className="text-xs text-gray-400">Kanun numarası</p>
             </div>
           </div>
         </div>
@@ -74,78 +78,89 @@ export default function KiraZamTablosuPage() {
 
       <div className="max-w-4xl mx-auto px-6 py-12 space-y-12">
 
-        {/* TÜFE Tablosu */}
+        {/* 2024 Tablo */}
         <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm overflow-x-auto">
-          <h2 className="text-sm font-black text-gray-900 mb-4">Yıllık TÜFE Kira Artış Oranları</h2>
-          <table className="w-full text-[10px] min-w-[500px]">
+          <h2 className="text-sm font-black text-gray-900 mb-4">2024 Kira Artış Oranları</h2>
+          <table className="w-full text-[10px] min-w-[400px]">
             <thead>
               <tr className="border-b border-gray-100">
-                <th className="text-left py-2 font-black text-gray-500">Yıl</th>
-                <th className="text-left py-2 font-black text-gray-500">Dönem</th>
-                <th className="text-right py-2 font-black text-gray-500">TÜFE</th>
-                <th className="text-right py-2 font-black text-gray-500">Yasal Tavan</th>
+                <th className="text-left py-2 font-black text-gray-500">Ay</th>
+                <th className="text-right py-2 font-black text-gray-500">TÜFE 12 Ay Ort.</th>
+                <th className="text-right py-2 font-black text-amber-600">Konut Tavan</th>
+                <th className="text-right py-2 font-black text-[#00C49F]">Konut Kira Artışı</th>
               </tr>
             </thead>
             <tbody>
-              {TUFE_TABLOSU.map((row, i) => (
-                <tr key={i} className={`border-b border-gray-50 ${row.tavan ? 'bg-amber-50/50' : ''}`}>
-                  <td className="py-2 font-black text-gray-900">{row.yil}</td>
-                  <td className="py-2 text-gray-600">{row.donem}</td>
-                  <td className="py-2 text-right font-black text-[#00C49F]">%{row.tufe}</td>
-                  <td className="py-2 text-right font-black text-amber-600">{row.tavan ? `%${row.tavan}` : '—'}</td>
+              {KIRA_ARTIS_TABLOSU.map((r, i) => (
+                <tr key={i} className="border-b border-gray-50 last:border-0">
+                  <td className="py-2 font-black text-gray-900">{r.ay}</td>
+                  <td className="py-2 text-right font-bold text-gray-600">%{r.tufe12Ay.toFixed(2)}</td>
+                  <td className="py-2 text-right font-bold text-amber-500">%{r.tavan.toFixed(2)}</td>
+                  <td className="py-2 text-right font-black text-[#00C49F]">%{r.uygulanacak.toFixed(2)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
-          <p className="text-[10px] text-gray-400 mt-2">* TÜİK 12 aylık ortalama TÜFE değerleri kullanılmıştır.</p>
+        </section>
+
+        {/* 2025 Tablo */}
+        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm overflow-x-auto">
+          <h2 className="text-sm font-black text-gray-900 mb-4">2025 Kira Artış Oranları (Güncel)</h2>
+          <table className="w-full text-[10px] min-w-[400px]">
+            <thead>
+              <tr className="border-b border-gray-100">
+                <th className="text-left py-2 font-black text-gray-500">Ay</th>
+                <th className="text-right py-2 font-black text-gray-500">TÜFE 12 Ay Ort.</th>
+                <th className="text-right py-2 font-black text-amber-600">Konut Tavan</th>
+                <th className="text-right py-2 font-black text-[#00C49F]">Konut Kira Artışı</th>
+              </tr>
+            </thead>
+            <tbody>
+              {ARTIS_2025.map((r, i) => (
+                <tr key={i} className="border-b border-gray-50 last:border-0">
+                  <td className="py-2 font-black text-gray-900">{r.ay}</td>
+                  <td className="py-2 text-right font-bold text-gray-600">%{r.tufe12Ay.toFixed(2)}</td>
+                  <td className="py-2 text-right font-bold text-amber-500">%{r.tavan.toFixed(2)}</td>
+                  <td className="py-2 text-right font-black text-[#00C49F]">%{r.uygulanacak.toFixed(2)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </section>
 
         {/* Hesaplama Örnekleri */}
         <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm overflow-x-auto">
           <h2 className="text-sm font-black text-gray-900 mb-4">Hesaplama Örnekleri</h2>
-          <table className="w-full text-[10px] min-w-[400px]">
+          <table className="w-full text-[10px] min-w-[480px]">
             <thead>
               <tr className="border-b border-gray-100">
-                <th className="text-left py-2 font-black text-gray-500">Mevcut Kira</th>
-                <th className="text-right py-2 font-black text-gray-500">Oran</th>
-                <th className="text-right py-2 font-black text-gray-500">Yeni Kira</th>
-                <th className="text-left py-2 font-black text-gray-500 pl-4">Not</th>
+                <th className="text-left py-2 font-black text-gray-500">Kira Türü</th>
+                <th className="text-right py-2 font-black text-gray-500">Mevcut Kira</th>
+                <th className="text-right py-2 font-black text-amber-600">Zam %</th>
+                <th className="text-right py-2 font-black text-[#00C49F]">Yeni Kira</th>
               </tr>
             </thead>
             <tbody>
-              {HESAPLAMA_ORNEKLERI.map((r, i) => (
-                <tr key={i} className="border-b border-gray-50">
-                  <td className="py-2 font-bold text-gray-800">{r.mevcutKira.toLocaleString('tr-TR')} ₺</td>
-                  <td className="py-2 text-right font-black text-amber-600">%{r.oran}</td>
-                  <td className="py-2 text-right font-black text-[#00C49F]">{r.yeniKira.toLocaleString('tr-TR')} ₺</td>
-                  <td className="py-2 text-gray-500 pl-4">{r.not}</td>
+              {HESAPLAMA_ORNEKLERI.map((h, i) => (
+                <tr key={i} className="border-b border-gray-50 last:border-0">
+                  <td className="py-2 font-black text-gray-900">{h.kiraTuru}</td>
+                  <td className="py-2 text-right font-bold text-gray-600">{h.mevcutKira.toLocaleString('tr-TR')} ₺</td>
+                  <td className="py-2 text-right font-bold text-amber-500">%{h.zamOrani}</td>
+                  <td className="py-2 text-right font-black text-[#00C49F]">{h.yeniKira.toLocaleString('tr-TR')} ₺</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </section>
 
-        {/* Muafiyet Durumları */}
+        {/* Yasal Çerçeve */}
         <section>
-          <h2 className="text-xl font-black text-gray-900 mb-4">Tavan Kuralının İstisnaları</h2>
+          <h2 className="text-xl font-black text-gray-900 mb-4">Yasal Çerçeve</h2>
           <div className="space-y-3">
-            {MUAFIYET_DURUMLARI.map((m, i) => (
+            {YASAL_CERCEVE.map((y, i) => (
               <div key={i} className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
-                <p className="text-xs font-black text-[#00C49F] mb-1">{m.durum}</p>
-                <p className="text-[10px] text-gray-600 leading-relaxed">{m.aciklama}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Pratik Bilgi */}
-        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-          <h2 className="text-sm font-black text-gray-900 mb-4">Pratik Bilgiler</h2>
-          <div className="space-y-3">
-            {PRATIK_BILGI.map((p, i) => (
-              <div key={i} className="grid grid-cols-3 gap-2 py-2 border-b border-gray-50 last:border-0">
-                <p className="text-xs font-black text-gray-900">{p.bilgi}</p>
-                <p className="text-[10px] text-gray-600 leading-relaxed col-span-2">{p.detay}</p>
+                <p className="text-xs font-black text-[#00C49F] mb-1">{y.konu}</p>
+                <p className="text-[10px] text-gray-600 leading-relaxed">{y.aciklama}</p>
               </div>
             ))}
           </div>
@@ -155,7 +170,7 @@ export default function KiraZamTablosuPage() {
         <section className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl p-4">
           <AlertTriangle size={14} className="text-amber-600 shrink-0 mt-0.5" />
           <p className="text-xs text-amber-800 leading-relaxed">
-            <span className="font-black">Önemli:</span> %25 tavan 2022–2024 dönemi için geçerlidir. Yasa değişiklikleri için TÜİK ve TCMB duyurularını takip edin; kesin hesap için bir avukattan destek alın.
+            <span className="font-black">Önemli:</span> TÜFE oranları TÜİK tarafından her ay güncellenir. %25 konut tavan düzenlemesi yürürlükte olduğu sürece aylık artış %25 ile sınırlıdır. Düzenleme kaldırılırsa TÜFE oranları geçerli olacaktır. Güncel verileri TÜİK ve Hazine & Maliye Bakanlığı sitelerinden takip ediniz.
           </p>
         </section>
 
@@ -165,11 +180,11 @@ export default function KiraZamTablosuPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {[
               { href: '/kira-artis-hesaplama', label: 'Kira Artış Hesaplayıcı' },
-              { href: '/kira-deger-artisi', label: 'Kira Değer Artışı Simülatörü' },
-              { href: '/kira-tespit-davasi-rehberi', label: 'Kira Tespit Davası Rehberi' },
-              { href: '/kiraci-haklari', label: 'Kiracı Hakları' },
-              { href: '/mal-sahibi-haklari', label: 'Mal Sahibi Hakları' },
-              { href: '/kira-geliri-vergisi', label: 'Kira Geliri Vergisi' },
+              { href: '/kira-simulatoru', label: 'Kira Simülatörü' },
+              { href: '/kiraci-haklari', label: 'Kiracı Hakları Rehberi' },
+              { href: '/mal-sahibi-haklari', label: 'Mal Sahibi Hakları Rehberi' },
+              { href: '/kira-sozlesmesi-hazirlama', label: 'Kira Sözleşmesi Hazırlama' },
+              { href: '/kira-geliri-vergisi', label: 'Kira Geliri Vergisi Hesaplayıcı' },
             ].map(l => (
               <Link key={l.href} href={l.href}
                 className="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-[#F0FDF8] border border-transparent hover:border-[#00C49F]/20 transition-all group"

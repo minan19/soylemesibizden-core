@@ -1,50 +1,49 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowRight, TrendingUp, AlertTriangle, CheckCircle } from 'lucide-react';
+import { CheckCircle, AlertTriangle, ArrowRight, TrendingUp } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Gayrimenkul Yatırım Fonu (GYF) Rehberi | GYO, REIF | Söylemesi Bizden',
+  title: 'GYF ve GYO Rehberi | Gayrimenkul Yatırım Fonu ve Ortaklığı | Söylemesi Bizden',
   description:
-    'Gayrimenkul yatırım fonları (GYF) ve ortaklıkları (GYO) nedir? Nasıl yatırım yapılır? Avantajlar, riskler ve Türkiye pazarı hakkında kapsamlı rehber.',
+    'Gayrimenkul Yatırım Fonu (GYF) ve Gayrimenkul Yatırım Ortaklığı (GYO) nedir? BİST\'te nasıl yatırım yapılır, vergi avantajları ve getiri karşılaştırması.',
 };
 
-const GYF_GYO_FARKI = [
-  {
-    tur: 'Gayrimenkul Yatırım Ortaklığı (GYO)',
-    borsada: true,
-    aciklama: 'Borsada işlem gören şirket hisseleri. Taşınmaz varlıklar kiraya verilir; kira geliri ve değer artışı yatırımcıya yansır. İstanbul Menkul Kıymetler Borsası\'nda işlem görür.',
-    avantaj: 'Likidite yüksek, düşük sermaye, borsada anında alım-satım',
-    dezavantaj: 'Borsa dalgalanmasına açık; temettü garantisi yok',
-  },
-  {
-    tur: 'Gayrimenkul Yatırım Fonu (GYF)',
-    borsada: false,
-    aciklama: 'Nitelikli yatırımcılara satılan, Sermaye Piyasası Kurulu (SPK) tarafından yetkilendirilmiş portföy yönetim şirketlerince yönetilen fonlar.',
-    avantaj: 'Profesyonel yönetim, çeşitlendirme, vergi avantajları',
-    dezavantaj: 'Likidite düşük; genellikle 250.000 USD+ giriş eşiği',
-  },
+const GYF_GYO_KARSILASTIRMA = [
+  { kriter: 'Tanım', gyf: 'SPK lisanslı portföy yönetim şirketleri tarafından yönetilen kolektif yatırım aracı', gyo: 'BİST\'te halka açık, portföyünün en az %50\'si gayrimenkulden oluşan anonim şirket' },
+  { kriter: 'Yatırımcı Erişimi', gyf: 'Nitelikli yatırımcılara özel (min. 1 milyon ₺ portföy veya yeterlilik belgesi)', gyo: 'BİST\'te işlem gören hisse senedi; her yatırımcı alabilir' },
+  { kriter: 'Likidite', gyf: 'Düşük; fon bitiş tarihi veya geri alım penceresine göre', gyo: 'Yüksek; borsa saatlerinde anlık alım-satım imkânı' },
+  { kriter: 'Vergi', gyf: '%0 stopaj (kurumlar vergisinden muaf); temettü dağıtımında bireysel vergilendirme', gyo: 'Temettü %10 stopaj; hisse alım-satım kazancında %0 (halka açık)' },
+  { kriter: 'Getiri', gyf: 'Kira geliri + değer artışı; uzun vadeli sabit getiri hedefi', gyo: 'Temettü + hisse değer artışı; piyasa volatilitesine tabi' },
+  { kriter: 'Minimum Yatırım', gyf: 'Genellikle 100.000 ₺ ve üzeri (fona göre değişir)', gyo: 'Borsa lotunun fiyatı (birkaç yüz ₺\'den başlayabilir)' },
 ];
 
-const TURKIYE_GYO = [
-  { ad: 'Emlak Konut GYO', odak: 'Konut projeleri', temettüVerimi: '%2–4', aciklama: 'TOKİ ortaklığıyla sıfır konut projeleri geliştiren en büyük GYO.' },
-  { ad: 'Torunlar GYO', odak: 'AVM ve otel', temettüVerimi: '%1–3', aciklama: 'Alışveriş merkezi ve oteller odaklı ticari gayrimenkul portföyü.' },
-  { ad: 'Özak GYO', odak: 'Karma proje', temettüVerimi: '%1–3', aciklama: 'Konut, ofis ve ticari alanlar karma portföy.' },
-  { ad: 'Vakıf GYO', odak: 'Ofis ve lojistik', temettüVerimi: '%2–5', aciklama: 'Vakıfbank grubuna bağlı; ofis ve depo ağırlıklı.' },
-  { ad: 'Reysaş GYO', odak: 'Lojistik', temettüVerimi: '%3–6', aciklama: 'Türkiye\'nin en büyük lojistik gayrimenkul portföyü.' },
+const GYO_HAKKINDA = [
+  { baslik: 'BİST\'teki GYO\'lar', aciklama: 'Türkiye\'de 35+ GYO BİST\'te işlem görmektedir. En büyükleri: Emlak Konut GYO (EKGYO), Torunlar GYO (TRGYO), Yeni Gimat GYO (YGGYO) gibi şirketler.' },
+  { baslik: 'Portföy Yapısı', aciklama: 'GYO\'lar AVM, ofis binaları, lojistik merkezleri, konut projeleri ve otel gibi büyük ölçekli gayrimenkullere yatırım yapar.' },
+  { baslik: 'Temettü Zorunluluğu', aciklama: 'GYO\'lar, vergi muafiyeti avantajından yararlanabilmek için kar payının büyük bölümünü temettü olarak dağıtmak zorundadır.' },
+  { baslik: 'NAD (Net Aktif Değer)', aciklama: 'GYO\'ların portföy değeri genellikle halka açık şirket değerinden farklıdır; NAD iskontolu veya primli işlem görebilir.' },
 ];
 
-const YATIRIM_ADIM = [
-  { adim: 'Aracı Kurum Hesabı Açın', aciklama: 'GYO hissesi almak için Borsa İstanbul\'da işlem yapan bir aracı kurumda hesap gereklidir.' },
-  { adim: 'GYO Şirketlerini Araştırın', aciklama: 'KAP\'tan (Kamuyu Aydınlatma Platformu) finansal raporları inceleyin; net aktif değer (NAV) ve temettü geçmişini değerlendirin.' },
-  { adim: 'Portföy Değeri/Piyasa Değeri Farkı', aciklama: 'GYO hissesi NAV\'ın altında işlem görüyorsa iskontolu fırsat olabilir; üzerinde ise prim ödüyorsunuz.' },
-  { adim: 'Temettü Politikasını İnceleyin', aciklama: 'GYO\'lar yasal olarak belirli oranda kar dağıtmak zorundadır. Düzenli temettü geçmişi olan şirketleri tercih edin.' },
-  { adim: 'Çeşitlendirin', aciklama: 'Tek GYO\'ya yatırım yapmak yerine farklı sektörlere (konut, AVM, lojistik) yayılın.' },
+const YATIRIM_AVANTAJLARI = [
+  { avantaj: 'Düşük Sermayeyle Başlayın', aciklama: 'Büyük bir mülk almak için milyonlarca lira gerekirken, GYO hisseleriyle birkaç yüz lirayla gayrimenkule yatırım yapılabilir.' },
+  { avantaj: 'Çeşitlendirme', aciklama: 'Tek bir GYO birden fazla mülke yatırım yapar; doğrudan mülk sahipliğinin getirdiği tekil risk azalır.' },
+  { avantaj: 'Pasif Yönetim', aciklama: 'Kiracı bulmak, bakım yapmak ve tapu işlemleriyle uğraşmak gerekmez; profesyonel portföy yönetimi sizi bu yükten kurtarır.' },
+  { avantaj: 'Likidite', aciklama: 'Doğrudan mülk sahipliğinde satış aylar sürebilir; GYO hisseleri borsa saatlerinde anında satılabilir.' },
+  { avantaj: 'Şeffaflık', aciklama: 'SPK denetimi ve kamuyu aydınlatma yükümlülüğü ile portföy ve mali tablolara tam erişim sağlanır.' },
 ];
 
-const VERGI_BILGISI = [
-  { konu: 'GYO Temettüsü', oran: '%10 stopaj', aciklama: 'GYO\'dan alınan temettü üzerinden %10 oranında stopaj kesilir.' },
-  { konu: 'Hisse Değer Artışı', oran: '2 yıldan sonra muaf', aciklama: '2 yılı aşan GYO hisse tutumları değer artış kazancı vergisinden muaftır.' },
-  { konu: 'GYF Yatırım Kazancı', oran: 'SPK düzenlemesine göre', aciklama: 'GYF gelirleri fon türüne ve nitelikli yatırımcı statüsüne göre farklı vergilendirilir.' },
+const RISKLER = [
+  { risk: 'Piyasa Volatilitesi', aciklama: 'GYO hisseleri tüm borsa hisseleri gibi kısa vadeli dalgalanmalara tabidir; mülk fiyatlarındaki istikrar hisse fiyatına yansımayabilir.' },
+  { risk: 'Yönetim Kalitesi', aciklama: 'Portföy yönetim kalitesi şirketten şirkete büyük farklılık gösterir; seçmeden önce track record ve yönetim ekibini araştırın.' },
+  { risk: 'Kaldıraç Riski', aciklama: 'GYO\'lar kredi kullanarak mülk alabilir; yüksek borçluluk oranı faiz artışı dönemlerinde şirketi zora sokabilir.' },
+  { risk: 'NAD İskontosu', aciklama: 'Piyasa koşullarına bağlı olarak GYO hisseleri portföy değerinin altında işlem görebilir; bu iskonto uzun süre devam edebilir.' },
+];
+
+const PRATIK_BILGILER = [
+  { bilgi: 'GYO Karşılaştırması', detay: 'EKGYO, TRGYO, ISGYO gibi önde gelen GYO\'ların temettü verimi, NAD iskontosu ve P/D oranlarını kıyaslayarak karar verin.' },
+  { bilgi: 'Temettü Takvimi', detay: 'GYO\'lar genellikle yılda bir veya iki kez temettü dağıtır; yıllık temettü verimini mülk kira getirisine karşı kıyaslayın.' },
+  { bilgi: 'GYF Portföy Erişimi', detay: 'GYF\'lere erişmek için aracı kurum veya portföy yönetim şirketiyle iletişime geçin; nitelikli yatırımcı olup olmadığınızı sorgulayın.' },
+  { bilgi: 'Uzun Vade', detay: 'Gayrimenkul yatırımları doğası gereği uzun vadeli. GYO ve GYF\'lerde de 3–5 yıl ve üzeri yatırım ufuklarıyla değerlendirme yapmak önerilir.' },
 ];
 
 export default function GayrimenkulYatirimFonuRehberiPage() {
@@ -54,26 +53,26 @@ export default function GayrimenkulYatirimFonuRehberiPage() {
       <section className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
         <div className="max-w-4xl mx-auto px-6 py-16">
           <div className="inline-flex items-center gap-2 bg-[#00C49F]/20 border border-[#00C49F]/30 text-[#00C49F] text-xs font-bold px-4 py-1.5 rounded-full mb-5">
-            <TrendingUp size={13} /> GYF / GYO Rehberi
+            <TrendingUp size={13} /> GYF / GYO
           </div>
           <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-4">
             Gayrimenkul Yatırım Fonu ve Ortaklığı Rehberi
           </h1>
           <p className="text-gray-300 text-sm max-w-xl leading-relaxed mb-8">
-            GYO ve GYF aracılığıyla gayrimenkul yatırımının avantajları, Türkiye\'deki büyük oyuncular ve nasıl başlanır.
+            GYF ve GYO nedir, nasıl çalışır? BİST&apos;teki gayrimenkul yatırım araçları, vergi avantajları ve doğrudan mülk sahipliğiyle karşılaştırma.
           </p>
           <div className="flex flex-wrap gap-4">
             <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
-              <p className="text-2xl font-black text-[#00C49F]">BIST</p>
-              <p className="text-xs text-gray-400">GYO işlem yeri</p>
+              <p className="text-2xl font-black text-[#00C49F]">35+</p>
+              <p className="text-xs text-gray-400">BİST&apos;teki GYO sayısı</p>
             </div>
             <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
-              <p className="text-2xl font-black text-white">%10</p>
-              <p className="text-xs text-gray-400">Temettü stopajı</p>
+              <p className="text-2xl font-black text-white">%0</p>
+              <p className="text-xs text-gray-400">GYO alım-satım stopajı</p>
             </div>
             <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
-              <p className="text-2xl font-black text-amber-400">2 Yıl</p>
-              <p className="text-xs text-gray-400">Vergi muafiyeti</p>
+              <p className="text-2xl font-black text-amber-400">SPK</p>
+              <p className="text-xs text-gray-400">Denetleyici otorite</p>
             </div>
           </div>
         </div>
@@ -81,82 +80,78 @@ export default function GayrimenkulYatirimFonuRehberiPage() {
 
       <div className="max-w-4xl mx-auto px-6 py-12 space-y-12">
 
-        {/* GYF vs GYO */}
-        <section>
-          <h2 className="text-xl font-black text-gray-900 mb-4">GYO ve GYF Farkı</h2>
-          <div className="space-y-4">
-            {GYF_GYO_FARKI.map((g, i) => (
-              <div key={i} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
-                <div className="flex items-start justify-between mb-2">
-                  <p className="text-xs font-black text-gray-900">{g.tur}</p>
-                  <span className={`text-[10px] font-black px-2 py-0.5 rounded shrink-0 ${g.borsada ? 'bg-[#F0FDF8] text-[#00C49F]' : 'bg-amber-50 text-amber-600'}`}>
-                    {g.borsada ? 'Borsada İşlem Görür' : 'Nitelikli Yatırımcı'}
-                  </span>
-                </div>
-                <p className="text-[10px] text-gray-600 leading-relaxed mb-2">{g.aciklama}</p>
-                <div className="flex gap-4 text-[10px]">
-                  <span className="text-green-600">✓ {g.avantaj}</span>
-                </div>
-                <div className="flex gap-4 text-[10px] mt-1">
-                  <span className="text-rose-500">✗ {g.dezavantaj}</span>
-                </div>
-              </div>
-            ))}
-          </div>
+        {/* Karşılaştırma Tablosu */}
+        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm overflow-x-auto">
+          <h2 className="text-sm font-black text-gray-900 mb-4">GYF vs GYO Karşılaştırması</h2>
+          <table className="w-full text-[10px] min-w-[480px]">
+            <thead>
+              <tr className="border-b border-gray-100">
+                <th className="text-left py-2 font-black text-gray-500">Kriter</th>
+                <th className="text-left py-2 font-black text-[#00C49F]">GYF</th>
+                <th className="text-left py-2 font-black text-blue-500">GYO</th>
+              </tr>
+            </thead>
+            <tbody>
+              {GYF_GYO_KARSILASTIRMA.map((k, i) => (
+                <tr key={i} className="border-b border-gray-50 last:border-0">
+                  <td className="py-2 font-black text-gray-900 pr-2">{k.kriter}</td>
+                  <td className="py-2 text-gray-600 pr-2">{k.gyf}</td>
+                  <td className="py-2 text-gray-600">{k.gyo}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </section>
 
-        {/* Türkiye GYO'ları */}
+        {/* GYO Hakkında */}
         <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-          <h2 className="text-sm font-black text-gray-900 mb-4">Türkiye\'deki Büyük GYO\'lar</h2>
+          <h2 className="text-sm font-black text-gray-900 mb-4">GYO Hakkında Bilinmesi Gerekenler</h2>
           <div className="space-y-3">
-            {TURKIYE_GYO.map((g, i) => (
-              <div key={i} className="grid grid-cols-4 gap-2 py-2 border-b border-gray-50 last:border-0">
-                <div>
-                  <p className="text-xs font-black text-gray-900">{g.ad}</p>
-                  <p className="text-[10px] text-gray-500">{g.odak}</p>
-                </div>
-                <div className="col-span-2">
-                  <p className="text-[10px] text-gray-600 leading-relaxed">{g.aciklama}</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-xs font-black text-[#00C49F]">{g.temettüVerimi}</p>
-                  <p className="text-[10px] text-gray-400">Temettü</p>
-                </div>
-              </div>
-            ))}
-          </div>
-          <p className="text-[10px] text-gray-400 mt-2">* Temettü verimleri yıllık değişkendir; güncel veriler için KAP&apos;ı takip edin.</p>
-        </section>
-
-        {/* Yatırım Adımları */}
-        <section>
-          <h2 className="text-xl font-black text-gray-900 mb-4">GYO&apos;ya Nasıl Yatırım Yapılır?</h2>
-          <div className="space-y-3">
-            {YATIRIM_ADIM.map((a, i) => (
-              <div key={i} className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
-                <div className="flex items-start gap-2">
-                  <div className="w-5 h-5 rounded-full bg-[#00C49F] text-white text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">{i + 1}</div>
-                  <div>
-                    <p className="text-xs font-black text-gray-900">{a.adim}</p>
-                    <p className="text-[10px] text-gray-600 leading-relaxed mt-0.5">{a.aciklama}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Vergi Bilgisi */}
-        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-          <h2 className="text-sm font-black text-gray-900 mb-4 flex items-center gap-2">
-            <CheckCircle size={14} className="text-[#00C49F]" /> Vergi Bilgisi
-          </h2>
-          <div className="space-y-3">
-            {VERGI_BILGISI.map((v, i) => (
+            {GYO_HAKKINDA.map((g, i) => (
               <div key={i} className="grid grid-cols-3 gap-2 py-2 border-b border-gray-50 last:border-0">
-                <p className="text-xs font-black text-gray-900">{v.konu}</p>
-                <p className="text-xs font-black text-[#00C49F]">{v.oran}</p>
-                <p className="text-[10px] text-gray-600 leading-relaxed">{v.aciklama}</p>
+                <p className="text-xs font-black text-[#00C49F]">{g.baslik}</p>
+                <p className="text-[10px] text-gray-600 leading-relaxed col-span-2">{g.aciklama}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Avantajlar */}
+        <section>
+          <h2 className="text-xl font-black text-gray-900 mb-4">Yatırım Avantajları</h2>
+          <div className="space-y-3">
+            {YATIRIM_AVANTAJLARI.map((a, i) => (
+              <div key={i} className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
+                <p className="text-xs font-black text-[#00C49F] mb-1 flex items-center gap-2">
+                  <CheckCircle size={11} /> {a.avantaj}
+                </p>
+                <p className="text-[10px] text-gray-600 leading-relaxed ml-4">{a.aciklama}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Riskler */}
+        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+          <h2 className="text-sm font-black text-gray-900 mb-4">Riskler</h2>
+          <div className="space-y-3">
+            {RISKLER.map((r, i) => (
+              <div key={i} className="grid grid-cols-3 gap-2 py-2 border-b border-gray-50 last:border-0">
+                <p className="text-xs font-black text-rose-500">{r.risk}</p>
+                <p className="text-[10px] text-gray-600 leading-relaxed col-span-2">{r.aciklama}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Pratik Bilgiler */}
+        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+          <h2 className="text-sm font-black text-gray-900 mb-4">Pratik Bilgiler</h2>
+          <div className="space-y-3">
+            {PRATIK_BILGILER.map((p, i) => (
+              <div key={i} className="grid grid-cols-3 gap-2 py-2 border-b border-gray-50 last:border-0">
+                <p className="text-xs font-black text-[#00C49F]">{p.bilgi}</p>
+                <p className="text-[10px] text-gray-600 leading-relaxed col-span-2">{p.detay}</p>
               </div>
             ))}
           </div>
@@ -166,7 +161,7 @@ export default function GayrimenkulYatirimFonuRehberiPage() {
         <section className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl p-4">
           <AlertTriangle size={14} className="text-amber-600 shrink-0 mt-0.5" />
           <p className="text-xs text-amber-800 leading-relaxed">
-            <span className="font-black">Yatırım Riski:</span> GYO hisse fiyatları borsa koşullarına bağlıdır; geçmiş getiri gelecek performansı garanti etmez. Yatırım kararları için lisanslı yatırım danışmanından destek alın.
+            <span className="font-black">Önemli:</span> GYO ve GYF yatırımları anapara güvencesi içermez; piyasa değerleri düşebilir. Yatırım kararı vermeden önce SPK onaylı izahname ve kamuyu aydınlatma belgelerini inceleyin.
           </p>
         </section>
 
@@ -175,12 +170,12 @@ export default function GayrimenkulYatirimFonuRehberiPage() {
           <h3 className="text-sm font-bold text-gray-900 mb-4">İlgili Araçlar</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {[
-              { href: '/yatirim-analizi', label: 'Yatırım ROI Hesaplayıcı' },
+              { href: '/yatirim-analizi', label: 'Yatırım ROI Analizi' },
               { href: '/amortisman-hesaplayici', label: 'Amortisman Hesaplayıcı' },
-              { href: '/bolge-getiri-karsilastir', label: 'Bölge Getiri Karşılaştırması' },
-              { href: '/portfoy', label: 'Portföy Takip' },
-              { href: '/servet-birikimi-hesaplayici', label: 'Servet Birikimi Hesaplayıcı' },
-              { href: '/gayrimenkul-vergi-optimizasyon', label: 'Vergi Optimizasyon' },
+              { href: '/net-kira-hesaplayici', label: 'Net Kira Hesaplayıcı' },
+              { href: '/bolge-getiri-karsilastir', label: 'Bölge Getiri Karşılaştır' },
+              { href: '/rehber/yatirim-rehberi', label: 'Yatırım Rehberi' },
+              { href: '/piyasa', label: 'Türkiye Piyasa Verileri' },
             ].map(l => (
               <Link key={l.href} href={l.href}
                 className="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-[#F0FDF8] border border-transparent hover:border-[#00C49F]/20 transition-all group"
