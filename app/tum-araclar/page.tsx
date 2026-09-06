@@ -46,6 +46,7 @@ const CATEGORIES: Category[] = [
       { href: '/kira-mi-satin-mi', icon: Scale, label: 'Kira mı, Satın mı?', desc: '30 yıl projeksiyon karşılaştırma', badge: 'Yeni' },
       { href: '/pesinat-plani', icon: TrendingUp, label: 'Peşinat Birikim Planı', desc: 'Ne zaman ev alabilirim?', badge: 'Yeni' },
       { href: '/butce-planlayici', icon: Calculator, label: 'Bütçe Planlayıcı', desc: 'Ne kadar ev alabilirim?', badge: 'Yeni' },
+      { href: '/insaat-maliyeti', icon: Building2, label: 'İnşaat Maliyet Hesaplayıcı', desc: 'm² bazlı yapım maliyeti tahmini', badge: 'Yeni' },
       { href: '/aidat-hesaplayici', icon: Calculator, label: 'Aidat Hesaplayıcı', desc: 'Bina ortak gider paylaşımı', badge: 'Yeni' },
       { href: '/emlak-komisyonu', icon: Calculator, label: 'Emlak Komisyonu Hesapla', desc: 'Satıcı/alıcı komisyon + KDV', badge: 'Yeni' },
       { href: '/mortgage-simulatoru', icon: Calculator, label: 'Gelişmiş Mortgage Simülatörü', desc: 'Erken ödeme, refinansman analizi', badge: 'Yeni' },
