@@ -135,6 +135,7 @@ const CATEGORIES: Category[] = [
       { href: '/enerji-kimlik-belgesi', icon: ShieldCheck, label: 'Enerji Kimlik Belgesi (EKB)', desc: 'A\'dan G\'ye sınıflar, maliyet, yükseltme', badge: 'Yeni' },
       { href: '/kat-mulkiyeti', icon: Building2, label: 'Kat Mülkiyeti Rehberi', desc: 'İrtifak vs mülkiyet, dönüşüm, yönetim', badge: 'Yeni' },
       { href: '/deprem-riski', icon: ShieldCheck, label: 'Deprem Riski Rehberi', desc: 'Risk bölgeleri, DASK, yapı güvenliği', badge: 'Yeni' },
+      { href: '/gayrimenkul-komisyoncusu', icon: Users, label: 'Komisyoncu Rehberi', desc: 'Seçim, komisyon, haklar, sözleşme', badge: 'Yeni' },
     ],
   },
   {
