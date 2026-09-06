@@ -487,7 +487,16 @@ git push https://minan19:<GITHUB_TOKEN>@github.com/minan19/soylemesibizden-core.
 
 ---
 
-*Son güncelleme: 2026-08-14 — Oturum 9: FAZ 148-165 tamamlandı. Gayrimenkul sözlüğü (25 terim), satıcı rehberi, DASK hesaplayıcı, ödeme planı simülatörü, kira geliri vergisi, kredi karşılaştırma, kira mı satın mı (30 yıl projeksiyon). Toplam 40+ araç ve sayfa.*
+*Son güncelleme: 2026-09-06 — Oturum 10: FAZ 170-176 tamamlandı. Yabancı alıcı rehberi, konut sigortası, bütçe planlayıcı, kira getiri hesaplayıcı, enflasyon koruması, miras ve gayrimenkul, kira sözleşmesi rehberi. Toplam 55+ araç ve sayfa.*
+
+**Oturum 10 (FAZ 170-176) — Tamamlananlar:**
+- FAZ-170: Yabancı alıcı rehberi (/yabanci-gayrimenkul) — DAB, vatandaşlık yolu, oturma izni, vergi, ülkeler
+- FAZ-171: Konut sigortası rehberi (/konut-sigortasi) — DASK farkı, 8 kapsam türü, prim faktörleri, hasar süreci
+- FAZ-172: Bütçe planlayıcı (/butce-planlayici) — DTI hesabı, max konut fiyatı, nakit gereksinim analizi
+- FAZ-173: Kira getiri hesaplayıcı (/kira-getiri-hesaplayici) — brüt/net getiri, cap rate, 5 yıl projeksiyon
+- FAZ-174: Enflasyon koruması rehberi (/enflasyon-korumasi) — tarihsel veri, stratejiler, varlık karşılaştırması
+- FAZ-175: Miras ve gayrimenkul (/miras-ve-gayrimenkul) — veraset ilamı, tapu intikali, saklı pay, vergi dilimleri
+- FAZ-176: Kira sözleşmesi rehberi (/kira-sozlesmesi) — 10 zorunlu madde, depozito, kiracı/ev sahibi hakları
 
 **Oturum 6 (FAZ 79-88) — Tamamlananlar:**
 - FAZ-79: İlan şikayet sistemi — /api/reports + ReportListingButton modal
