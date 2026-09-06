@@ -108,6 +108,7 @@ const CATEGORIES: Category[] = [
       { href: '/kentsel-donusum', icon: Building2, label: 'Kentsel Dönüşüm Rehberi', desc: 'Haklar, süreç, 2/3 kuralı', badge: 'Yeni' },
       { href: '/yabanci-gayrimenkul', icon: Globe, label: 'Yabancı Alıcı Rehberi', desc: 'DAB, vatandaşlık, vergi', badge: 'Yeni' },
       { href: '/konut-sigortasi', icon: ShieldCheck, label: 'Konut Sigortası Rehberi', desc: 'Kapsam, prim faktörleri, hasar', badge: 'Yeni' },
+      { href: '/enflasyon-korumasi', icon: TrendingUp, label: 'Enflasyon Koruması', desc: 'Gayrimenkul ile enflasyon hedging', badge: 'Yeni' },
       { href: '/sss', icon: BookOpen, label: 'Sıkça Sorulan Sorular', desc: 'Tüm platform soruları' },
     ],
   },
