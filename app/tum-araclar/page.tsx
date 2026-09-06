@@ -110,6 +110,7 @@ const CATEGORIES: Category[] = [
       { href: '/konut-sigortasi', icon: ShieldCheck, label: 'Konut Sigortası Rehberi', desc: 'Kapsam, prim faktörleri, hasar', badge: 'Yeni' },
       { href: '/enflasyon-korumasi', icon: TrendingUp, label: 'Enflasyon Koruması', desc: 'Gayrimenkul ile enflasyon hedging', badge: 'Yeni' },
       { href: '/sss', icon: BookOpen, label: 'Sıkça Sorulan Sorular', desc: 'Tüm platform soruları' },
+      { href: '/miras-ve-gayrimenkul', icon: FileText, label: 'Miras ve Gayrimenkul', desc: 'Veraset, intikal, mirasçı hakları', badge: 'Yeni' },
     ],
   },
   {
