@@ -151,6 +151,7 @@ const CATEGORIES: Category[] = [
       { href: '/kira-sozlesmesi-ornegi', icon: FileText, label: 'Kira Sözleşmesi Örneği', desc: 'Zorunlu maddeler, örnek metinler, depozito', badge: 'Yeni' },
       { href: '/ortak-mulkiyet', icon: Users, label: 'Ortak Mülkiyet Rehberi', desc: 'Paylı, iştirak, şufa hakkı, izale', badge: 'Yeni' },
       { href: '/kentsel-donusum', icon: Building2, label: 'Kentsel Dönüşüm Rehberi', desc: 'Riskli yapı, 2/3 çoğunluk, kira yardımı', badge: 'Yeni' },
+      { href: '/yabanci-gayrimenkul', icon: Globe, label: 'Yabancı Alım Rehberi', desc: 'İzin, yasak bölge, vergi, vatandaşlık', badge: 'Yeni' },
     ],
   },
   {
