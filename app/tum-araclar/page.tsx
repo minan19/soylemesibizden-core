@@ -145,6 +145,7 @@ const CATEGORIES: Category[] = [
       { href: '/konut-kredisi-rehberi', icon: Home, label: 'Konut Kredisi Rehberi', desc: 'Şartlar, belgeler, banka karşılaştırması', badge: 'Yeni' },
       { href: '/gayrimenkul-yatirim-fonu', icon: TrendingUp, label: 'GYO ve GYF Rehberi', desc: 'Borsa GYO, temettü, direkt karşılaştırma', badge: 'Yeni' },
       { href: '/sehir-planlama', icon: MapPin, label: 'Şehir Planlama ve İmar', desc: 'TAKS, KAKS, ruhsat süreci, kaçak yapı', badge: 'Yeni' },
+      { href: '/tasinmaz-degerleme', icon: Scale, label: 'Taşınmaz Değerleme', desc: 'Emsal, gelir, maliyet, DCF yöntemleri', badge: 'Yeni' },
     ],
   },
   {
