@@ -53,7 +53,7 @@ const SUREC_ADIMLARI = [
   { adim: 'Yetkili Firma Seçimi', detay: 'Enerji Kimlik Belgesi düzenlemeye yetkili firma listesi Çevre, Şehircilik ve İklim Değişikliği Bakanlığı web sitesinden sorgulanabilir.' },
   { adim: 'Yerinde İnceleme', detay: 'Yetkili mühendis binayı inceler; ısıtma sistemi, yalıtım, pencere, aydınlatma ve mekanik sistemler değerlendirilir.' },
   { adim: 'Hesaplama ve Sınıf Belirleme', detay: 'Ulusal Bina Enerji Performansı Hesaplama Yöntemi (UBEPHesap) kullanılarak puan hesaplanır.' },
-  { adim: 'Belge Düzenleme', detay: 'Bakanlığın sistemine kayıt; A'dan G'ye sınıf belirtilir. Resmi mühür ve imza zorunlu.' },
+  { adim: 'Belge Düzenleme', detay: "Bakanlığın sistemine kayıt; A'dan G'ye sınıf belirtilir. Resmi mühür ve imza zorunlu." },
   { adim: 'Teslim', detay: 'Belge sahibine teslim. Geçerlilik süresi 10 yıl; büyük tadilat sonrası yenilenmelidir.' },
 ];
 
