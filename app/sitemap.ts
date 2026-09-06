@@ -321,6 +321,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/ev-alma-butce-rehberi`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.82 },
     { url: `${baseUrl}/antalya-alanya`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.88 },
     { url: `${baseUrl}/kiraci-haklari-korunmasi`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.85 },
+    { url: `${baseUrl}/istanbul-pendik`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.88 },
+    { url: `${baseUrl}/gayrimenkul-portfoy-cesitlendirme`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.80 },
   ];
 
   const listingPages: MetadataRoute.Sitemap = listings.map(l => ({
