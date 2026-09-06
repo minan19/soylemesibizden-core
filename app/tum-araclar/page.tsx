@@ -59,6 +59,7 @@ const CATEGORIES: Category[] = [
       { href: '/kira-getiri-hesaplayici', icon: TrendingUp, label: 'Kira Getiri Hesaplayıcı', desc: 'Brüt/net getiri, cap rate, geri ödeme', badge: 'Yeni' },
       { href: '/portfoy', icon: PieChart, label: 'Portföy Takibi', desc: 'Gayrimenkul portföy yönetimi', badge: 'Yeni' },
       { href: '/market-radar', icon: BarChart2, label: 'Piyasa Radarı', desc: 'Canlı piyasa analitik' },
+      { href: '/yatirim-bolgesi', icon: MapPin, label: 'En İyi Yatırım Bölgeleri', desc: '10 bölge analitik skorlama', badge: 'Yeni' },
       { href: '/karsilastir', icon: Scale, label: 'Bölge Karşılaştırma', desc: 'İki şehir/ilçeyi karşılaştır' },
     ],
   },

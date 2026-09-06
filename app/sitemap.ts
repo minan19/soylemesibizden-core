@@ -85,6 +85,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/tapu-devir-sureci`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.72 },
     { url: `${baseUrl}/aidat-hesaplayici`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 },
     { url: `${baseUrl}/faiz-takip`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.8 },
+    { url: `${baseUrl}/yatirim-bolgesi`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.78 },
   ];
 
   const listingPages: MetadataRoute.Sitemap = listings.map(l => ({
