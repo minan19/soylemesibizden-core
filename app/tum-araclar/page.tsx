@@ -60,6 +60,7 @@ const CATEGORIES: Category[] = [
       { href: '/satilik-ev-degeri', icon: Home, label: 'Ev Değeri Hesapla', desc: 'Şehir+m²+özellik bazlı tahmin', badge: 'Yeni' },
       { href: '/yatirim-analizi', icon: TrendingUp, label: 'Yatırım ROI Analizi', desc: 'Getiri, al/kirala, projeksiyon', badge: 'Yeni' },
       { href: '/kira-getiri-hesaplayici', icon: TrendingUp, label: 'Kira Getiri Hesaplayıcı', desc: 'Brüt/net getiri, cap rate, geri ödeme', badge: 'Yeni' },
+      { href: '/yatirim-npv', icon: TrendingUp, label: 'NBD / NPV Hesaplayıcı', desc: 'Net bugünkü değer ve IRR analizi', badge: 'Yeni' },
       { href: '/portfoy', icon: PieChart, label: 'Portföy Takibi', desc: 'Gayrimenkul portföy yönetimi', badge: 'Yeni' },
       { href: '/market-radar', icon: BarChart2, label: 'Piyasa Radarı', desc: 'Canlı piyasa analitik' },
       { href: '/yatirim-bolgesi', icon: MapPin, label: 'En İyi Yatırım Bölgeleri', desc: '10 bölge analitik skorlama', badge: 'Yeni' },
