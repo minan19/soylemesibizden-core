@@ -243,6 +243,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/ev-tadilat-rehberi`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.78 },
     { url: `${baseUrl}/kira-deger-artisi`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.82 },
     { url: `${baseUrl}/kira-butce-planlayici`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.83 },
+    { url: `${baseUrl}/enerji-kimlik-belgesi`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.76 },
+    { url: `${baseUrl}/kira-artis-hakki-hesaplayici`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.84 },
   ];
 
   const listingPages: MetadataRoute.Sitemap = listings.map(l => ({

@@ -1,256 +1,142 @@
 import { Metadata } from 'next';
-import Link from 'next/link';
-import {
-  ShieldCheck, CheckCircle, AlertTriangle, ArrowRight, Scale,
-} from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Enerji Kimlik Belgesi (EKB) Rehberi | A\'dan G\'ye Sınıflar, Maliyet | Söylemesi Bizden',
+  title: 'Enerji Kimlik Belgesi (EKB) Rehberi | A-G Sınıfı | Söylemesi Bizden',
   description:
-    'Enerji kimlik belgesi nedir, zorunlu mu? A\'dan G\'ye enerji sınıfları, satış ve kiralamada EKB şartı, yükseltme yöntemleri.',
+    'Enerji Kimlik Belgesi (EKB) nedir, nasıl alınır, A-G enerji sınıfları, yasal zorunluluklar ve EKB olmadan satış/kiralama riski.',
 };
 
-const ENERJI_SINIFLARI = [
-  { sinif: 'A+', renk: 'bg-green-700', metin: 'text-white', tuketim: '< 50 kWh/m²/yıl', aciklama: 'Neredeyse sıfır enerji binası (NZEB). Yenilenebilir enerji entegrasyonu zorunlu.' },
-  { sinif: 'A', renk: 'bg-green-600', metin: 'text-white', tuketim: '50–75 kWh/m²/yıl', aciklama: 'Pasif ev standardına yakın. Üst düzey yalıtım, verimli ısıtma sistemi.' },
-  { sinif: 'B', renk: 'bg-green-400', metin: 'text-gray-800', tuketim: '75–100 kWh/m²/yıl', aciklama: 'Yeni yapılar için minimum standart. Modern yalıtım ve çift cam sistemleri.' },
-  { sinif: 'C', renk: 'bg-yellow-400', metin: 'text-gray-800', tuketim: '100–150 kWh/m²/yıl', aciklama: 'Orta düzey enerji verimliliği. 2010+ yapılarda yaygın.' },
-  { sinif: 'D', renk: 'bg-orange-400', metin: 'text-white', tuketim: '150–200 kWh/m²/yıl', aciklama: 'Ortanın altı. Çoğu 2000\'li yıllar yapısı bu bandda yer alır.' },
-  { sinif: 'E', renk: 'bg-orange-600', metin: 'text-white', tuketim: '200–250 kWh/m²/yıl', aciklama: 'Yetersiz yalıtım. Isınma maliyeti yüksek; tadilat önerilir.' },
-  { sinif: 'F', renk: 'bg-red-500', metin: 'text-white', tuketim: '250–350 kWh/m²/yıl', aciklama: 'Eski yapı tipi. Isınma faturası çok yüksek; acil önlem gerekir.' },
-  { sinif: 'G', renk: 'bg-red-700', metin: 'text-white', tuketim: '> 350 kWh/m²/yıl', aciklama: 'En düşük enerji verimliliği. Yıkım veya kapsamlı yenileme gerekebilir.' },
+const EKB_SINIFLARI = [
+  { sinif: 'A+', renk: 'bg-emerald-600', aciklama: 'Çok Yüksek Verimli', kwh: '< 25 kWh/m²/yıl', ornek: 'Pasif ev standardı' },
+  { sinif: 'A', renk: 'bg-emerald-500', aciklama: 'Yüksek Verimli', kwh: '25–50 kWh/m²/yıl', ornek: 'Yeni inşaat minimum' },
+  { sinif: 'B', renk: 'bg-lime-500', aciklama: 'İyi', kwh: '51–100 kWh/m²/yıl', ornek: '2010 sonrası bina' },
+  { sinif: 'C', renk: 'bg-yellow-400', aciklama: 'Orta', kwh: '101–150 kWh/m²/yıl', ornek: '2000–2010 dönemi bina' },
+  { sinif: 'D', renk: 'bg-orange-400', aciklama: 'Düşük Verimli', kwh: '151–200 kWh/m²/yıl', ornek: '1990–2000 dönemi bina' },
+  { sinif: 'E', renk: 'bg-orange-500', aciklama: 'Verimsiz', kwh: '201–250 kWh/m²/yıl', ornek: '1980 öncesi eski bina' },
+  { sinif: 'F', renk: 'bg-red-400', aciklama: 'Çok Verimsiz', kwh: '251–350 kWh/m²/yıl', ornek: 'Yalıtımsız eski yapı' },
+  { sinif: 'G', renk: 'bg-red-600', aciklama: 'En Verimsiz', kwh: '> 350 kWh/m²/yıl', ornek: 'Yıkılması önerilen yapı' },
 ];
 
-const ZORUNLULUKLAR = [
-  {
-    durum: 'Satış İşlemleri',
-    zorunlu: true,
-    detay: '2017\'den itibaren tüm konut ve işyeri satışlarında EKB zorunlu. Tapuya eklenmesi gerekir.',
-  },
-  {
-    durum: 'Kira İşlemleri',
-    zorunlu: true,
-    detay: 'Kira sözleşmesinde EKB bilgisi belirtilmeli. İlan yayınlamada sınıf gösterimi zorunlu.',
-  },
-  {
-    durum: 'Yeni İnşaat',
-    zorunlu: true,
-    detay: 'İnşaat ruhsatı için enerji performans projesi sunulması şart; minimum B sınıfı hedeflenir.',
-  },
-  {
-    durum: 'Tadilat / Renovasyon',
-    zorunlu: false,
-    detay: 'Binada büyük çaplı tadilat yapılıyorsa EKB güncellenmesi gerekebilir.',
-  },
-  {
-    durum: 'Kamu Binaları',
-    zorunlu: true,
-    detay: 'Tüm kamu binaları 2023 itibarıyla EKB\'ye sahip olmak zorunda.',
-  },
+const NASIL_ALINIR = [
+  { adim: 1, baslik: 'Yetkili Enerji Uzmanı Bulun', aciklama: 'Çevre, Şehircilik ve İklim Değişikliği Bakanlığı lisanslı enerji uzmanlarından randevu alın.' },
+  { adim: 2, baslik: 'Bina Bilgilerini Hazırlayın', aciklama: 'Mimari proje, yapı ruhsatı, ısı yalıtım projesi, kullanılan yapı malzemeleri bilgileri gereklidir.' },
+  { adim: 3, baslik: 'Yerinde İnceleme', aciklama: 'Uzman binanın yalıtım kalitesini, ısıtma/soğutma sistemini ve pencere tipini yerinde değerlendirir.' },
+  { adim: 4, baslik: 'BEP-TR Yazılımı ile Hesaplama', aciklama: 'Standart enerji tüketimi hesabı resmi BEP-TR yazılımıyla yapılır.' },
+  { adim: 5, baslik: 'EKB Düzenlenir', aciklama: 'Belge 10 yıl geçerlidir; bakanlık sistemine kayıt yapılır ve karekodlu basılı belge teslim edilir.' },
 ];
 
-const SUREC_ADIMLARI = [
-  { adim: 'Yetkili Firma Seçimi', detay: 'Enerji Kimlik Belgesi düzenlemeye yetkili firma listesi Çevre, Şehircilik ve İklim Değişikliği Bakanlığı web sitesinden sorgulanabilir.' },
-  { adim: 'Yerinde İnceleme', detay: 'Yetkili mühendis binayı inceler; ısıtma sistemi, yalıtım, pencere, aydınlatma ve mekanik sistemler değerlendirilir.' },
-  { adim: 'Hesaplama ve Sınıf Belirleme', detay: 'Ulusal Bina Enerji Performansı Hesaplama Yöntemi (UBEPHesap) kullanılarak puan hesaplanır.' },
-  { adim: 'Belge Düzenleme', detay: "Bakanlığın sistemine kayıt; A'dan G'ye sınıf belirtilir. Resmi mühür ve imza zorunlu." },
-  { adim: 'Teslim', detay: 'Belge sahibine teslim. Geçerlilik süresi 10 yıl; büyük tadilat sonrası yenilenmelidir.' },
+const YASAL_ZORUNLULUK = [
+  { baslik: 'Satışta Zorunlu', aciklama: '2023 yılı itibarıyla 500 m² üzeri veya 4+ bağımsız bölümlü binalarda satış için EKB zorunludur.' },
+  { baslik: 'Kiralamada Zorunlu', aciklama: 'Konut ve işyeri kiralamaları için EKB sunulması gereklidir; olmadan kira sözleşmesi geçerliliği tartışmalı olabilir.' },
+  { baslik: 'Yeni İnşaatlarda Zorunlu', aciklama: 'Ruhsat başvurularında enerji verimliliği projesi sunulması şarttır; C sınıfının altında ruhsat verilmez.' },
+  { baslik: 'İdari Para Cezası', aciklama: 'EKB olmadan satış veya kiralama yapanlara 5.000 ₺ ile 50.000 ₺ arasında idari para cezası uygulanabilir.' },
 ];
 
-const YUKSELTME_YOLLARI = [
-  { yontem: 'Dış Cephe Yalıtımı', beklenenKazanim: '1–2 sınıf', maliyet: '500–1.500 ₺/m²', sure: '2–4 hafta' },
-  { yontem: 'Çift / Üçlü Cam', beklenenKazanim: '0.5–1 sınıf', maliyet: '3.000–8.000 ₺/pencere', sure: '1–2 gün/pencere' },
-  { yontem: 'Yoğuşmalı Kombi', beklenenKazanim: '0.5–1 sınıf', maliyet: '15.000–35.000 ₺', sure: '1–2 gün' },
-  { yontem: 'Isı Pompası', beklenenKazanim: '1–2 sınıf', maliyet: '80.000–200.000 ₺', sure: '3–5 gün' },
-  { yontem: 'Çatı / Tavan Yalıtımı', beklenenKazanim: '0.5–1 sınıf', maliyet: '200–600 ₺/m²', sure: '1–3 gün' },
-  { yontem: 'Güneş Enerjisi Paneli', beklenenKazanim: '1–2 sınıf', maliyet: '150.000–400.000 ₺', sure: '2–3 gün kurulum' },
+const VERIMLILIK_ARTIRMA = [
+  { onlem: 'Dış Cephe Yalıtımı', tasarruf: '%20–35', maliyet: 'Orta-Yüksek', getiri: '5–8 yıl' },
+  { onlem: 'Çift Camlı PVC Pencere', tasarruf: '%15–25', maliyet: 'Orta', getiri: '4–6 yıl' },
+  { onlem: 'Kombi / Isı Pompası Yenileme', tasarruf: '%15–30', maliyet: 'Orta', getiri: '5–7 yıl' },
+  { onlem: 'Çatı ve Tavan Yalıtımı', tasarruf: '%10–20', maliyet: 'Düşük-Orta', getiri: '3–5 yıl' },
+  { onlem: 'LED Aydınlatmaya Geçiş', tasarruf: '%5–10', maliyet: 'Düşük', getiri: '1–2 yıl' },
+  { onlem: 'Güneş Enerjisi (PV Panel)', tasarruf: '%25–60', maliyet: 'Yüksek', getiri: '7–12 yıl' },
 ];
-
-const EKONOMIK_ETKI = [
-  { sinif: 'A', aylikIsitmaTahmini: 400, yillikTasarruf: null },
-  { sinif: 'B', aylikIsitmaTahmini: 600, yillikTasarruf: 2400 },
-  { sinif: 'C', aylikIsitmaTahmini: 900, yillikTasarruf: 3600 },
-  { sinif: 'D', aylikIsitmaTahmini: 1300, yillikTasarruf: 4800 },
-  { sinif: 'E', aylikIsitmaTahmini: 1800, yillikTasarruf: 6000 },
-  { sinif: 'F', aylikIsitmaTahmini: 2500, yillikTasarruf: 8400 },
-  { sinif: 'G', aylikIsitmaTahmini: 3500, yillikTasarruf: 12000 },
-];
-
-const fmt = (n: number) => n.toLocaleString('tr-TR');
 
 export default function EnerjiKimlikBelgesiPage() {
   return (
     <main className="min-h-screen bg-[#F8FAFC]">
-
-      {/* Hero */}
       <section className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
-        <div className="max-w-4xl mx-auto px-6 py-16">
-          <div className="inline-flex items-center gap-2 bg-[#00C49F]/20 border border-[#00C49F]/30 text-[#00C49F] text-xs font-bold px-4 py-1.5 rounded-full mb-5">
-            <ShieldCheck size={13} /> EKB Rehberi
-          </div>
-          <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-4">
-            Enerji Kimlik Belgesi (EKB)
-          </h1>
-          <p className="text-gray-300 text-sm max-w-xl leading-relaxed mb-8">
-            A'dan G'ye enerji sınıfları, zorunluluklar, belgeleme süreci ve enerji verimliliğini artırma yolları.
+        <div className="max-w-4xl mx-auto px-6 py-14">
+          <p className="text-[#00C49F] text-xs font-bold mb-3 uppercase tracking-widest">Yasal Rehber</p>
+          <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-3">Enerji Kimlik Belgesi (EKB)</h1>
+          <p className="text-gray-300 text-sm max-w-xl leading-relaxed">
+            EKB nedir, nasıl alınır, A-G sınıfları ne anlama gelir ve satış/kiralamada nasıl zorunluluk oluşturur?
           </p>
-          <div className="flex flex-wrap gap-4">
-            <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
-              <p className="text-2xl font-black text-[#00C49F]">10 Yıl</p>
-              <p className="text-xs text-gray-400">Geçerlilik süresi</p>
-            </div>
-            <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
-              <p className="text-2xl font-black text-white">A+ → G</p>
-              <p className="text-xs text-gray-400">8 enerji sınıfı</p>
-            </div>
-            <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
-              <p className="text-2xl font-black text-amber-400">2017</p>
-              <p className="text-xs text-gray-400">Satışta zorunluluk</p>
-            </div>
-          </div>
         </div>
       </section>
 
-      <div className="max-w-4xl mx-auto px-6 py-12 space-y-12">
+      <div className="max-w-4xl mx-auto px-4 py-10 space-y-10">
 
-        {/* Enerji Sınıfları */}
-        <section>
-          <h2 className="text-xl font-black text-gray-900 mb-4">Enerji Sınıfları</h2>
+        {/* EKB Sınıfları */}
+        <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+          <h2 className="text-base font-black text-gray-900 mb-1">Enerji Sınıfları (A–G)</h2>
+          <p className="text-xs text-gray-400 mb-5">Her sınıf yıllık birim enerji tüketimine (kWh/m²) göre belirlenir.</p>
           <div className="space-y-2">
-            {ENERJI_SINIFLARI.map((s, i) => (
-              <div key={i} className="bg-white rounded-xl border border-gray-100 p-3 shadow-sm flex items-center gap-4">
-                <div className={`${s.renk} ${s.metin} text-sm font-black w-10 h-10 rounded-lg flex items-center justify-center shrink-0`}>
-                  {s.sinif}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-0.5">
-                    <p className="text-xs font-black text-gray-900">{s.tuketim}</p>
-                  </div>
-                  <p className="text-[10px] text-gray-600 leading-relaxed">{s.aciklama}</p>
+            {EKB_SINIFLARI.map((s) => (
+              <div key={s.sinif} className="flex items-center gap-3">
+                <span className={`${s.renk} text-white font-black text-xs w-8 h-8 flex items-center justify-center rounded-lg shrink-0`}>{s.sinif}</span>
+                <div className="flex-1">
+                  <p className="text-xs font-black text-gray-900">{s.aciklama}</p>
+                  <p className="text-[10px] text-gray-400">{s.kwh} — {s.ornek}</p>
                 </div>
               </div>
             ))}
           </div>
-        </section>
+        </div>
 
-        {/* Zorunluluklar */}
-        <section>
-          <h2 className="text-xl font-black text-gray-900 mb-4">EKB Zorunluluğu Ne Zaman?</h2>
-          <div className="space-y-3">
-            {ZORUNLULUKLAR.map((z, i) => (
-              <div key={i} className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm flex items-start gap-3">
-                <div className={`text-[10px] font-black px-2 py-1 rounded-lg shrink-0 ${z.zorunlu ? 'bg-rose-100 text-rose-600' : 'bg-gray-100 text-gray-500'}`}>
-                  {z.zorunlu ? 'ZORUNLU' : 'OPSİYONEL'}
-                </div>
+        {/* Nasıl Alınır */}
+        <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+          <h2 className="text-base font-black text-gray-900 mb-1">EKB Nasıl Alınır?</h2>
+          <p className="text-xs text-gray-400 mb-5">5 adımda EKB başvuru ve düzenleme süreci.</p>
+          <div className="space-y-4">
+            {NASIL_ALINIR.map((a) => (
+              <div key={a.adim} className="flex gap-3">
+                <span className="w-6 h-6 rounded-full bg-[#00C49F] text-white text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">{a.adim}</span>
                 <div>
-                  <p className="text-xs font-black text-gray-900 mb-0.5">{z.durum}</p>
-                  <p className="text-[10px] text-gray-600 leading-relaxed">{z.detay}</p>
+                  <p className="text-xs font-black text-gray-900 mb-0.5">{a.baslik}</p>
+                  <p className="text-[11px] text-gray-500 leading-relaxed">{a.aciklama}</p>
                 </div>
               </div>
             ))}
           </div>
-        </section>
+        </div>
 
-        {/* Süreç */}
-        <section>
-          <h2 className="text-xl font-black text-gray-900 mb-4">Belgeleme Süreci</h2>
-          <div className="space-y-3">
-            {SUREC_ADIMLARI.map((s, i) => (
-              <div key={i} className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm flex items-start gap-3">
-                <div className="bg-[#F0FDF8] text-[#00C49F] text-[10px] font-black px-2 py-1 rounded-lg shrink-0">{i + 1}</div>
-                <div>
-                  <p className="text-xs font-black text-gray-900 mb-0.5">{s.adim}</p>
-                  <p className="text-[10px] text-gray-600 leading-relaxed">{s.detay}</p>
-                </div>
+        {/* Yasal Zorunluluk */}
+        <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+          <h2 className="text-base font-black text-gray-900 mb-1">Yasal Zorunluluklar</h2>
+          <p className="text-xs text-gray-400 mb-5">EKB olmadan satış veya kiralama yapmanın riskleri.</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {YASAL_ZORUNLULUK.map((z, i) => (
+              <div key={i} className="border border-gray-100 rounded-xl p-4">
+                <p className="text-xs font-black text-gray-900 mb-1">{z.baslik}</p>
+                <p className="text-[11px] text-gray-500 leading-relaxed">{z.aciklama}</p>
               </div>
             ))}
           </div>
-        </section>
+        </div>
 
-        {/* Yükseltme Yolları */}
-        <section>
-          <h2 className="text-xl font-black text-gray-900 mb-4">Enerji Sınıfı Yükseltme Yolları</h2>
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-            <table className="w-full text-xs">
-              <thead className="bg-gray-50 border-b border-gray-100">
-                <tr>
-                  <th className="text-left px-4 py-3 font-black text-gray-700">Yöntem</th>
-                  <th className="text-left px-4 py-3 font-black text-gray-700">Kazanım</th>
-                  <th className="text-left px-4 py-3 font-black text-gray-500">Maliyet</th>
-                  <th className="text-left px-4 py-3 font-black text-gray-400">Süre</th>
+        {/* Enerji Verimliliği Önlemleri */}
+        <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm overflow-x-auto">
+          <h2 className="text-base font-black text-gray-900 mb-1">Enerji Verimliliği Önlemleri</h2>
+          <p className="text-xs text-gray-400 mb-5">Daha iyi EKB sınıfı için uygulanabilir önlemler ve tahmini geri dönüş süreleri.</p>
+          <table className="w-full text-[10px] min-w-[420px]">
+            <thead>
+              <tr className="border-b border-gray-100">
+                <th className="text-left py-2 font-black text-gray-500">Önlem</th>
+                <th className="text-center py-2 font-black text-gray-500">Enerji Tasarrufu</th>
+                <th className="text-center py-2 font-black text-gray-500">Maliyet</th>
+                <th className="text-right py-2 font-black text-[#00C49F]">Geri Dönüş</th>
+              </tr>
+            </thead>
+            <tbody>
+              {VERIMLILIK_ARTIRMA.map((v, i) => (
+                <tr key={i} className="border-b border-gray-50 last:border-0">
+                  <td className="py-2 font-black text-gray-900">{v.onlem}</td>
+                  <td className="py-2 text-center font-bold text-emerald-600">{v.tasarruf}</td>
+                  <td className="py-2 text-center font-bold text-gray-600">{v.maliyet}</td>
+                  <td className="py-2 text-right font-black text-[#00C49F]">{v.getiri}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {YUKSELTME_YOLLARI.map((y, i) => (
-                  <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                    <td className="px-4 py-3 font-bold text-gray-800">{y.yontem}</td>
-                    <td className="px-4 py-3 text-[#00C49F] font-bold">{y.beklenenKazanim}</td>
-                    <td className="px-4 py-3 text-gray-600">{y.maliyet}</td>
-                    <td className="px-4 py-3 text-gray-500">{y.sure}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
-        {/* Ekonomik Etki */}
-        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-          <h2 className="text-sm font-black text-gray-900 mb-4 flex items-center gap-2">
-            <CheckCircle size={14} className="text-[#00C49F]" /> Tahmini Isıtma Maliyeti (100 m² Konut)
-          </h2>
-          <div className="space-y-2">
-            {EKONOMIK_ETKI.map((e, i) => {
-              const maxAylik = 3500;
-              return (
-                <div key={i} className="flex items-center gap-3">
-                  <div className={`text-[10px] font-black w-6 text-center ${i === 0 ? 'text-green-600' : i <= 2 ? 'text-amber-600' : 'text-rose-500'}`}>{e.sinif}</div>
-                  <div className="flex-1 bg-gray-100 rounded-full h-4 overflow-hidden">
-                    <div
-                      className="h-full rounded-full"
-                      style={{
-                        width: `${(e.aylikIsitmaTahmini / maxAylik) * 100}%`,
-                        backgroundColor: i === 0 ? '#16a34a' : i === 1 ? '#22c55e' : i === 2 ? '#f59e0b' : i === 3 ? '#f97316' : i === 4 ? '#ef4444' : '#dc2626',
-                      }}
-                    />
-                  </div>
-                  <span className="text-[10px] text-gray-600 w-20 text-right">₺{fmt(e.aylikIsitmaTahmini)}/ay</span>
-                </div>
-              );
-            })}
-          </div>
-          <p className="text-[10px] text-gray-400 mt-3">Tahmini değerler; gerçek fatura ikliim, konum ve kullanım alışkanlığına göre değişir.</p>
-        </section>
-
-        {/* Warning */}
-        <section className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl p-4">
-          <AlertTriangle size={14} className="text-amber-600 shrink-0 mt-0.5" />
-          <p className="text-xs text-amber-800 leading-relaxed">
-            <span className="font-black">Önemli:</span> EKB olmadan tapu işlemi ve kira sözleşmesi yapılamaz. Satın aldığınız mülkün EKB sınıfını tapu devri öncesinde mutlaka kontrol edin; düşük sınıf hem enerji maliyeti hem de yeniden satışta dezavantaj yaratır.
+        {/* Info box */}
+        <div className="bg-blue-50 border border-blue-100 rounded-2xl p-5">
+          <p className="text-xs font-black text-blue-700 mb-1">📋 EKB Maliyeti</p>
+          <p className="text-[11px] text-blue-600 leading-relaxed">
+            Konutlarda EKB düzenleme ücreti bağımsız bölüm başına ortalama <strong>3.000–8.000 ₺</strong> arasındadır. Ticari yapılarda alan ve karmaşıklığa göre değişir. Bakanlık lisanslı uzman listesine Çevre, Şehircilik ve İklim Değişikliği Bakanlığı web sitesinden ulaşabilirsiniz.
           </p>
-        </section>
-
-        {/* Related */}
-        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-          <h3 className="text-sm font-bold text-gray-900 mb-4">İlgili Rehberler</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {[
-              { href: '/kentsel-donusum', label: 'Kentsel Dönüşüm Rehberi' },
-              { href: '/konut-sigortasi', label: 'Konut Sigortası Rehberi' },
-              { href: '/tapu-devir-sureci', label: 'Tapu Devir Süreci' },
-              { href: '/deprem-riski', label: 'Deprem Riski Rehberi' },
-              { href: '/ekspertiz-raporu', label: 'Ekspertiz Raporu' },
-              { href: '/imar-durumu', label: 'İmar Durumu Rehberi' },
-            ].map(l => (
-              <Link key={l.href} href={l.href}
-                className="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-[#F0FDF8] border border-transparent hover:border-[#00C49F]/20 transition-all group"
-              >
-                <ArrowRight size={12} className="text-gray-300 group-hover:text-[#00C49F] transition-colors shrink-0" />
-                <span className="text-xs text-gray-700 group-hover:text-[#00C49F] font-medium transition-colors">{l.label}</span>
-              </Link>
-            ))}
-          </div>
-        </section>
+        </div>
 
       </div>
     </main>
