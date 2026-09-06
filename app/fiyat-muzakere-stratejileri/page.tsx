@@ -1,216 +1,197 @@
 import { Metadata } from 'next';
-import Link from 'next/link';
-import { TrendingDown, CheckCircle, AlertTriangle, ArrowRight } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Emlak Fiyat Müzakere Stratejileri 2024 | İndirim Alma Teknikleri | Söylemesi Bizden',
+  title: 'Fiyat Müzakere Stratejileri | Gayrimenkulde Pazarlık | Söylemesi Bizden',
   description:
-    'Gayrimenkul alımında fiyat müzakeresi: emsal analizi, teklif stratejileri, satıcı psikolojisi ve hata kaçınma rehberi.',
+    'Gayrimenkul alım satımında etkili fiyat müzakere teknikleri: piyasa analizi, pazarlık taktikleri, alıcı ve satıcı stratejileri, yasal haklar.',
 };
 
-const HAZIRLIK_ADIMLARI = [
+const ALICI_STRATEJILERI = [
   {
-    adim: 'Emsal Araştırması Yapın',
-    detay: 'Son 3–6 aydaki benzer mülk satış fiyatlarını toplayın. Aynı bina, semt ve oda sayısı kombinasyonu için en az 3–5 emsal bulun. Bu veriler somut bir müzakere zemini oluşturur.',
+    baslik: 'Piyasa Araştırması Yapın',
+    aciklama: 'Benzer ilanları inceleyin, ortalama ₺/m² değeri hesaplayın. Gerçek piyasa verisi olmadan müzakere zayıf kalır.',
+    ipucu: 'Son 3 ayda aynı mahallede satılan ilanların ortalama fiyatını referans alın.',
   },
   {
-    adim: 'Mülkün Eksikliklerini Listeleyin',
-    detay: 'Kat, cephe, tadilat ihtiyacı, yaş, aidat, yönetim kalitesi, ulaşım mesafesi gibi faktörleri puanlayın. Her eksiklik indirim gerekçesidir.',
+    baslik: 'İlanın Piyasada Kalma Süresini Araştırın',
+    aciklama: 'Uzun süredir satılmayan ilanlar, satıcının daha esnek olduğuna işaret eder. 90+ gün ilanlar için %10-15 indirim talebi makuldür.',
+    ipucu: 'Portaldaki ilan tarihini not edin; danışmandan da ilan geçmişini sorabilirsiniz.',
   },
   {
-    adim: 'Maksimum Bütçenizi Bilin',
-    detay: 'Müzakerede "biraz daha verebilirim" havası yaratmak sizi zayıf konuma sokar. İç sınırınızı baştan belirleyin ve aşmayın.',
+    baslik: 'Eksiklikleri Belgeleyin',
+    aciklama: 'Tadilat gerektiren noktalar, eski tesisat, izinsiz yapılar — bunların maliyeti pazarlık kozu olur. Önce hesaplayıcıdan maliyet çıkarın.',
+    ipucu: 'Teklifinize "tespit edilen tadilat maliyeti" olarak belgelenmiş bir rakam ekleyin.',
   },
   {
-    adim: 'Satıcının Motivasyonunu Araştırın',
-    detay: 'İlanlık süre, taşınma tarihi, çoklu mülk, boş konut, miras gibi faktörler satıcıyı esnek yapar. Danışmana sorularla öğrenin.',
+    baslik: 'Alternatif Tekliflerden Bahsedin',
+    aciklama: 'Bakılan başka ilanlar olduğunu ima etmek, satıcıyı hızlı karar almaya yönlendirir. Somut olmayan tehditler işe yaramaz.',
+    ipucu: 'Gerçekten alternatif taşınmazlar bulundurun; yüzü kızarmadan söyleyebildiğiniz bir koz çok daha güçlüdür.',
   },
   {
-    adim: 'BATNA\'nızı Belirleyin',
-    detay: 'En İyi Alternatif (BATNA): bu mülk olmasa ne yaparsınız? Alternatif seçeneğiniz güçlüyse müzakerede daha etkili olursunuz.',
-  },
-];
-
-const TEKLIF_STRATEJILERI = [
-  {
-    strateji: 'Düşük Açılış Teklifi',
-    ne_zaman: 'Mülk uzun süre satılmamışsa (60+ gün)',
-    nasil: 'İstenen fiyatın %10–15 altından başlayın. Gerçekçi bir alt sınır; çok düşük açılış satıcıyı müzakereden kaçırır.',
-    risk: 'Satıcıyı incitebilir; iyi niyetli görünmek önemli',
+    baslik: 'Nakit veya Hızlı Kapanış Teklif Edin',
+    aciklama: 'Peşin ödeme veya kısa kapanış süresi, satıcı için büyük avantajdır. Bunu karşılığında indirim talep edebilirsiniz.',
+    ipucu: '30 gün içinde tapu — bu koşul çoğu satıcı için fiyat indiriminin yerini alır.',
   },
   {
-    strateji: 'Çabuk Kapanma Teklifi',
-    ne_zaman: 'Satıcı hızlı nakit arıyorsa',
-    nasil: '"10 gün içinde tapuya girebiliriz, belgeler hazır" mesajı fiyat konusunda esneklik yaratır.',
-    risk: 'Süreç gecikirse güven kaybı; sadece gerçekten yapabilirseniz teklif edin',
-  },
-  {
-    strateji: 'Koşullu Teklif',
-    ne_zaman: 'Kredi onayı veya tadilat gerektiren durumlarda',
-    nasil: '"Tadilat maliyeti düşüldüğünde X fiyat önerim var" şeklinde somut gerekçe sunun.',
-    risk: 'Satıcının başka teklife açık kalması; hızlı yanıt almanız gerekir',
-  },
-  {
-    strateji: 'Karşı Teklif Reddi',
-    ne_zaman: 'Satıcı küçük indirimle geri döndüğünde',
-    nasil: 'Önerinizi tekrar etmek yerine sessiz kalın veya "teklifim benim son teklifim" deyin. Satıcı genellikle konuşmak zorunda kalır.',
-    risk: 'Müzakereyi kesebilir; güçlü alternatif varsa kullanın',
+    baslik: 'Birden Fazla Teklif Turunu Planlayın',
+    aciklama: 'İlk teklifinizi gerçek hedef fiyatınızın %5-8 altında verin; karşı teklife hazırlıklı olun. Tek turda kapanmaya çalışmayın.',
+    ipucu: 'Satıcı sayaç teklif vermişse bu iyi işarettir — müzakere başlamıştır.',
   },
 ];
 
-const MUZAKERE_IPUCLARI = [
-  'İlk teklifi sözlü değil, yazılı yapın — ciddiye alınır, geri adım atmayı zorlaştırmaz',
-  'Fiyat yerine koşulları (tapu tarihi, dahil eşyalar, onarım) müzakere edin — satıcı için değer yaratırsınız',
-  'Kapora miktarını yüksek tutmak kararlılık sinyali verir; satıcı teklife güvenir',
-  'Her müzakerede bir şey alın, bir şey verin — "hem fiyatı hem vademi kabul ettim" deyin',
-  'Acele etmeyin: "Bir gece düşüneceğim" ifadesi satıcının kaygısını artırır',
-  'Ekstra taleplerle değer oluşturun: klima, perde, ankastre, otopark dahil edilmesini isteyin',
+const SATICI_STRATEJILERI = [
+  {
+    baslik: 'Gerçekçi Bir Liste Fiyatı Belirleyin',
+    aciklama: 'Piyasanın %10+ üzerindeki fiyatlar alıcıları kaçırır; uzun bekleme satışı zorlaştırır. Doğru fiyat daha hızlı ve daha az indirimle sonuç verir.',
+    ipucu: 'Benzer satışların ₺/m² ortalamasını baz alın; ondan ±%5 aralığında başlayın.',
+  },
+  {
+    baslik: 'İlk Teklife Hemen Kabul Etmeyin',
+    aciklama: 'Anında kabul, alıcıda daha düşük teklif verebileceği izlenimi yaratır. 24-48 saat düşünme süresi standart ve makuldür.',
+    ipucu: 'Karşı teklifle dönün; mesaj "müzakere açığız ama fiyatımızı kolay bırakmıyoruz" olsun.',
+  },
+  {
+    baslik: 'Taşınmazın Güçlü Yönlerini Ön Plana Çıkarın',
+    aciklama: 'Konum, okul yakınlığı, ulaşım, bina yaşı, asansör/otopark gibi özellikler indirim taleplerini dengeleyebilir.',
+    ipucu: 'Detay sayfasında bu özellikleri net yazın; müzakerede sözlü referans gösterin.',
+  },
+  {
+    baslik: 'Eşya veya Değer Katın, Nakit İndirim Yerine',
+    aciklama: 'Beyaz eşya, mutfak tezgahı, aydınlatma gibi eklemeler alıcı için fiyat indirimi kadar değerli ama sizin için daha az maliyetlidir.',
+    ipucu: 'Bu yöntem vergi matrahını da aşağı çekmez; hem sizin hem alıcının lehinedir.',
+  },
+  {
+    baslik: 'Birden Fazla Teklif Rekabeti Yaratın',
+    aciklama: 'Aynı anda birden fazla potansiyel alıcı olduğunu duyurmak, fiyat baskısını azaltır ve alıcıyı daha hızlı karar almaya iter.',
+    ipucu: 'Birden fazla gerçek ilgili varsa "teklifler için son tarih" belirleyin.',
+  },
 ];
 
-const HATA_LISTESI = [
-  { hata: 'Mülke olan aşkı göstermek', sonuc: 'Satıcı indirim yapmaya gerek duymaz' },
-  { hata: 'İlk teklifte maksimum bütçeyi söylemek', sonuc: 'Müzakere marjı kalmaz' },
-  { hata: 'Emsal araştırmasız fiyat tartışmak', sonuc: 'Güvenilirlik kaybı; zaaf sinyali' },
-  { hata: 'Birden fazla mülke aynı anda kapora vermek', sonuc: 'Hukuki risk, ciddi para kaybı' },
-  { hata: 'Sözlü anlaşmayı yeterli saymak', sonuc: 'Satıcı daha iyi teklife gidebilir' },
-  { hata: 'Tapu öncesi ödeme yapmak', sonuc: 'Hukuki güvencesiz para transferi riski' },
+const MUZAKERE_HATALARI = [
+  { hata: 'Duygusal kararlar vermek', aciklama: 'Ev satışı iş işlemidir. Kişisel bağ fiyatı yüksek tutmamalıdır.' },
+  { hata: 'Alt sınırı açıklamak', aciklama: '"En az X alırım" demeyin; karşı taraf hep o rakamı hedefler.' },
+  { hata: 'Sözlü anlaşmaya güvenmek', aciklama: 'Her görüşme noktası yazıya dökülmeli; imzasız taahhüt geçersizdir.' },
+  { hata: 'Aceleyle karar vermek', aciklama: 'Baskı altında verilen kararlar genelde pişmanlıkla sonuçlanır; süreyi kendiniz belirleyin.' },
+  { hata: 'Danışmana tamamen bırakmak', aciklama: 'Danışman rehber, siz karar vericisiniz. Kilit noktalarda bizzat müzakere edin.' },
+];
+
+const YASAL_HAKLAR = [
+  {
+    baslik: 'Ön Protokol (Ön Sözleşme)',
+    aciklama: 'Müzakere tamamlandıktan sonra tapu devrine kadar olan süreci güvence altına alır. Noterde düzenlenmesi tavsiye edilir.',
+  },
+  {
+    baslik: 'Cayma Bedeli (Pey Akçesi)',
+    aciklama: 'TBK md. 177: Cayma bedelini ödeyen taraf sözleşmeden dönebilir. Tutar pazarlıkta kararlaştırılır.',
+  },
+  {
+    baslik: 'Gizli Ayıp Hakkı',
+    aciklama: 'Tapu devrinden sonra ortaya çıkan yapısal sorunlar için TBK md. 219 kapsamında satıcıya başvurulabilir (5 yıl zamanaşımı).',
+  },
+  {
+    baslik: 'Emlakçı Komisyonu',
+    aciklama: 'Yasal oran her iki taraf için ayrı ayrı %2 + KDV. Daha yüksek talep yasal değildir; yazılı sözleşme isteyin.',
+  },
 ];
 
 export default function FiyatMuzakereStratejileriPage() {
   return (
     <main className="min-h-screen bg-[#F8FAFC]">
-
       <section className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
-        <div className="max-w-4xl mx-auto px-6 py-16">
-          <div className="inline-flex items-center gap-2 bg-[#00C49F]/20 border border-[#00C49F]/30 text-[#00C49F] text-xs font-bold px-4 py-1.5 rounded-full mb-5">
-            <TrendingDown size={13} /> Müzakere Stratejileri
-          </div>
-          <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-4">
-            Emlak Fiyat Müzakere Stratejileri 2024
-          </h1>
-          <p className="text-gray-300 text-sm max-w-xl leading-relaxed mb-8">
-            Emsal analizinden teklif stratejilerine, satıcı psikolojisinden kritik hatalara kadar eksiksiz müzakere rehberi.
+        <div className="max-w-4xl mx-auto px-6 py-14">
+          <p className="text-[#00C49F] text-xs font-bold mb-3 uppercase tracking-widest">Alım Satım Rehberi</p>
+          <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-3">Fiyat Müzakere Stratejileri</h1>
+          <p className="text-gray-300 text-sm max-w-xl leading-relaxed">
+            Gayrimenkul alım ve satımında etkili pazarlık teknikleri, yaygın hatalar ve yasal haklarınız.
           </p>
-          <div className="flex flex-wrap gap-4">
-            <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
-              <p className="text-2xl font-black text-[#00C49F]">%10–15</p>
-              <p className="text-xs text-gray-400">Açılış teklif farkı</p>
-            </div>
-            <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
-              <p className="text-2xl font-black text-white">Yazılı</p>
-              <p className="text-xs text-gray-400">Teklif formatı</p>
-            </div>
-            <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
-              <p className="text-2xl font-black text-amber-400">BATNA</p>
-              <p className="text-xs text-gray-400">Alternatifinizi bilin</p>
-            </div>
-          </div>
         </div>
       </section>
 
-      <div className="max-w-4xl mx-auto px-6 py-12 space-y-12">
+      <div className="max-w-4xl mx-auto px-4 py-10 space-y-10">
 
-        {/* Hazırlık */}
-        <section>
-          <h2 className="text-xl font-black text-gray-900 mb-4">Müzakere Öncesi Hazırlık</h2>
-          <div className="space-y-3">
-            {HAZIRLIK_ADIMLARI.map((a, i) => (
-              <div key={i} className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
-                <div className="flex gap-3">
-                  <div className="w-6 h-6 rounded-full bg-[#00C49F] text-white text-[10px] font-black flex items-center justify-center shrink-0">{i + 1}</div>
-                  <div>
-                    <p className="text-xs font-black text-gray-900 mb-1">{a.adim}</p>
-                    <p className="text-[10px] text-gray-600 leading-relaxed">{a.detay}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Teklif Stratejileri */}
-        <section>
-          <h2 className="text-xl font-black text-gray-900 mb-4">Teklif Stratejileri</h2>
+        {/* Alıcı Stratejileri */}
+        <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+          <h2 className="text-base font-black text-gray-900 mb-1">Alıcı Müzakere Stratejileri</h2>
+          <p className="text-xs text-gray-400 mb-5">İstediğiniz fiyata ulaşmak için kanıtlanmış 6 adım.</p>
           <div className="space-y-4">
-            {TEKLIF_STRATEJILERI.map((t, i) => (
-              <div key={i} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
-                <p className="text-xs font-black text-gray-900 mb-3">{t.strateji}</p>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                  <div className="bg-[#F0FDF8] rounded-xl p-2">
-                    <p className="text-[10px] font-black text-[#00C49F] mb-0.5">Ne Zaman?</p>
-                    <p className="text-[10px] text-gray-700 leading-relaxed">{t.ne_zaman}</p>
-                  </div>
-                  <div className="bg-blue-50 rounded-xl p-2">
-                    <p className="text-[10px] font-black text-blue-600 mb-0.5">Nasıl?</p>
-                    <p className="text-[10px] text-gray-700 leading-relaxed">{t.nasil}</p>
-                  </div>
-                  <div className="bg-amber-50 rounded-xl p-2">
-                    <p className="text-[10px] font-black text-amber-600 mb-0.5">Risk</p>
-                    <p className="text-[10px] text-gray-700 leading-relaxed">{t.risk}</p>
+            {ALICI_STRATEJILERI.map((s, i) => (
+              <div key={i} className="border border-gray-100 rounded-xl p-4">
+                <div className="flex items-start gap-3">
+                  <span className="w-6 h-6 rounded-full bg-[#00C49F] text-white text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">{i + 1}</span>
+                  <div>
+                    <p className="text-xs font-black text-gray-900 mb-1">{s.baslik}</p>
+                    <p className="text-[11px] text-gray-600 leading-relaxed mb-2">{s.aciklama}</p>
+                    <div className="bg-[#F0FDF8] rounded-lg px-3 py-2">
+                      <p className="text-[10px] text-[#00C49F] font-black">💡 İpucu: {s.ipucu}</p>
+                    </div>
                   </div>
                 </div>
               </div>
             ))}
           </div>
-        </section>
+        </div>
 
-        {/* İpuçları */}
-        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-          <h2 className="text-sm font-black text-gray-900 mb-4 flex items-center gap-2">
-            <CheckCircle size={14} className="text-[#00C49F]" /> Altın Müzakere İpuçları
-          </h2>
-          <div className="space-y-2">
-            {MUZAKERE_IPUCLARI.map((ip, i) => (
-              <div key={i} className="flex items-start gap-2 py-2 border-b border-gray-50 last:border-0">
-                <CheckCircle size={12} className="text-[#00C49F] shrink-0 mt-0.5" />
-                <p className="text-xs text-gray-700 leading-relaxed">{ip}</p>
+        {/* Satıcı Stratejileri */}
+        <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+          <h2 className="text-base font-black text-gray-900 mb-1">Satıcı Müzakere Stratejileri</h2>
+          <p className="text-xs text-gray-400 mb-5">Değerinizden taviz vermeden hızlı satış için teknikler.</p>
+          <div className="space-y-4">
+            {SATICI_STRATEJILERI.map((s, i) => (
+              <div key={i} className="border border-gray-100 rounded-xl p-4">
+                <div className="flex items-start gap-3">
+                  <span className="w-6 h-6 rounded-full bg-amber-400 text-white text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">{i + 1}</span>
+                  <div>
+                    <p className="text-xs font-black text-gray-900 mb-1">{s.baslik}</p>
+                    <p className="text-[11px] text-gray-600 leading-relaxed mb-2">{s.aciklama}</p>
+                    <div className="bg-amber-50 rounded-lg px-3 py-2">
+                      <p className="text-[10px] text-amber-600 font-black">💡 İpucu: {s.ipucu}</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
-        </section>
+        </div>
 
-        {/* Hatalar */}
-        <section>
-          <h2 className="text-xl font-black text-gray-900 mb-4">Kaçınılması Gereken Hatalar</h2>
+        {/* Yaygın Hatalar */}
+        <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+          <h2 className="text-base font-black text-gray-900 mb-1">Kaçınılması Gereken Hatalar</h2>
+          <p className="text-xs text-gray-400 mb-5">Müzakereyi mahveden 5 yaygın hata.</p>
           <div className="space-y-3">
-            {HATA_LISTESI.map((h, i) => (
-              <div key={i} className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm flex items-center justify-between gap-3">
-                <p className="text-xs text-gray-800">{h.hata}</p>
-                <span className="text-[10px] bg-rose-50 text-rose-600 font-black px-2 py-0.5 rounded shrink-0">{h.sonuc}</span>
+            {MUZAKERE_HATALARI.map((h, i) => (
+              <div key={i} className="flex gap-3 border border-rose-100 rounded-xl p-4 bg-rose-50">
+                <span className="text-rose-500 font-black text-sm shrink-0">✕</span>
+                <div>
+                  <p className="text-xs font-black text-rose-700 mb-0.5">{h.hata}</p>
+                  <p className="text-[11px] text-rose-600">{h.aciklama}</p>
+                </div>
               </div>
             ))}
           </div>
-        </section>
+        </div>
 
-        {/* Uyarı */}
-        <section className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl p-4">
-          <AlertTriangle size={14} className="text-amber-600 shrink-0 mt-0.5" />
-          <p className="text-xs text-amber-800 leading-relaxed">
-            <span className="font-black">Önemli:</span> Sözlü uzlaşma hukuki bağlayıcılık taşımaz. Anlaşma sağlandığında en kısa sürede noter tasdikli satış vaadi sözleşmesi veya kapora sözleşmesi imzalayın.
-          </p>
-        </section>
-
-        {/* Related */}
-        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-          <h3 className="text-sm font-bold text-gray-900 mb-4">İlgili Araçlar</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {[
-              { href: '/ev-alma-rehberi', label: 'Ev Alma Rehberi' },
-              { href: '/satilik-ev-degeri', label: 'Satılık Ev Değer Hesaplayıcı' },
-              { href: '/emlak-danismani-secme', label: 'Emlak Danışmanı Seçme' },
-              { href: '/gayrimenkul-degerleme', label: 'Gayrimenkul Değerleme' },
-              { href: '/emsal-karsilastirma', label: 'Emsal Karşılaştırması' },
-              { href: '/pismanlik-hakki', label: 'Pişmanlık Hakkı Rehberi' },
-            ].map(l => (
-              <Link key={l.href} href={l.href}
-                className="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-[#F0FDF8] border border-transparent hover:border-[#00C49F]/20 transition-all group"
-              >
-                <ArrowRight size={12} className="text-gray-300 group-hover:text-[#00C49F] transition-colors shrink-0" />
-                <span className="text-xs text-gray-700 group-hover:text-[#00C49F] font-medium transition-colors">{l.label}</span>
-              </Link>
+        {/* Yasal Haklar */}
+        <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+          <h2 className="text-base font-black text-gray-900 mb-1">Yasal Haklarınız</h2>
+          <p className="text-xs text-gray-400 mb-5">Müzakere sürecinde bilmeniz gereken hukuki güvenceler.</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {YASAL_HAKLAR.map((h, i) => (
+              <div key={i} className="border border-gray-100 rounded-xl p-4">
+                <p className="text-xs font-black text-gray-900 mb-1">{h.baslik}</p>
+                <p className="text-[11px] text-gray-500 leading-relaxed">{h.aciklama}</p>
+              </div>
             ))}
           </div>
-        </section>
+        </div>
+
+        {/* CTA */}
+        <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl p-6 text-center">
+          <p className="text-white font-black text-sm mb-1">Piyasa değerini öğrenmek ister misiniz?</p>
+          <p className="text-gray-300 text-xs mb-4">Konut Değer Tahmini aracımızla taşınmazın gerçek değerini hesaplayın.</p>
+          <a href="/konut-deger-tahmini" className="inline-block bg-[#00C49F] text-white text-xs font-black px-5 py-2.5 rounded-full hover:bg-[#00a882] transition-colors">
+            Değer Tahmini Yap
+          </a>
+        </div>
 
       </div>
     </main>
