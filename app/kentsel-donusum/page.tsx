@@ -1,47 +1,97 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import {
-  Building2, CheckCircle2, AlertCircle, ArrowRight, Users,
-  FileText, Info, Shield, TrendingUp, Home, Clock,
+  Building2, CheckCircle, AlertTriangle, ArrowRight, Scale, FileText, Home,
 } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Kentsel Dönüşüm: Haklar, Süreç ve Tazminat | Söylemesi Bizden',
+  title: 'Kentsel Dönüşüm Rehberi | Riskli Yapı, Hak Sahipliği, Süreç | Söylemesi Bizden',
   description:
-    'Kentsel dönüşüm nedir, kimler başlatabilir, hak sahipliği nasıl korunur? Riskli yapı tespiti, 2/3 çoğunluk kuralı ve kira yardımı hakkında kapsamlı rehber.',
+    'Kentsel dönüşüm nedir, riskli yapı tespiti, kat mülkiyeti iptali, hak sahipliği, kira yardımı ve hukuki süreç.',
 };
 
-const STAGES = [
-  { num: 1, title: 'Riskli Yapı Tespiti', desc: 'Bina sahibi ya da kiracıların en az %10\'u talep etmesiyle veya Bakanlık re\'sen yapı tespiti başlatabilir. Lisanslı kuruluşlarca inceleme yapılır.', icon: Shield },
-  { num: 2, title: 'Tespit Kararı Tebliği', desc: 'Riskli olduğu belirlenen bina maliklerine ve kiracılara resmi tebligat yapılır. Tebliğden itibaren 15 gün itiraz hakkı bulunur.', icon: FileText },
-  { num: 3, title: 'Anlaşma Süreci', desc: 'Malikler kendi aralarında oy kullanır. En az 2/3 çoğunluk sağlanırsa yenileme/yıkım kararı alınabilir. Azınlıkta kalanların payı bedeli karşılığında devralınır.', icon: Users },
-  { num: 4, title: 'Tahliye ve Yıkım', desc: 'Anlaşma sağlanıyorsa 60 gün içinde tahliye ve yıkım gerçekleşir. Kira yardımı ve faiz desteği bu süreçte devreye girer.', icon: Building2 },
-  { num: 5, title: 'Yeniden İnşaat', desc: 'Müteahhit seçimi, kat karşılığı ya da hasılat paylaşımı modellerinden biriyle yeni bina inşaatı başlar.', icon: Home },
-  { num: 6, title: 'Teslim ve Tapu', desc: 'Yeni bina tamamlandıktan sonra malikler yeni tapularını alır. Süreç genelde 2-5 yıl sürer.', icon: CheckCircle2 },
+const DONUSUM_TURLERI = [
+  {
+    tip: 'Riskli Yapı Dönüşümü',
+    aciklama: 'Deprem veya yapısal risk raporu alan binanın yıkılarak yeniden inşa edilmesi.',
+    dayanak: '6306 sayılı Afet Riski Altındaki Alanların Dönüştürülmesi Hakkında Kanun',
+    oran: '%2/3 çoğunluk yeter',
+    sure: '18–36 ay',
+  },
+  {
+    tip: 'Riskli Alan Dönüşümü',
+    aciklama: 'Bakanlıkça riskli ilan edilen geniş bölgelerdeki tüm yapıların toplu dönüşümü.',
+    dayanak: 'Bakanlar Kurulu kararnamesi ile riskli alan tescili',
+    oran: 'Zorunlu (bireysel onay aranmaz)',
+    sure: '24–60 ay',
+  },
+  {
+    tip: 'Rezerv Yapı Alanı',
+    aciklama: 'Riskli alan sakinlerinin geçici iskânı için ayrılan alan; yeni konut projeleri yapılır.',
+    dayanak: 'Bakanlık onayı ile ilan',
+    oran: 'Bakanlık kararı',
+    sure: '12–24 ay',
+  },
 ];
 
-const RIGHTS = [
-  { title: 'Kira Yardımı', desc: 'Tahliye edilen malikler ve kiracılar aylık kira yardımı alır. 2024 yılında İstanbul\'da bu tutar ₺10.000-15.000 aralığında uygulanmıştır.' },
-  { title: 'Faiz Desteği', desc: 'Riskli alan kapsamındaki yapılar için kullanılan kredilerde faiz desteği sağlanır. Bakanlık belirli koşullarda kredi avantajı sunar.' },
-  { title: 'Vergi Muafiyeti', desc: 'Kentsel dönüşüm kapsamındaki satış ve devir işlemlerinde harç, vergi ve tapu masraflarından muafiyet tanınır.' },
-  { title: 'İtiraz Hakkı', desc: 'Riskli yapı tespitine 15 gün içinde itiraz edilebilir. Teknik heyet 30 gün içinde yeniden inceleme yapar.' },
-  { title: '2/3 Kuralı Koruması', desc: 'Azınlıkta kalan malikler mülklerini gerçek değerinden satmak zorunda bırakılamaz; bağımsız ekspertiz raporu talep edebilirler.' },
-  { title: 'Geçici Konut', desc: 'TOKİ \'nin belirlediği bölgelerde, tahliye süreci boyunca geçici konut tahsisi talep edilebilir.' },
+const SUREC_ADIMLARI = [
+  {
+    adim: 'Riskli Yapı Tespiti',
+    detay: 'Lisanslı kuruluşa başvuru (ücretli). Rapor bakanlığa iletilir; itiraz süresi 15 gün.',
+  },
+  {
+    adim: 'Tapu Kaydı',
+    detay: 'Tapu müdürlüğü "riskli yapı" şerhi düşer; satış kısıtlaması başlar.',
+  },
+  {
+    adim: 'Kat Malikleri Kararı',
+    detay: 'Malikler toplantısı: 2/3 çoğunluk onayı aranır. Yüklenici veya kendi kendine yenileme seçimi.',
+  },
+  {
+    adim: 'Yıkım Kararı',
+    detay: 'Çoğunluk sağlanamazsa idare 60 günde re\'sen yıkım yapabilir.',
+  },
+  {
+    adim: 'Kira / Taşınma Yardımı',
+    detay: 'Boşaltma süresince aylık kira yardımı (Bakanlık tarifesi; 2024 için bölgeye göre 5.000–15.000 ₺/ay).',
+  },
+  {
+    adim: 'İnşaat ve Teslim',
+    detay: 'Yeniden inşa; hak sahiplerine yeni/renovasyon bağımsız bölüm tescil edilir.',
+  },
 ];
 
-const RISKS = [
-  { title: 'Değer Kaybı Riski', desc: 'Riskli yapı kararı ilan edilen binalarda piyasa değeri düşebilir ve satmak zorunda kalınabilir.' },
-  { title: 'Süreç Uzaması', desc: 'Kat maliklerinin anlaşamaması halinde tahliye ve yıkım mahkeme süreci gerektirebilir; bu da yıllarca sürebilir.' },
-  { title: 'Müteahhit Riski', desc: 'Bazı dönüşüm projelerinde müteahhit iflasları yaşanmıştır; sözleşmede teminat, güvence ve teslim tarihi kesinleştirilmeli.' },
-  { title: 'Azınlık Mağduriyeti', desc: 'Azınlıkta kalan malikler çoğunluk kararına uymak zorundadır; hukuki temsil önerilir.' },
+const HAK_SAHIPLIGI = [
+  { grup: 'Malik', hak: 'Yeni bağımsız bölüm hakkı — arsa payı oranında.' },
+  { grup: 'Kiracı', hak: 'Kiracılar tahliyeye uymak zorunda; kira yardımı olmaz, tazminat kiracıdan değil malikten talep edilir.' },
+  { grup: 'İpotek / Haciz', hak: 'Tapu şerhleri yeni yapıya geçer; alacaklı hakları korunur.' },
+  { grup: 'Taşınmaz Vakfı', hak: 'Vakıf mallarında Vakıflar Genel Müdürlüğü onayı şarttır.' },
+  { grup: '%1/3 Azınlık', hak: '2/3 kararı aldıktan sonra direnenler: payları bakanlık aracılığıyla pazarlık + bedel üzerinden alınır.' },
 ];
 
-const FAQS = [
-  { q: 'Kiracılar kentsel dönüşümde ne haklarına sahip?', a: 'Kiracılar kira yardımına hak kazanır. Ancak bina sahibinin haklarının büyük kısmı malike aittir. Kiracının tahliye kararına itiraz hakkı sınırlıdır; sözleşmedeki tazminat şartları ön plana çıkar.' },
-  { q: '2/3 çoğunluk nasıl hesaplanır?', a: 'Arsa payı oranları esas alınır; bağımsız bölüm sayısı değil. Büyük arsa paylı malikler daha fazla oy hakkına sahiptir.' },
-  { q: 'Riskli yapı tespiti ücreti kim tarafından karşılanır?', a: 'İlk tespit masrafı maliklerden alınır; ancak yapı riskli çıkarsa bu ücret iade edilir. TOKİ ve AFAD ücretsiz tespit hizmeti de sunabilir.' },
-  { q: 'Kentsel dönüşümde kat karşılığı nasıl işler?', a: 'Mevcut bina yıkılır, yerine yeni bina yapılır. Malikler arsa payları oranında yeni daireler alır. Müteahhit daire satışından kâr eder.' },
-  { q: 'Tapu devri kısıtlaması ne anlama gelir?', a: 'Riskli alan kararnamesiyle kapsama alınan parsellerde tapu devri Bakanlık izniyle mümkün olabilir. Bu, mülkü satma sürecinizi etkileyebilir.' },
+const YARDIMLAR = [
+  { kalem: 'Kira Yardımı', miktar: 'Bölgeye göre 5.000–15.000 ₺/ay (en fazla 18 ay)', kosul: 'Yapıyı süresinde boşaltmak' },
+  { kalem: 'Taşınma Yardımı', miktar: 'Tek seferlik yakl. 10.000–20.000 ₺', kosul: 'Malik veya kiracı; 60 gün içinde boşaltma' },
+  { kalem: 'Faiz Desteği', miktar: 'Kentsel dönüşüm konut kredisine %3–5 faiz desteği', kosul: 'Bakanlıktan onaylı kredi kullanımı' },
+  { kalem: 'KDV İstisnası', miktar: 'Teslimde %1 KDV (normal %4 yerine)', kosul: '150 m² altı konut, ilk 5 yıl satışı' },
+];
+
+const RISKLER = [
+  { risk: 'Geçici Konut Sorunu', onlem: 'Kira yardımı başlamadan önce boşaltma notifi alınır; hemen alternatif kiralık aranmalı.' },
+  { risk: 'Yüklenici Seçimi', onlem: 'Kat karşılığı sözleşme noter onaylı olmalı; teminat mektubu + iş bitirme belgesi şart.' },
+  { risk: 'Arsa Payı Adaletsizliği', onlem: 'Eski tapularda arsa payı dağılımı bozuk olabilir; dönüşüm öncesi düzeltme davası.' },
+  { risk: '2/3 Çoğunluk Sağlanamaz', onlem: 'Uzlaşı süreci + idari başvuru; bakanlık arabuluculuğu talep edilebilir.' },
+  { risk: 'İnşaat Gecikmesi', onlem: 'Sözleşmeye gecikmede günlük ceza (kira bedeli) eklenmelidir.' },
+];
+
+const KONTROL_LISTESI = [
+  'Lisanslı kuruluş raporu (bakanlık listesinden kontrol)',
+  'Kat malikleri kurulu toplantı tutanağı',
+  'Yüklenici referansları ve teminat mektubu',
+  'Kat karşılığı sözleşme (noter + tapu şerhi)',
+  'Kira yardımı başvurusu (bakanlık e-dönüşüm portalı)',
+  'Arsa payı kontrolü (tapu kaydı + beyan)',
+  'KDV istisnası uygulanacaksa boyut kontrolü (≤150 m²)',
 ];
 
 export default function KentselDonusumPage() {
@@ -49,161 +99,182 @@ export default function KentselDonusumPage() {
     <main className="min-h-screen bg-[#F8FAFC]">
 
       {/* Hero */}
-      <section className="bg-gradient-to-br from-slate-800 to-slate-900 text-white">
-        <div className="max-w-5xl mx-auto px-6 py-14">
-          <div className="flex items-center gap-3 mb-5">
-            <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center">
-              <Building2 size={22} className="text-white" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-black tracking-tight">Kentsel Dönüşüm Rehberi</h1>
-              <p className="text-slate-400 text-sm mt-0.5">Haklar · Süreç · Kira Yardımı · 2/3 Kuralı</p>
-            </div>
+      <section className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
+        <div className="max-w-4xl mx-auto px-6 py-16">
+          <div className="inline-flex items-center gap-2 bg-[#00C49F]/20 border border-[#00C49F]/30 text-[#00C49F] text-xs font-bold px-4 py-1.5 rounded-full mb-5">
+            <Building2 size={13} /> Kentsel Dönüşüm Rehberi
           </div>
-          <p className="text-slate-300 text-sm max-w-xl leading-relaxed">
-            Türkiye&apos;nin deprem dönüşüm sürecinde milyonlarca vatandaşı etkileyen kentsel dönüşüm.
-            Haklarınızı, süreçleri ve riskleri öğrenin.
+          <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-4">
+            Kentsel Dönüşüm Rehberi
+          </h1>
+          <p className="text-gray-300 text-sm max-w-xl leading-relaxed mb-8">
+            Riskli yapı tespitinden yıkım, kira yardımı ve yeni bağımsız bölüm tesciline kadar tüm süreç.
           </p>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-8">
-            {[
-              { label: '2/3 Çoğunluk', sub: 'yıkım kararı için' },
-              { label: '15 Gün', sub: 'itiraz süresi' },
-              { label: 'Kira Yardımı', sub: 'tahliye sürecinde' },
-              { label: 'Vergi Muafiyeti', sub: 'satış ve devir' },
-            ].map(f => (
-              <div key={f.label} className="bg-white/5 border border-white/10 rounded-xl p-3">
-                <p className="text-sm font-black text-white">{f.label}</p>
-                <p className="text-[10px] text-slate-400 mt-0.5">{f.sub}</p>
-              </div>
-            ))}
+          <div className="flex flex-wrap gap-4">
+            <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
+              <p className="text-2xl font-black text-[#00C49F]">2/3</p>
+              <p className="text-xs text-gray-400">Çoğunluk eşiği</p>
+            </div>
+            <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
+              <p className="text-2xl font-black text-white">6306</p>
+              <p className="text-xs text-gray-400">Kanun numarası</p>
+            </div>
+            <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
+              <p className="text-2xl font-black text-amber-400">18 Ay</p>
+              <p className="text-xs text-gray-400">Max kira yardımı</p>
+            </div>
           </div>
         </div>
       </section>
 
-      <div className="max-w-5xl mx-auto px-6 py-10 space-y-8">
+      <div className="max-w-4xl mx-auto px-6 py-12 space-y-12">
 
-        {/* Process steps */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-6">
-          <h2 className="text-sm font-black text-gray-900 mb-6 flex items-center gap-2">
-            <Clock size={15} className="text-[#00C49F]" /> Kentsel Dönüşüm Süreci
-          </h2>
+        {/* Dönüşüm Türleri */}
+        <section>
+          <h2 className="text-xl font-black text-gray-900 mb-4">Dönüşüm Türleri</h2>
           <div className="space-y-4">
-            {STAGES.map(s => (
-              <div key={s.num} className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-xl bg-[#F0FDF8] flex items-center justify-center shrink-0">
-                  <s.icon size={18} className="text-[#00C49F]" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-[10px] font-bold text-gray-400">ADIM {s.num}</span>
-                    <span className="text-xs font-black text-gray-900">{s.title}</span>
+            {DONUSUM_TURLERI.map((d, i) => (
+              <div key={i} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+                <div className="flex items-start justify-between gap-4 mb-2">
+                  <p className="text-xs font-black text-gray-900">{d.tip}</p>
+                  <div className="flex gap-2 shrink-0">
+                    <span className="text-[10px] bg-[#F0FDF8] text-[#00C49F] font-bold px-2 py-0.5 rounded-full">{d.sure}</span>
                   </div>
-                  <p className="text-xs text-gray-500 leading-relaxed">{s.desc}</p>
+                </div>
+                <p className="text-[10px] text-gray-600 mb-3 leading-relaxed">{d.aciklama}</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <div className="bg-blue-50 rounded-lg p-2">
+                    <p className="text-[10px] text-blue-600 font-bold mb-0.5">Yasal Dayanak</p>
+                    <p className="text-[10px] text-gray-600">{d.dayanak}</p>
+                  </div>
+                  <div className="bg-amber-50 rounded-lg p-2">
+                    <p className="text-[10px] text-amber-600 font-bold mb-0.5">Karar Eşiği</p>
+                    <p className="text-[10px] text-gray-600">{d.oran}</p>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
-        </div>
+        </section>
 
-        {/* Rights */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-6">
-          <h2 className="text-sm font-black text-gray-900 mb-5 flex items-center gap-2">
-            <Shield size={15} className="text-[#00C49F]" /> Malik Hakları
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {RIGHTS.map(r => (
-              <div key={r.title} className="bg-[#F0FDF8] rounded-xl border border-[#00C49F]/20 p-4">
-                <div className="flex items-start gap-2 mb-2">
-                  <CheckCircle2 size={13} className="text-[#00C49F] shrink-0 mt-0.5" />
-                  <p className="text-xs font-black text-gray-900">{r.title}</p>
-                </div>
-                <p className="text-[11px] text-gray-500 leading-relaxed pl-5">{r.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Risks */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-6">
-          <h2 className="text-sm font-black text-gray-900 mb-5 flex items-center gap-2">
-            <AlertCircle size={15} className="text-rose-500" /> Riskler ve Dikkat Edilecekler
-          </h2>
+        {/* Süreç */}
+        <section>
+          <h2 className="text-xl font-black text-gray-900 mb-4">Adım Adım Süreç</h2>
           <div className="space-y-3">
-            {RISKS.map(r => (
-              <div key={r.title} className="flex items-start gap-3 p-4 bg-rose-50 border border-rose-100 rounded-xl">
-                <AlertCircle size={13} className="text-rose-400 shrink-0 mt-0.5" />
+            {SUREC_ADIMLARI.map((s, i) => (
+              <div key={i} className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm flex items-start gap-3">
+                <div className="bg-[#F0FDF8] text-[#00C49F] text-[10px] font-black px-2 py-1 rounded-lg shrink-0">{i + 1}</div>
                 <div>
-                  <p className="text-xs font-bold text-rose-700">{r.title}</p>
-                  <p className="text-xs text-rose-600 mt-0.5 leading-relaxed">{r.desc}</p>
+                  <p className="text-xs font-black text-gray-900 mb-0.5">{s.adim}</p>
+                  <p className="text-[10px] text-gray-600 leading-relaxed">{s.detay}</p>
                 </div>
               </div>
             ))}
           </div>
-        </div>
+        </section>
 
-        {/* Investment angle */}
-        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6">
-          <h2 className="text-sm font-black text-amber-900 mb-3 flex items-center gap-2">
-            <TrendingUp size={14} className="text-amber-500" /> Yatırımcı Perspektifi
-          </h2>
-          <ul className="space-y-2 text-xs text-amber-800">
-            {[
-              'Dönüşüm alanlarında eski bina fiyatları düşük, yeni bina değeri yüksektir; arsa payı yatırımı cazip olabilir.',
-              'Riskli bölge kararnamesi olmadan bina sahibi dönüşümü başlatamaz; belediye sınırlarını kontrol edin.',
-              'Kat karşılığı sözleşmesinde yeni daire/alan oranı, garanti fiyatı ve teslim tarihi kritik maddelerdir.',
-              'Büyük ölçekli riskli alan kararları (ör. Fikirtepe, Başıbüyük) bölge değerini önce düşürüp sonra artırabilir.',
-              'Kiracılı daireler, dönüşüm sürecinde tahliye masrafı ve kira kaybı riski nedeniyle fiyatı daha düşük olabilir.',
-            ].map(tip => (
-              <li key={tip} className="flex items-start gap-2">
-                <CheckCircle2 size={11} className="text-amber-500 shrink-0 mt-0.5" />
-                {tip}
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* FAQ */}
-        <div>
-          <h2 className="text-sm font-black text-gray-900 mb-4">Sıkça Sorulan Sorular</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {FAQS.map(f => (
-              <div key={f.q} className="bg-white rounded-2xl border border-gray-100 p-5">
-                <p className="text-xs font-black text-gray-900 mb-2">{f.q}</p>
-                <p className="text-xs text-gray-500 leading-relaxed">{f.a}</p>
+        {/* Hak Sahipliği */}
+        <section>
+          <h2 className="text-xl font-black text-gray-900 mb-4">Hak Sahipliği</h2>
+          <div className="space-y-3">
+            {HAK_SAHIPLIGI.map((h, i) => (
+              <div key={i} className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm flex items-start gap-3">
+                <Scale size={13} className="text-blue-500 shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-xs font-black text-gray-900 mb-0.5">{h.grup}</p>
+                  <p className="text-[10px] text-gray-600 leading-relaxed">{h.hak}</p>
+                </div>
               </div>
             ))}
           </div>
-        </div>
+        </section>
 
-        <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-2xl p-4">
-          <Info size={14} className="text-amber-500 shrink-0 mt-0.5" />
-          <p className="text-xs text-amber-700 leading-relaxed">
-            Kentsel dönüşüm mevzuatı sık güncellenmektedir (6306 sayılı Kanun ve yönetmelikleri).
-            Hak kayıplarını önlemek için süreçe girişmeden önce gayrimenkul hukuku alanında uzman
-            bir avukata danışmanızı öneririz.
+        {/* Yardımlar */}
+        <section>
+          <h2 className="text-xl font-black text-gray-900 mb-4">Devlet Yardımları ve Destekler</h2>
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <table className="w-full text-xs">
+              <thead className="bg-gray-50 border-b border-gray-100">
+                <tr>
+                  <th className="text-left px-4 py-3 font-black text-gray-700">Kalem</th>
+                  <th className="text-left px-4 py-3 font-black text-gray-700">Miktar</th>
+                  <th className="text-left px-4 py-3 font-black text-gray-500">Koşul</th>
+                </tr>
+              </thead>
+              <tbody>
+                {YARDIMLAR.map((y, i) => (
+                  <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                    <td className="px-4 py-3 font-bold text-gray-800">{y.kalem}</td>
+                    <td className="px-4 py-3 text-[#00C49F] font-bold">{y.miktar}</td>
+                    <td className="px-4 py-3 text-gray-500 leading-relaxed">{y.kosul}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        {/* Riskler */}
+        <section>
+          <h2 className="text-xl font-black text-gray-900 mb-4">Riskler ve Önlemler</h2>
+          <div className="space-y-3">
+            {RISKLER.map((r, i) => (
+              <div key={i} className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
+                <div className="flex items-start gap-2 mb-1">
+                  <AlertTriangle size={12} className="text-amber-500 shrink-0 mt-0.5" />
+                  <p className="text-xs font-black text-gray-900">{r.risk}</p>
+                </div>
+                <p className="text-[10px] text-gray-600 leading-relaxed ml-5">{r.onlem}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Kontrol Listesi */}
+        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+          <h2 className="text-sm font-black text-gray-900 mb-4 flex items-center gap-2">
+            <CheckCircle size={14} className="text-[#00C49F]" /> Kontrol Listesi
+          </h2>
+          <div className="space-y-2">
+            {KONTROL_LISTESI.map((item, i) => (
+              <div key={i} className="flex items-start gap-2">
+                <div className="w-4 h-4 rounded border-2 border-[#00C49F]/40 shrink-0 mt-0.5" />
+                <p className="text-xs text-gray-700">{item}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Warning */}
+        <section className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl p-4">
+          <AlertTriangle size={14} className="text-amber-600 shrink-0 mt-0.5" />
+          <p className="text-xs text-amber-800 leading-relaxed">
+            <span className="font-black">Önemli:</span> Kentsel dönüşüm sürecinde yüklenici sözleşmesi ve arsa payı oranları kritik hukuki belgelerdir. İmzalamadan önce mutlaka bir gayrimenkul avukatından görüş alınız.
           </p>
-        </div>
+        </section>
 
         {/* Related */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {[
-            { href: '/rehber/ev-satin-alma', label: 'Ev Satın Alma Rehberi', desc: 'Tapu süreçleri ve dikkat edilecekler' },
-            { href: '/imar-durumu', label: 'İmar Durumu Rehberi', desc: 'TAKS/KAKS ve ruhsat süreci' },
-            { href: '/gayrimenkul-sozlugu', label: 'Gayrimenkul Sözlüğü', desc: 'Kentsel dönüşüm terimleri' },
-          ].map(t => (
-            <Link
-              key={t.href}
-              href={t.href}
-              className="group bg-white rounded-2xl border border-gray-100 p-5 hover:shadow-md hover:border-[#00C49F]/30 transition-all flex items-center gap-4"
-            >
-              <div className="flex-1">
-                <p className="text-sm font-bold text-gray-800 group-hover:text-[#00C49F] transition-colors">{t.label}</p>
-                <p className="text-xs text-gray-400">{t.desc}</p>
-              </div>
-              <ArrowRight size={14} className="text-gray-300 group-hover:text-[#00C49F] transition-colors shrink-0" />
-            </Link>
-          ))}
-        </div>
+        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+          <h3 className="text-sm font-bold text-gray-900 mb-4">İlgili Rehberler</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {[
+              { href: '/deprem-riski', label: 'Deprem Riski Rehberi' },
+              { href: '/kat-karsiligi', label: 'Kat Karşılığı Rehberi' },
+              { href: '/kat-mulkiyeti', label: 'Kat Mülkiyeti Rehberi' },
+              { href: '/tapu-devir-sureci', label: 'Tapu Devir Süreci' },
+              { href: '/ortak-mulkiyet', label: 'Ortak Mülkiyet Rehberi' },
+              { href: '/imar-durumu', label: 'İmar Durumu Rehberi' },
+            ].map(l => (
+              <Link key={l.href} href={l.href}
+                className="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-[#F0FDF8] border border-transparent hover:border-[#00C49F]/20 transition-all group"
+              >
+                <ArrowRight size={12} className="text-gray-300 group-hover:text-[#00C49F] transition-colors shrink-0" />
+                <span className="text-xs text-gray-700 group-hover:text-[#00C49F] font-medium transition-colors">{l.label}</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+
       </div>
     </main>
   );
