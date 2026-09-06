@@ -65,6 +65,7 @@ const CATEGORIES: Category[] = [
       { href: '/market-radar', icon: BarChart2, label: 'Piyasa Radarı', desc: 'Canlı piyasa analitik' },
       { href: '/yatirim-bolgesi', icon: MapPin, label: 'En İyi Yatırım Bölgeleri', desc: '10 bölge analitik skorlama', badge: 'Yeni' },
       { href: '/karsilastir', icon: Scale, label: 'Bölge Karşılaştırma', desc: 'İki şehir/ilçeyi karşılaştır' },
+      { href: '/bolge-karsilastir', icon: Scale, label: '3 Şehir Karşılaştır', desc: 'Fiyat, getiri, yaşam maliyeti, skor', badge: 'Yeni' },
     ],
   },
   {

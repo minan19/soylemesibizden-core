@@ -99,6 +99,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/yatirim-npv`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.75 },
     { url: `${baseUrl}/kira-haritasi`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.78 },
     { url: `${baseUrl}/taksitli-satis`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.68 },
+    { url: `${baseUrl}/bolge-karsilastir`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.78 },
   ];
 
   const listingPages: MetadataRoute.Sitemap = listings.map(l => ({
