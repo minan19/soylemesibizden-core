@@ -45,6 +45,7 @@ const CATEGORIES: Category[] = [
       { href: '/stopaj-vergisi', icon: FileText, label: 'Kira Stopaj Vergisi', desc: 'Kurumsal kiracı %20 stopaj, net/brüt', badge: 'Yeni' },
       { href: '/deger-artis-vergisi', icon: TrendingUp, label: 'Değer Artış Vergisi', desc: '5 yıl kuralı, TÜFE endeksleme, tarife', badge: 'Yeni' },
       { href: '/net-gelir-hesaplayici', icon: TrendingUp, label: 'Kira Net Gelir Hesapla', desc: 'Vergi, aidat, gider sonrası gerçek kazanç', badge: 'Yeni' },
+      { href: '/faiz-hesaplayici', icon: TrendingUp, label: 'Faiz Hesaplayıcı', desc: 'Basit/bileşik faiz, mevduat, kredi taksiti', badge: 'Yeni' },
       { href: '/kredi-karsilastirma', icon: Scale, label: 'Kredi Karşılaştırma', desc: '4 senaryoyu yan yana karşılaştır', badge: 'Yeni' },
       { href: '/kira-mi-satin-mi', icon: Scale, label: 'Kira mı, Satın mı?', desc: '30 yıl projeksiyon karşılaştırma', badge: 'Yeni' },
       { href: '/pesinat-plani', icon: TrendingUp, label: 'Peşinat Birikim Planı', desc: 'Ne zaman ev alabilirim?', badge: 'Yeni' },
