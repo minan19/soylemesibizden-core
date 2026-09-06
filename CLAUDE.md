@@ -487,7 +487,7 @@ git push https://minan19:<GITHUB_TOKEN>@github.com/minan19/soylemesibizden-core.
 
 ---
 
-*Son güncelleme: 2026-09-06 — Oturum 14: FAZ 233-244 tamamlandı. Miras ve gayrimenkul, ipotek-rehin, belediye işlemleri, depozito, kooperatif, müteahhit seçimi, tadilat, taşınma, kira tespit davası, tahliye davası, sıfır konut, ev değerleme. Toplam 120+ araç ve sayfa.*
+*Son güncelleme: 2026-09-06 — Oturum 15: FAZ 251-259 tamamlandı. Arsa fiyat hesaplayıcı, kira sözleşmesi örneği, emlak piyasası analizi, satın alma maliyeti hesaplayıcı, yazlık kiralama, ofis kiralama, konut analizi, gayrimenkul değerleme, tatil konutu yatırımı. Toplam 140+ araç ve sayfa.*
 
 ### Oturum 11 (FAZ 185-196) — Tamamlananlar
 - [x] **FAZ-185:** Arsa yatırımı rehberi — imar türleri, kontrol listesi, hisseli arsa (/arsa-yatirimi)
