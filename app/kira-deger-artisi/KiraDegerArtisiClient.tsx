@@ -1,195 +1,151 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import Link from 'next/link';
-import { ArrowRight, TrendingUp } from 'lucide-react';
-
-const TUFE_VERILERI = [
-  { yil: 2019, oran: 11.8 },
-  { yil: 2020, oran: 14.6 },
-  { yil: 2021, oran: 19.6 },
-  { yil: 2022, oran: 64.3 },
-  { yil: 2023, oran: 65.2 },
-  { yil: 2024, oran: 48.6 },
-];
 
 export default function KiraDegerArtisiClient() {
-  const [mevcutKira, setMevcutKira] = useState(15000);
-  const [yillikArtis, setYillikArtis] = useState(35);
-  const [enflasyonOrani, setEnflasyonOrani] = useState(40);
-  const [yil, setYil] = useState(5);
+  const [baslangicKira, setBaslangicKira] = useState(15000);
+  const [yillikArtis, setYillikArtis] = useState(25);
+  const [enflasyon, setEnflasyon] = useState(40);
+  const [sure, setSure] = useState(5);
 
-  const sonuc = useMemo(() => {
+  const hesap = useMemo(() => {
     const yillar = [];
-    let kira = mevcutKira;
-    let reel = mevcutKira;
-    let nominalKumulatif = 0;
+    let kira = baslangicKira;
+    let enflasyonluKira = baslangicKira;
 
-    for (let y = 1; y <= yil; y++) {
-      const yillikNominalKira = kira * 12;
-      nominalKumulatif += yillikNominalKira;
+    for (let y = 1; y <= sure; y++) {
       kira = kira * (1 + yillikArtis / 100);
-      const reelDeflator = Math.pow(1 + enflasyonOrani / 100, y);
-      const reelKira = (mevcutKira * Math.pow(1 + yillikArtis / 100, y)) / reelDeflator;
-
+      enflasyonluKira = enflasyonluKira * (1 + enflasyon / 100);
+      const reelKira = kira / Math.pow(1 + enflasyon / 100, y);
+      const enflasyonFark = kira - enflasyonluKira;
+      const enflasyonFarkYuzde = ((kira / enflasyonluKira) - 1) * 100;
       yillar.push({
-        y,
-        nominalAylik: Math.round(kira / (1 + yillikArtis / 100)),
-        nominalAylikSonraki: Math.round(kira),
-        nominalYillik: Math.round(yillikNominalKira),
-        nominalKumulatif: Math.round(nominalKumulatif),
-        reelAylik: Math.round(reelKira),
-        reelKayip: reelKira < mevcutKira,
+        yil: y,
+        kira: Math.round(kira),
+        enflasyonluKira: Math.round(enflasyonluKira),
+        reelKira: Math.round(reelKira),
+        enflasyonFark: Math.round(enflasyonFark),
+        enflasyonFarkYuzde: Math.round(enflasyonFarkYuzde * 10) / 10,
       });
     }
 
-    const sonYil = yillar[yillar.length - 1];
-    const toplamNominal = nominalKumulatif;
-    const nominalArtis = ((sonYil.nominalAylikSonraki / mevcutKira) - 1) * 100;
+    return { yillar };
+  }, [baslangicKira, yillikArtis, enflasyon, sure]);
 
-    return { yillar, toplamNominal, nominalArtis: nominalArtis.toFixed(1) };
-  }, [mevcutKira, yillikArtis, enflasyonOrani, yil]);
-
-  const maxNominal = Math.max(...sonuc.yillar.map(y => y.nominalAylikSonraki));
-  const maxReel = Math.max(...sonuc.yillar.map(y => y.reelAylik));
-  const maxY = Math.max(maxNominal, maxReel, mevcutKira);
+  const maxKira = Math.max(...hesap.yillar.map(y => Math.max(y.kira, y.enflasyonluKira)), 1);
+  const sonYil = hesap.yillar[hesap.yillar.length - 1];
+  const reelDegisim = sonYil ? ((sonYil.reelKira / baslangicKira) - 1) * 100 : 0;
 
   return (
-    <main className="min-h-screen bg-[#F8FAFC]">
-      <section className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
-        <div className="max-w-4xl mx-auto px-6 py-16">
-          <div className="inline-flex items-center gap-2 bg-[#00C49F]/20 border border-[#00C49F]/30 text-[#00C49F] text-xs font-bold px-4 py-1.5 rounded-full mb-5">
-            <TrendingUp size={13} /> Kira Değer Artışı
+    <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
+
+      <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+        <h2 className="text-sm font-black text-gray-900 mb-5">Kira ve Enflasyon Parametreleri</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+
+          <div>
+            <label className="text-xs font-black text-gray-700 block mb-1">Başlangıç Kira (₺/ay)</label>
+            <input type="number" value={baslangicKira} onChange={e => setBaslangicKira(Number(e.target.value))} step={500} min={1000}
+              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm font-bold focus:outline-none focus:border-[#00C49F]" />
           </div>
-          <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-4">Kira Değer Artışı Simülatörü</h1>
-          <p className="text-gray-300 text-sm max-w-xl leading-relaxed">
-            Kiranızın nominal ve reel değerinin yıllar içinde nasıl değişeceğini, enflasyona karşı satın alma gücünü hesaplayın.
-          </p>
+
+          <div>
+            <label className="text-xs font-black text-gray-700 block mb-1">Yıllık Kira Artışı: %{yillikArtis}</label>
+            <input type="range" min={5} max={60} step={5} value={yillikArtis} onChange={e => setYillikArtis(Number(e.target.value))}
+              className="w-full accent-[#00C49F]" />
+          </div>
+
+          <div>
+            <label className="text-xs font-black text-gray-700 block mb-1">Enflasyon Oranı: %{enflasyon}</label>
+            <input type="range" min={10} max={80} step={5} value={enflasyon} onChange={e => setEnflasyon(Number(e.target.value))}
+              className="w-full accent-[#00C49F]" />
+          </div>
+
+          <div>
+            <label className="text-xs font-black text-gray-700 block mb-1">Süre: {sure} Yıl</label>
+            <input type="range" min={1} max={15} step={1} value={sure} onChange={e => setSure(Number(e.target.value))}
+              className="w-full accent-[#00C49F]" />
+          </div>
         </div>
-      </section>
-
-      <div className="max-w-4xl mx-auto px-6 py-12 space-y-8">
-
-        {/* Inputs */}
-        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-          <h2 className="text-sm font-black text-gray-900 mb-5">Parametreler</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-xs font-bold text-gray-700 mb-1">Mevcut Aylık Kira</label>
-              <p className="text-lg font-black text-[#00C49F] mb-2">{mevcutKira.toLocaleString('tr-TR')} ₺</p>
-              <input type="range" min={2000} max={100000} step={1000} value={mevcutKira}
-                onChange={e => setMevcutKira(Number(e.target.value))} className="w-full accent-[#00C49F]" />
-              <div className="flex justify-between text-[10px] text-gray-400 mt-1"><span>2K</span><span>100K</span></div>
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-gray-700 mb-1">Yıllık Kira Artış Oranı</label>
-              <p className="text-lg font-black text-[#00C49F] mb-2">%{yillikArtis}</p>
-              <input type="range" min={5} max={80} step={5} value={yillikArtis}
-                onChange={e => setYillikArtis(Number(e.target.value))} className="w-full accent-[#00C49F]" />
-              <div className="flex justify-between text-[10px] text-gray-400 mt-1"><span>%5</span><span>%80</span></div>
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-gray-700 mb-1">Beklenen Yıllık Enflasyon</label>
-              <p className="text-lg font-black text-amber-500 mb-2">%{enflasyonOrani}</p>
-              <input type="range" min={10} max={80} step={5} value={enflasyonOrani}
-                onChange={e => setEnflasyonOrani(Number(e.target.value))} className="w-full accent-[#00C49F]" />
-              <div className="flex justify-between text-[10px] text-gray-400 mt-1"><span>%10</span><span>%80</span></div>
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-gray-700 mb-1">Projeksiyon Süresi</label>
-              <p className="text-lg font-black text-gray-700 mb-2">{yil} yıl</p>
-              <input type="range" min={1} max={15} step={1} value={yil}
-                onChange={e => setYil(Number(e.target.value))} className="w-full accent-[#00C49F]" />
-              <div className="flex justify-between text-[10px] text-gray-400 mt-1"><span>1 yıl</span><span>15 yıl</span></div>
-            </div>
-          </div>
-        </section>
-
-        {/* Özet */}
-        <section className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-          <div className="bg-[#F0FDF8] rounded-2xl border border-[#00C49F]/20 p-4 text-center">
-            <p className="text-xl font-black text-[#00C49F]">{sonuc.yillar[sonuc.yillar.length - 1]?.nominalAylikSonraki.toLocaleString('tr-TR')} ₺</p>
-            <p className="text-xs text-gray-500 mt-1">Nominal Kira ({yil}. Yıl)</p>
-          </div>
-          <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm text-center">
-            <p className="text-xl font-black text-amber-500">{sonuc.yillar[sonuc.yillar.length - 1]?.reelAylik.toLocaleString('tr-TR')} ₺</p>
-            <p className="text-xs text-gray-500 mt-1">Reel Kira ({yil}. Yıl)</p>
-          </div>
-          <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm text-center col-span-2 sm:col-span-1">
-            <p className="text-xl font-black text-blue-600">{(sonuc.toplamNominal / 1000000).toFixed(2)} M ₺</p>
-            <p className="text-xs text-gray-500 mt-1">Toplam Kira Geliri</p>
-          </div>
-        </section>
-
-        {/* Grafik */}
-        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-          <h2 className="text-sm font-black text-gray-900 mb-2">Nominal vs Reel Kira Grafiği</h2>
-          <div className="flex gap-4 text-[10px] mb-4">
-            <span className="flex items-center gap-1"><span className="w-3 h-2 rounded bg-[#00C49F] inline-block" /> Nominal Kira</span>
-            <span className="flex items-center gap-1"><span className="w-3 h-2 rounded bg-amber-400 inline-block" /> Reel Kira (Enflasyon Düzeltmeli)</span>
-          </div>
-          <div className="space-y-3">
-            {sonuc.yillar.map(row => (
-              <div key={row.y} className="space-y-1">
-                <p className="text-[10px] font-bold text-gray-500">{row.y}. Yıl</p>
-                <div className="flex items-center gap-2">
-                  <div className="flex-1 bg-gray-50 rounded-full h-4 overflow-hidden">
-                    <div className="h-full bg-[#00C49F] rounded-full transition-all"
-                      style={{ width: `${(row.nominalAylikSonraki / maxY) * 100}%` }} />
-                  </div>
-                  <span className="text-[10px] font-black text-[#00C49F] w-24 text-right">{row.nominalAylikSonraki.toLocaleString('tr-TR')} ₺</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="flex-1 bg-gray-50 rounded-full h-4 overflow-hidden">
-                    <div className="h-full bg-amber-400 rounded-full transition-all"
-                      style={{ width: `${(row.reelAylik / maxY) * 100}%` }} />
-                  </div>
-                  <span className="text-[10px] font-black text-amber-500 w-24 text-right">{row.reelAylik.toLocaleString('tr-TR')} ₺</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* TÜFE Geçmiş */}
-        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-          <h2 className="text-sm font-black text-gray-900 mb-4">Geçmiş TÜFE Oranları (Referans)</h2>
-          <div className="space-y-2">
-            {TUFE_VERILERI.map(t => (
-              <div key={t.yil} className="flex items-center gap-3">
-                <span className="text-xs font-bold text-gray-500 w-12">{t.yil}</span>
-                <div className="flex-1 bg-gray-50 rounded-full h-3 overflow-hidden">
-                  <div className="h-full bg-amber-400 rounded-full" style={{ width: `${(t.oran / 70) * 100}%` }} />
-                </div>
-                <span className="text-xs font-black text-amber-600 w-12 text-right">%{t.oran}</span>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Related */}
-        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-          <h3 className="text-sm font-bold text-gray-900 mb-4">İlgili Araçlar</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {[
-              { href: '/kira-artis-hesaplama', label: 'Kira Artış Hesaplayıcı' },
-              { href: '/net-kira-hesaplayici', label: 'Net Kira Geliri Hesaplayıcı' },
-              { href: '/amortisman-hesaplayici', label: 'Amortisman Hesaplayıcı' },
-              { href: '/kira-mi-satin-mi', label: 'Kira mı Satın mı?' },
-              { href: '/kira-geliri-vergisi', label: 'Kira Geliri Vergisi' },
-              { href: '/enflasyon-korumasi', label: 'Enflasyona Karşı Korunma' },
-            ].map(l => (
-              <Link key={l.href} href={l.href}
-                className="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-[#F0FDF8] border border-transparent hover:border-[#00C49F]/20 transition-all group"
-              >
-                <ArrowRight size={12} className="text-gray-300 group-hover:text-[#00C49F] transition-colors shrink-0" />
-                <span className="text-xs text-gray-700 group-hover:text-[#00C49F] font-medium transition-colors">{l.label}</span>
-              </Link>
-            ))}
-          </div>
-        </section>
-
       </div>
-    </main>
+
+      {/* Özet */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        {[
+          { label: `${sure}. Yıl Kira`, value: `${sonYil?.kira.toLocaleString('tr-TR')} ₺`, color: 'text-[#00C49F]' },
+          { label: `${sure}. Yıl Enflasyon Bazlı Kira`, value: `${sonYil?.enflasyonluKira.toLocaleString('tr-TR')} ₺`, color: 'text-rose-500' },
+          { label: 'Reel Değer Değişimi', value: `${reelDegisim >= 0 ? '+' : ''}${reelDegisim.toFixed(1)}%`, color: reelDegisim >= 0 ? 'text-emerald-500' : 'text-rose-500' },
+        ].map((k, i) => (
+          <div key={i} className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm text-center">
+            <p className="text-[10px] text-gray-500 mb-1">{k.label}</p>
+            <p className={`text-sm font-black ${k.color}`}>{k.value}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Bar chart */}
+      <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+        <h2 className="text-sm font-black text-gray-900 mb-4">Kira Artışı vs Enflasyon Karşılaştırması</h2>
+        <div className="space-y-2">
+          {hesap.yillar.map((y, i) => {
+            const kiraPct = (y.kira / maxKira) * 100;
+            const enflPct = (y.enflasyonluKira / maxKira) * 100;
+            const reelPct = (y.reelKira / maxKira) * 100;
+            return (
+              <div key={i} className="flex items-center gap-3">
+                <span className="text-[10px] font-black text-gray-500 w-10 shrink-0">{y.yil}. Yıl</span>
+                <div className="flex-1 space-y-1">
+                  <div className="bg-gray-100 rounded-full h-2">
+                    <div className="bg-[#00C49F] h-2 rounded-full" style={{ width: `${kiraPct}%` }} />
+                  </div>
+                  <div className="bg-gray-100 rounded-full h-1.5">
+                    <div className="bg-rose-300 h-1.5 rounded-full" style={{ width: `${enflPct}%` }} />
+                  </div>
+                  <div className="bg-gray-100 rounded-full h-1.5">
+                    <div className="bg-blue-300 h-1.5 rounded-full" style={{ width: `${reelPct}%` }} />
+                  </div>
+                </div>
+                <span className="text-[10px] font-black text-[#00C49F] w-24 text-right shrink-0">{y.kira.toLocaleString('tr-TR')} ₺</span>
+              </div>
+            );
+          })}
+        </div>
+        <div className="flex gap-4 mt-3 text-[10px] text-gray-500 flex-wrap">
+          <span><span className="inline-block w-3 h-2 bg-[#00C49F] rounded mr-1" />Kira (%{yillikArtis} artış)</span>
+          <span><span className="inline-block w-3 h-1.5 bg-rose-300 rounded mr-1" />Enflasyon Bazlı Kira</span>
+          <span><span className="inline-block w-3 h-1.5 bg-blue-300 rounded mr-1" />Reel Kira (Bugünkü)</span>
+        </div>
+      </div>
+
+      {/* Tablo */}
+      <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm overflow-x-auto">
+        <h2 className="text-sm font-black text-gray-900 mb-4">Yıl Bazlı Kira ve Enflasyon Tablosu</h2>
+        <table className="w-full text-[10px] min-w-[500px]">
+          <thead>
+            <tr className="border-b border-gray-100">
+              <th className="text-left py-2 font-black text-gray-500">Yıl</th>
+              <th className="text-right py-2 font-black text-[#00C49F]">Kira</th>
+              <th className="text-right py-2 font-black text-rose-500">Enflasyon Bazlı</th>
+              <th className="text-right py-2 font-black text-blue-500">Reel Kira</th>
+              <th className="text-right py-2 font-black text-gray-500">Fark</th>
+            </tr>
+          </thead>
+          <tbody>
+            {hesap.yillar.map((y, i) => (
+              <tr key={i} className="border-b border-gray-50 last:border-0">
+                <td className="py-2 font-black text-gray-900">{y.yil}. Yıl</td>
+                <td className="py-2 text-right font-black text-[#00C49F]">{y.kira.toLocaleString('tr-TR')} ₺</td>
+                <td className="py-2 text-right font-bold text-rose-500">{y.enflasyonluKira.toLocaleString('tr-TR')} ₺</td>
+                <td className="py-2 text-right font-bold text-blue-500">{y.reelKira.toLocaleString('tr-TR')} ₺</td>
+                <td className={`py-2 text-right font-black ${y.enflasyonFark >= 0 ? 'text-emerald-500' : 'text-rose-600'}`}>
+                  {y.enflasyonFark >= 0 ? '+' : ''}{y.enflasyonFark.toLocaleString('tr-TR')} ₺
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+    </div>
   );
 }
