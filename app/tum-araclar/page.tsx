@@ -149,6 +149,7 @@ const CATEGORIES: Category[] = [
       { href: '/sehir-planlama', icon: MapPin, label: 'Şehir Planlama ve İmar', desc: 'TAKS, KAKS, ruhsat süreci, kaçak yapı', badge: 'Yeni' },
       { href: '/tasinmaz-degerleme', icon: Scale, label: 'Taşınmaz Değerleme', desc: 'Emsal, gelir, maliyet, DCF yöntemleri', badge: 'Yeni' },
       { href: '/kira-sozlesmesi-ornegi', icon: FileText, label: 'Kira Sözleşmesi Örneği', desc: 'Zorunlu maddeler, örnek metinler, depozito', badge: 'Yeni' },
+      { href: '/ortak-mulkiyet', icon: Users, label: 'Ortak Mülkiyet Rehberi', desc: 'Paylı, iştirak, şufa hakkı, izale', badge: 'Yeni' },
     ],
   },
   {
