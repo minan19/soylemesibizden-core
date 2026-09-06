@@ -120,6 +120,7 @@ const CATEGORIES: Category[] = [
       { href: '/tapu-devir-sureci', icon: FileText, label: 'Tapu Devir Süreci', desc: '7 adım, belgeler, maliyet dökümü', badge: 'Yeni' },
       { href: '/belediye-hizmetleri', icon: Building2, label: 'Belediye Hizmetleri', desc: 'Emlak vergisi, imar, iskan', badge: 'Yeni' },
       { href: '/arsa-yatirimi', icon: MapPin, label: 'Arsa Yatırımı Rehberi', desc: 'İmar türleri, kontrol listesi, riskler', badge: 'Yeni' },
+      { href: '/pismanlik-hakki', icon: FileText, label: 'Pişmanlık Hakkı ve Cayma', desc: 'Kapora, BK md. 177, hukuki süreç', badge: 'Yeni' },
     ],
   },
   {
