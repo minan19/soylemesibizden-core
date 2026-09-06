@@ -190,6 +190,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/konut-kredisi-simulatoru`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.82 },
     { url: `${baseUrl}/kira-deger-artisi`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.78 },
     { url: `${baseUrl}/ev-satisa-hazirlama`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
+    { url: `${baseUrl}/kredi-notu-rehberi`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.78 },
+    { url: `${baseUrl}/ilk-ev-alma-rehberi`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.80 },
   ];
 
   const listingPages: MetadataRoute.Sitemap = listings.map(l => ({
