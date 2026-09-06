@@ -125,6 +125,7 @@ const CATEGORIES: Category[] = [
       { href: '/pismanlik-hakki', icon: FileText, label: 'Pişmanlık Hakkı ve Cayma', desc: 'Kapora, BK md. 177, hukuki süreç', badge: 'Yeni' },
       { href: '/ekspertiz-raporu', icon: FileText, label: 'Ekspertiz Raporu Rehberi', desc: 'SPK lisanslı değerleme, süreç, maliyet', badge: 'Yeni' },
       { href: '/enerji-kimlik-belgesi', icon: ShieldCheck, label: 'Enerji Kimlik Belgesi (EKB)', desc: 'A\'dan G\'ye sınıflar, maliyet, yükseltme', badge: 'Yeni' },
+      { href: '/kat-mulkiyeti', icon: Building2, label: 'Kat Mülkiyeti Rehberi', desc: 'İrtifak vs mülkiyet, dönüşüm, yönetim', badge: 'Yeni' },
     ],
   },
   {
