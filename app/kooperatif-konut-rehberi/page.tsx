@@ -1,180 +1,150 @@
 import { Metadata } from 'next';
-import Link from 'next/link';
-import { CheckCircle, AlertTriangle, ArrowRight, Building2 } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Kooperatif Konut Rehberi 2024 | Nasıl Üye Olunur, Avantajlar | Söylemesi Bizden',
+  title: 'Kooperatif Konut Rehberi | Üyelik, Hak ve Riskler | Söylemesi Bizden',
   description:
-    'Kooperatif konut nedir, nasıl üye olunur? Avantajlar, riskler, ödeme planı ve kooperatif ile müteahhit farkı hakkında kapsamlı rehber.',
+    'Kooperatif konut nedir, nasıl üye olunur, hak ve yükümlülükler, kooperatif tapu süreci ve olası riskler hakkında kapsamlı rehber.',
 };
 
-const NASIL_CALISIR = [
-  { adim: 'Kooperatif Kurulur veya Mevcut Birine Üye Olunur', aciklama: 'Birden fazla kişi bir araya gelerek konut yapı kooperatifi kurabilir ya da mevcut kooperatifte boş hisse bularak üye olabilirsiniz.' },
-  { adim: 'Arsa Satın Alınır', aciklama: 'Üyelerin aidat veya öz kaynaklarıyla arsa satın alınır; bazı kooperatifler arsa sahibinin katılımıyla da kurulur.' },
-  { adim: 'Proje Hazırlanır ve İnşaat İzni Alınır', aciklama: 'Mimar ve mühendis tutulur, belediyeden inşaat ruhsatı alınır. Teknik şartname ortaklar kurulunda onaylanır.' },
-  { adim: 'İnşaat Başlar', aciklama: 'Üyelerden periyodik ödeme toplanır; müteahhit veya kooperatif kendi yönetiminde inşaat yürütür.' },
-  { adim: 'İskan ve Tapu Tescili', aciklama: 'İnşaat bitince iskan alınır; her üyenin payına düşen bağımsız bölüm belirlenir ve tapu devri yapılır.' },
-];
-
-const AVANTAJLAR = [
-  { avantaj: 'Maliyetin Altında Konut', aciklama: 'Müteahhit karı yoktur; genellikle piyasanın %20–30 altında maliyet oluşur.' },
-  { avantaj: 'Kalite Kontrolü', aciklama: 'Üyeler bina özelliklerini ve malzeme seçimlerini doğrudan yönetir.' },
-  { avantaj: 'Ödeme Esnekliği', aciklama: 'İnşaat sürecinde aşamalı ödeme imkânı tanınır; sıfır faiz ile taksit yapılabilir.' },
-  { avantaj: 'Vergi Avantajları', aciklama: 'Kooperatifler kurumlar vergisinden muaf olabilir; bu maliyet düşüşüne yansır.' },
-  { avantaj: 'Şeffaflık', aciklama: 'Muhasebe ve bütçe ortaklar kuruluna açık tutulur; hesap verilebilirlik yüksektir.' },
+const KOOPERATIF_AVANTAJLARI = [
+  { baslik: 'Düşük Maliyet', aciklama: 'Ticari kâr marjı olmadığından piyasa fiyatının %15–30 altında konut edinme fırsatı sunar.' },
+  { baslik: 'Kolektif Müzakere Gücü', aciklama: 'Toplu alım sayesinde inşaat firmasından daha iyi fiyat ve kalite standartları elde edilir.' },
+  { baslik: 'Ortak Yönetim', aciklama: 'Üyeler yönetim kuruluna katılabilir; projeye ilişkin kararlar demokratik alınır.' },
+  { baslik: 'Devlet Desteği', aciklama: 'TOKİ bağlantılı kooperatiflerde uzun vadeli düşük faizli kredi imkânı bulunabilir.' },
 ];
 
 const RISKLER = [
-  { risk: 'Yönetim Kalitesi', aciklama: 'Deneyimsiz yönetim kurulu proje gecikmesine veya bütçe aşımına neden olabilir.' },
-  { risk: 'Arsa Bulma Zorluğu', aciklama: 'Büyük şehirlerde uygun fiyatlı ve imarlı arsa bulmak giderek zorlaşmaktadır.' },
-  { risk: 'Finansman Riski', aciklama: 'Üyelerin ödeme geciktiği durumda inşaat yavaşlayabilir veya durabileceği gibi borcunu ödeyemeyene icra uygulanabilir.' },
-  { risk: 'Tapu Gecikmeleri', aciklama: 'Ortaklar arasındaki anlaşmazlıklar veya teknik sorunlar tapu işlemlerini uzatabilir.' },
-  { risk: 'Üye Çekilmesi', aciklama: 'Üye ayrılması projeyi sekteye uğratabilir; yerini dolduracak yeni üye bulmak zorlaşabilir.' },
+  { baslik: 'Uzun Teslim Süreleri', aciklama: 'Kooperatiflerde proje süreci yıllarca uzayabilir; teslim tarihi garantisi yoktur.' },
+  { baslik: 'Yönetim Sorunları', aciklama: 'Kötü yönetim, yolsuzluk veya iç anlaşmazlıklar projeyi durdurabilir.' },
+  { baslik: 'Ek Aidat Talepleri', aciklama: 'Maliyet aşımlarında üyelerden ek ödeme istenebilir; başlangıçtaki bütçe şişebilir.' },
+  { baslik: 'Tapu Gecikmesi', aciklama: 'Tüm borcunu ödeyen üye bile proje tamamlanmadan tapusunu alamaz.' },
+  { baslik: 'Hisse Devrinde Kısıtlama', aciklama: 'Kooperatif üyeliği ve hissesi yönetim kurulu onayı olmadan kolayca devredilemez.' },
 ];
 
-const KOOPERATIF_VS_MUTTEAHHIT = [
-  { kriter: 'Maliyet', kooperatif: 'Piyasanın %20–30 altında', mutteahhit: 'Piyasa fiyatı + müteahhit karı' },
-  { kriter: 'Kalite Kontrolü', kooperatif: 'Üyeler doğrudan denetler', mutteahhit: 'Sözleşme ile sınırlı' },
-  { kriter: 'Risk', kooperatif: 'Yönetim ve finansman riski', mutteahhit: 'İflas/teslim etmeme riski' },
-  { kriter: 'Süre', kooperatif: 'Daha uzun (3–7 yıl)', mutteahhit: 'Genellikle 1–3 yıl' },
-  { kriter: 'Esneklik', kooperatif: 'Yüksek (daire planı, malzeme)', mutteahhit: 'Düşük (standart proje)' },
+const UYELIK_SURECI = [
+  { adim: 1, baslik: 'Kooperatif Araştırın', aciklama: 'Tarihçesi, teslim sicili, mevcut projeleri ve mali durumu inceleyin. Ticaret Sicili ve İl Müdürlüğü kayıtlarını kontrol edin.' },
+  { adim: 2, baslik: 'Ana Sözleşmeyi İnceleyin', aciklama: 'Üyelik şartları, aidat yapısı, çıkarılma koşulları ve yönetim yapısı ana sözleşmede yer alır; mutlaka okuyun.' },
+  { adim: 3, baslik: 'Giriş Aidatı ve Hisse Bedeli', aciklama: 'Üyelik kabulünden sonra belirlenmiş giriş aidatı ve hisse bedeli ödenir; makbuzları saklayın.' },
+  { adim: 4, baslik: 'Üyelik Kararı', aciklama: 'Yönetim kurulu üyeliğinizi onaylar. Onay sonrası üye defterine kaydolursunuz.' },
+  { adim: 5, baslik: 'İnşaat ve Taksit Ödemeleri', aciklama: 'Projenin ilerleme dönemlerine göre belirlenen taksitler ödenir; gecikmeler ek faiz doğurabilir.' },
+  { adim: 6, baslik: 'Kura veya Kıdem Sırası', aciklama: 'Daire tahsisi kura veya kıdeme göre yapılır; yönetmeliği önceden öğrenin.' },
+  { adim: 7, baslik: 'Tapu Teslimi', aciklama: 'Borcun tam ödenmesi ve inşaatın tamamlanmasının ardından bireysel tapu devri gerçekleşir.' },
+];
+
+const TAPU_ASAMALARI = [
+  { aşama: 'Kooperatif Adına Arsa Tapusu', sure: 'Proje başında', durum: 'Arsa satın alındığında' },
+  { aşama: 'Kat İrtifakı', sure: 'İnşaat başlamadan', durum: 'Mimari proje onayında' },
+  { aşama: 'Kat Mülkiyeti', sure: 'İskan sonrası', durum: 'Yapı kullanma izni alındığında' },
+  { aşama: 'Ferdi Tapu', sure: 'Borç ödeme tamamlandığında', durum: 'Kooperatif tarafından devredilir' },
+];
+
+const PRATIK_BILGILER = [
+  { baslik: 'Kooperatif Sicil Sorgusu', aciklama: 'Ticaret Bakanlığı Merkezi Sicil Kayıt Sistemi (MERSİS) üzerinden kooperatifin tescil durumunu sorgulayın.' },
+  { baslik: 'Arsa Üzerindeki Yükümlülük', aciklama: 'Kooperatif arsasında ipotek, haciz veya şerh olup olmadığını tapu müdürlüğünden tapu kaydı alarak kontrol edin.' },
+  { baslik: 'Aidatların Belgelenmesi', aciklama: 'Yaptığınız her ödeme için makbuz alın; banka kanalıyla ödeme yapın. Sözlü taahhütlere güvenmeyin.' },
+  { baslik: 'Avukat Desteği', aciklama: 'Yüksek meblağlı kooperatif üyeliği öncesinde ana sözleşmeyi bir gayrimenkul avukatına inceletin.' },
 ];
 
 export default function KooperatifKonutRehberiPage() {
   return (
     <main className="min-h-screen bg-[#F8FAFC]">
-
       <section className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
-        <div className="max-w-4xl mx-auto px-6 py-16">
-          <div className="inline-flex items-center gap-2 bg-[#00C49F]/20 border border-[#00C49F]/30 text-[#00C49F] text-xs font-bold px-4 py-1.5 rounded-full mb-5">
-            <Building2 size={13} /> Kooperatif Konut
-          </div>
-          <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-4">
-            Kooperatif Konut Rehberi 2024
-          </h1>
-          <p className="text-gray-300 text-sm max-w-xl leading-relaxed mb-8">
-            Kooperatif konut nedir, nasıl üye olunur? Müteahhitle farkı, avantajlar, riskler ve süreç.
+        <div className="max-w-4xl mx-auto px-6 py-14">
+          <p className="text-[#00C49F] text-xs font-bold mb-3 uppercase tracking-widest">Konut Rehberi</p>
+          <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-3">Kooperatif Konut Rehberi</h1>
+          <p className="text-gray-300 text-sm max-w-xl leading-relaxed">
+            Kooperatifle konut edinmenin avantajları, riskleri, üyelik süreci ve tapu aşamaları hakkında kapsamlı bilgi.
           </p>
-          <div className="flex flex-wrap gap-4">
-            <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
-              <p className="text-2xl font-black text-[#00C49F]">%20–30</p>
-              <p className="text-xs text-gray-400">Maliyet avantajı</p>
-            </div>
-            <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
-              <p className="text-2xl font-black text-white">5 Adım</p>
-              <p className="text-xs text-gray-400">Konut süreci</p>
-            </div>
-            <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
-              <p className="text-2xl font-black text-amber-400">Muaf</p>
-              <p className="text-xs text-gray-400">Kurumlar vergisi</p>
-            </div>
-          </div>
         </div>
       </section>
 
-      <div className="max-w-4xl mx-auto px-6 py-12 space-y-12">
-
-        {/* Nasıl Çalışır */}
-        <section>
-          <h2 className="text-xl font-black text-gray-900 mb-4">Kooperatif Konut Nasıl Çalışır?</h2>
-          <div className="space-y-3">
-            {NASIL_CALISIR.map((a, i) => (
-              <div key={i} className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
-                <div className="flex items-start gap-2">
-                  <div className="w-5 h-5 rounded-full bg-[#00C49F] text-white text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">{i + 1}</div>
-                  <div>
-                    <p className="text-xs font-black text-gray-900">{a.adim}</p>
-                    <p className="text-[10px] text-gray-600 leading-relaxed mt-0.5">{a.aciklama}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
+      <div className="max-w-4xl mx-auto px-4 py-10 space-y-10">
 
         {/* Avantajlar */}
-        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-          <h2 className="text-sm font-black text-gray-900 mb-4 flex items-center gap-2">
-            <CheckCircle size={14} className="text-[#00C49F]" /> Avantajlar
-          </h2>
-          <div className="space-y-2">
-            {AVANTAJLAR.map((a, i) => (
-              <div key={i} className="flex items-start gap-3 py-2 border-b border-gray-50 last:border-0">
-                <CheckCircle size={12} className="text-[#00C49F] shrink-0 mt-0.5" />
+        <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+          <h2 className="text-base font-black text-gray-900 mb-1">Kooperatif Konutun Avantajları</h2>
+          <p className="text-xs text-gray-400 mb-5">Neden kooperatif yoluyla konut alınır?</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {KOOPERATIF_AVANTAJLARI.map((a, i) => (
+              <div key={i} className="border border-[#00C49F]/20 rounded-xl p-4 bg-[#F0FDF8]">
+                <p className="text-xs font-black text-[#00C49F] mb-1">✓ {a.baslik}</p>
+                <p className="text-[11px] text-gray-600 leading-relaxed">{a.aciklama}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Üyelik Süreci */}
+        <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+          <h2 className="text-base font-black text-gray-900 mb-1">Üyelik ve Edinim Süreci</h2>
+          <p className="text-xs text-gray-400 mb-5">Kooperatif üyeliğinden ferdi tapuya kadar 7 adım.</p>
+          <div className="space-y-4">
+            {UYELIK_SURECI.map((a) => (
+              <div key={a.adim} className="flex gap-3">
+                <span className="w-6 h-6 rounded-full bg-[#00C49F] text-white text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">{a.adim}</span>
                 <div>
-                  <p className="text-xs font-black text-gray-900">{a.avantaj}</p>
-                  <p className="text-[10px] text-gray-500 mt-0.5">{a.aciklama}</p>
+                  <p className="text-xs font-black text-gray-900 mb-0.5">{a.baslik}</p>
+                  <p className="text-[11px] text-gray-500 leading-relaxed">{a.aciklama}</p>
                 </div>
               </div>
             ))}
           </div>
-        </section>
+        </div>
 
-        {/* Riskler */}
-        <section>
-          <h2 className="text-xl font-black text-gray-900 mb-4">Riskler</h2>
-          <div className="space-y-3">
-            {RISKLER.map((r, i) => (
-              <div key={i} className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
-                <p className="text-xs font-black text-rose-500 mb-1">{r.risk}</p>
-                <p className="text-[10px] text-gray-600 leading-relaxed">{r.aciklama}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Karşılaştırma */}
-        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm overflow-x-auto">
-          <h2 className="text-sm font-black text-gray-900 mb-4">Kooperatif vs Müteahhit Karşılaştırması</h2>
-          <table className="w-full text-[10px] min-w-[400px]">
+        {/* Tapu Aşamaları */}
+        <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm overflow-x-auto">
+          <h2 className="text-base font-black text-gray-900 mb-1">Tapu Aşamaları</h2>
+          <p className="text-xs text-gray-400 mb-5">Kooperatif tapusundan ferdi tapuya geçiş adımları.</p>
+          <table className="w-full text-[10px] min-w-[380px]">
             <thead>
               <tr className="border-b border-gray-100">
-                <th className="text-left py-2 font-black text-gray-500">Kriter</th>
-                <th className="text-center py-2 font-black text-[#00C49F]">Kooperatif</th>
-                <th className="text-center py-2 font-black text-gray-500">Müteahhit</th>
+                <th className="text-left py-2 font-black text-gray-500">Aşama</th>
+                <th className="text-center py-2 font-black text-gray-500">Süre</th>
+                <th className="text-right py-2 font-black text-[#00C49F]">Koşul</th>
               </tr>
             </thead>
             <tbody>
-              {KOOPERATIF_VS_MUTTEAHHIT.map((k, i) => (
-                <tr key={i} className="border-b border-gray-50">
-                  <td className="py-2 font-bold text-gray-700">{k.kriter}</td>
-                  <td className="py-2 text-center text-[#00C49F] font-bold">{k.kooperatif}</td>
-                  <td className="py-2 text-center text-gray-600">{k.mutteahhit}</td>
+              {TAPU_ASAMALARI.map((t, i) => (
+                <tr key={i} className="border-b border-gray-50 last:border-0">
+                  <td className="py-2 font-black text-gray-900">{t.aşama}</td>
+                  <td className="py-2 text-center font-bold text-gray-500">{t.sure}</td>
+                  <td className="py-2 text-right font-bold text-[#00C49F]">{t.durum}</td>
                 </tr>
               ))}
             </tbody>
           </table>
-        </section>
+        </div>
 
-        {/* Uyarı */}
-        <section className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl p-4">
-          <AlertTriangle size={14} className="text-amber-600 shrink-0 mt-0.5" />
-          <p className="text-xs text-amber-800 leading-relaxed">
-            <span className="font-black">Önemli:</span> Kooperatife üye olmadan önce kooperatif tüzüğünü, finansal tablolarını ve yönetim kurulu geçmişini araştırın. Bir muhasebeci veya avukattan görüş alın.
-          </p>
-        </section>
-
-        {/* Related */}
-        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-          <h3 className="text-sm font-bold text-gray-900 mb-4">İlgili Araçlar</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {[
-              { href: '/yeni-konut-projeleri', label: 'Yeni Konut Projeleri' },
-              { href: '/ilk-ev-alma-rehberi', label: 'İlk Ev Alma Rehberi' },
-              { href: '/tapu-masrafi', label: 'Tapu Masrafı Hesaplayıcı' },
-              { href: '/yatirim-butce-hesaplayici', label: 'Yatırım Bütçe Hesaplayıcı' },
-              { href: '/konut-deger-tahmini', label: 'Konut Değer Tahmini' },
-              { href: '/insaat-maliyeti', label: 'İnşaat Maliyet Hesaplayıcı' },
-            ].map(l => (
-              <Link key={l.href} href={l.href}
-                className="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-[#F0FDF8] border border-transparent hover:border-[#00C49F]/20 transition-all group"
-              >
-                <ArrowRight size={12} className="text-gray-300 group-hover:text-[#00C49F] transition-colors shrink-0" />
-                <span className="text-xs text-gray-700 group-hover:text-[#00C49F] font-medium transition-colors">{l.label}</span>
-              </Link>
+        {/* Riskler */}
+        <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+          <h2 className="text-base font-black text-gray-900 mb-1">Bilmeniz Gereken Riskler</h2>
+          <p className="text-xs text-gray-400 mb-5">Kooperatif konutla ilgili yaygın sorunlar ve nasıl korunulur?</p>
+          <div className="space-y-3">
+            {RISKLER.map((r, i) => (
+              <div key={i} className="flex gap-3 border border-rose-100 rounded-xl p-4 bg-rose-50">
+                <span className="text-rose-500 font-black text-sm shrink-0">⚠</span>
+                <div>
+                  <p className="text-xs font-black text-rose-700 mb-0.5">{r.baslik}</p>
+                  <p className="text-[11px] text-rose-600">{r.aciklama}</p>
+                </div>
+              </div>
             ))}
           </div>
-        </section>
+        </div>
+
+        {/* Pratik Bilgiler */}
+        <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+          <h2 className="text-base font-black text-gray-900 mb-1">Pratik Bilgiler</h2>
+          <p className="text-xs text-gray-400 mb-5">Kooperatif üyeliği öncesi ve süresince dikkat edilmesi gerekenler.</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {PRATIK_BILGILER.map((b, i) => (
+              <div key={i} className="border border-gray-100 rounded-xl p-4">
+                <p className="text-xs font-black text-gray-900 mb-1">{b.baslik}</p>
+                <p className="text-[11px] text-gray-500 leading-relaxed">{b.aciklama}</p>
+              </div>
+            ))}
+          </div>
+        </div>
 
       </div>
     </main>

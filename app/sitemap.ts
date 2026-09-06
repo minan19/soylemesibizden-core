@@ -245,6 +245,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/kira-butce-planlayici`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.83 },
     { url: `${baseUrl}/enerji-kimlik-belgesi`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.76 },
     { url: `${baseUrl}/kira-artis-hakki-hesaplayici`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.84 },
+    { url: `${baseUrl}/kooperatif-konut-rehberi`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.76 },
+    { url: `${baseUrl}/net-bugunku-deger-hesaplayici`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.82 },
   ];
 
   const listingPages: MetadataRoute.Sitemap = listings.map(l => ({
