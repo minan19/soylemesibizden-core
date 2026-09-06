@@ -221,6 +221,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/yeni-konut-projeleri`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.80 },
     { url: `${baseUrl}/insaat-maliyeti`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.82 },
     { url: `${baseUrl}/pesinat-hesaplayici`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.82 },
+    { url: `${baseUrl}/faiz-orani-karsilastirici`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.85 },
+    { url: `${baseUrl}/konut-kredisi-basvuru`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.82 },
   ];
 
   const listingPages: MetadataRoute.Sitemap = listings.map(l => ({
