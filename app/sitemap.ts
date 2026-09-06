@@ -259,6 +259,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/kiralik-daire-ankara`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.90 },
     { url: `${baseUrl}/satilik-villa`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.87 },
     { url: `${baseUrl}/kira-depozito-iade-rehberi`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.78 },
+    { url: `${baseUrl}/yatirim-getiri-karsilastirici`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.84 },
+    { url: `${baseUrl}/satilik-arsa`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.87 },
   ];
 
   const listingPages: MetadataRoute.Sitemap = listings.map(l => ({
