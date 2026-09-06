@@ -3,58 +3,63 @@ import Link from 'next/link';
 import { CheckCircle, AlertTriangle, ArrowRight, Shield } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Konut Sigortası Rehberi 2024 | DASK, Konut Güvencesi, Teminatlar | Söylemesi Bizden',
+  title: 'Konut Sigortası Rehberi | Kapsamlar, Primler, İpuçları | Söylemesi Bizden',
   description:
-    'Konut sigortası türleri, DASK zorunlu deprem sigortası, teminat kapsamları ve hasar başvurusu hakkında kapsamlı rehber.',
+    'Konut sigortası nedir, ne kapsar? Zorunlu DASK ile ihtiyari konut sigortası farkı, teminat türleri, hasar tazminatı ve sigorta seçim ipuçları.',
 };
 
 const SIGORTA_TURLERI = [
   {
     tur: 'DASK (Zorunlu Deprem Sigortası)',
     zorunlu: true,
-    kapsam: 'Deprem, yangın/patlama (deprem kaynaklı), tsunami ve yer kayması sonrası yapısal hasarlar',
-    sinir: 'Yapı değeri tavan: 2024 için yaklaşık 770.000 ₺; üzeri isteğe bağlı sigorta ile tamamlanır',
-    kimYaptirir: 'Tüm binadaki bağımsız bölüm sahipleri; tapuya kayıtlı zorunlu tescil',
+    kapsam: 'Yalnızca deprem ve buna bağlı yangın, patlama, çığ ve heyelan hasarlarını karşılar.',
+    sinir: 'Yapı bedeli üst sınırlı (m² ve yapı türüne göre belirlenir)',
+    fiyat: '500–3.000 ₺/yıl',
   },
   {
-    tur: 'Konut Sigortası (İsteğe Bağlı)',
+    tur: 'İhtiyari Konut Sigortası',
     zorunlu: false,
-    kapsam: 'Yangın, hırsızlık, su baskını, fırtına, cam kırığı, eşya, 3. şahıs mali mesuliyet',
-    sinir: 'Belirsiz; taşınan değer ve poliçe limitine göre değişir',
-    kimYaptirir: 'Mal sahibi ve/veya kiracı (eşya güvencesi için kiracı da yaptırabilir)',
+    kapsam: 'Yangın, hırsızlık, su baskını, doğal afet, cam kırılması, eşya hasarı gibi geniş kapsamlı teminatlar.',
+    sinir: 'Sigortalı değer (yapı + eşya + sorumluluk)',
+    fiyat: '1.500–10.000 ₺/yıl',
   },
   {
-    tur: 'Kredi Bağlantılı Konut Sigortası',
+    tur: 'Kiracı Sigortası',
     zorunlu: false,
-    kapsam: 'Banka zorunlu kılar; temel yangın ve deprem teminatı genellikle dahildir',
-    sinir: 'Kredi miktarı kadar yapı güvencesi; ekspertiz değeriyle orantılı',
-    kimYaptirir: 'Konut kredisi kullananlar; banka genellikle sigorta şirketini önerir',
+    kapsam: 'Kiracının sorumluluğundaki eşya hasarları ve ev sahibine karşı sorumlulukları kapsar; yapı teminatı içermez.',
+    sinir: 'Eşya değerine göre',
+    fiyat: '800–3.000 ₺/yıl',
+  },
+  {
+    tur: 'Konut Kredi Sigortası (Hayat)',
+    zorunlu: false,
+    kapsam: 'Banka konut kredisinde borçlunun vefatı veya iş göremezliği halinde kalan kredi borcunu karşılar.',
+    sinir: 'Kalan kredi bakiyesi',
+    fiyat: 'Kredi tutarına göre yıllık prim',
   },
 ];
 
-const TEMINATLAR = [
-  { teminat: 'Yangın ve Duman', aciklama: 'Yangın, çıkan duman ve ısı hasarı', dahil: true },
-  { teminat: 'Hırsızlık', aciklama: 'Kırarak/zorla girme ile yapılan hırsızlık', dahil: true },
-  { teminat: 'Su Baskını/Sel', aciklama: 'Dışarıdan gelen su ve sel hasarı', dahil: false },
-  { teminat: 'Fırtına ve Dolu', aciklama: 'Fırtına, rüzgar ve dolu kaynaklı hasar', dahil: true },
-  { teminat: 'Cam Kırığı', aciklama: 'Pencere, vitrin camı kırılması', dahil: true },
-  { teminat: 'Ev Eşyası', aciklama: 'Mobilya, elektronik, beyaz eşya güvencesi', dahil: false },
-  { teminat: 'Kira Kaybı', aciklama: 'Hasar nedeniyle kullanılamayan dönemde kira kaybı', dahil: false },
-  { teminat: '3. Şahıs Mesuliyet', aciklama: 'Komşuya verilen su hasarı ve benzeri durumlar', dahil: true },
+const TEMINAT_TURLERI = [
+  { teminat: 'Yangın ve Duman', aciklama: 'Konut yangını ve duman hasarını karşılar; mutfak yangınlarında kısmi hasar teminatı önemlidir.' },
+  { teminat: 'Su Baskını ve Fırtına', aciklama: 'Dışarıdan gelen sel/su baskını teminatı ile fırtına hasarı; bölgesel risk koşullarına göre prim değişir.' },
+  { teminat: 'Hırsızlık', aciklama: 'Kırarak/zorlayarak giriş yoluyla gerçekleşen hırsızlık hasarlarını karşılar; alt limit ve belgeleme şartı vardır.' },
+  { teminat: 'Cam Kırılması', aciklama: 'Konut pencereleri, sürgülü kapılar ve vitrin camlarının kırılmasını karşılar; çatlaklar için ek kloz gerekebilir.' },
+  { teminat: 'Eşya ve Beyaz Eşya', aciklama: 'Mobilya, elektronik ve ev aletleri için ek teminat; her yıl güncellenen değer bildiriminde doğruluk önemlidir.' },
+  { teminat: 'Malik/Kiracı Sorumluluğu', aciklama: 'Alt daire gibi üçüncü kişilere verilen su/yangın hasarlarını karşılar; site ve apartman hayatında kritik teminattır.' },
 ];
 
-const HASAR_SURECI = [
-  { adim: 'Hasarı Bildirin', sure: 'Hemen', aciklama: 'Sigorta şirketine telefon veya mobil uygulama üzerinden hasar ihbarı yapın. İhbar tarihi sigorta süresine dahildir.' },
-  { adim: 'Hasar Ekspertizi', sure: '1–5 gün', aciklama: 'Sigortacı bir eksper görevlendirir. Eksper hasarı inceler, tutanağı düzenler.' },
-  { adim: 'Belge Tamamlama', sure: '1–2 hafta', aciklama: 'Faturalar, fotoğraflar, tamir teklifleri ve diğer belgeler teslim edilir.' },
-  { adim: 'Hasar Ödemesi', sure: '15–30 gün', aciklama: 'Onaylanan hasar tutarı, poliçe muafiyet düşüldükten sonra banka hesabınıza aktarılır.' },
+const HASARDA_YAPILACAKLAR = [
+  { adim: '24 Saat İçinde Bildir', aciklama: 'Hasarı fark ettiğiniz andan itibaren 24 saat (bazı poliçelerde 5 iş günü) içinde sigorta şirketine bildirin; gecikmeli bildirim tazminatı etkileyebilir.' },
+  { adim: 'Belgeleme Yapın', aciklama: 'Hasarı fotoğraflayın, mümkünse video çekin. Hasarın kaynağını (boru kaçağı faturası, hırsızlık ihbar belgesi) belgeleyin.' },
+  { adim: 'Eksik İmzalamayın', aciklama: 'Sigorta eksperinin sunduğu tutanağı, hasarı tam olarak tazmin edecek miktarı görmeden imzalamayın; itiraz hakkı tanınmıştır.' },
+  { adim: 'Hasar Tespiti Öncesi Onarım Yapmayın', aciklama: 'Eksper gelmeden hasarlı bölümü onarmaya başlamayın; aksi halde hasar miktarı eksik belgelenebilir.' },
 ];
 
-const PRATIK_IPUCLARI = [
-  { ipucu: 'Sigorta değerini doğru belirleyin', aciklama: 'Yapı değerini güncel yeniden inşa maliyetiyle belirleyin; düşük sigortalama durumunda hasarın yalnızca bir bölümü ödenir (müşterek sigorta ilkesi).' },
-  { ipucu: 'Eşya envanteri tutun', aciklama: 'Değerli eşyaların fotoğraf ve makbuzlarını saklayın; hırsızlık ve yangın hasarında ispat kolaylaşır.' },
-  { ipucu: 'Muafiyet tutarını bilin', aciklama: 'Her poliçede "muafiyet" adlı öz risk dilimi vardır; bu tutarın altındaki hasarlar ödenmez.' },
-  { ipucu: 'Yıllık yenileme yapın', aciklama: 'Enflasyon nedeniyle yapı değeri yükselir; poliçeyi her yıl güncel değerle yenileyin.' },
+const SECIM_IPUCLARI = [
+  { ipucu: 'Üst Yapı Değerini Doğru Bildirin', aciklama: 'Yapı değerini düşük bildirmek prim tasarrufu sağlar ama hasar anında eksik tazminat almanıza yol açar. Güncel inşaat m² maliyetiyle hesaplayın.' },
+  { ipucu: 'Eşyaları Ayrı Teminat Alın', aciklama: 'Birçok temel konut poliçesi yalnızca yapı hasarını karşılar. Eşya ve beyaz eşya için ek teminat seçeneğini mutlaka değerlendirin.' },
+  { ipucu: 'Muafiyet Tutarına Bakın', aciklama: 'Hasar başına düşen muafiyet (franchise) tutarı, küçük hasarlarda sigorta ödemesi yapılmayacağı anlamına gelir; bu tutarı önceden öğrenin.' },
+  { ipucu: 'Fiyat Karşılaştırması Yapın', aciklama: 'DASK dahil tüm poliçeleri en az 3 sigorta şirketinden kıyaslayın. Banka aracılığıyla alınan poliçeler genellikle daha pahalıdır.' },
 ];
 
 export default function KonutSigortasiRehberiPage() {
@@ -67,23 +72,23 @@ export default function KonutSigortasiRehberiPage() {
             <Shield size={13} /> Konut Sigortası
           </div>
           <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-4">
-            Konut Sigortası Rehberi 2024
+            Konut Sigortası Rehberi
           </h1>
           <p className="text-gray-300 text-sm max-w-xl leading-relaxed mb-8">
-            DASK zorunlu deprem sigortası, konut güvencesi teminatları ve hasar başvurusu hakkında kapsamlı rehber.
+            DASK ve ihtiyari konut sigortası türleri, teminat kapsamları, hasar prosedürü ve sigorta seçim ipuçları.
           </p>
           <div className="flex flex-wrap gap-4">
             <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
-              <p className="text-2xl font-black text-[#00C49F]">3 Tür</p>
-              <p className="text-xs text-gray-400">Sigorta çeşidi</p>
+              <p className="text-2xl font-black text-[#00C49F]">Zorunlu</p>
+              <p className="text-xs text-gray-400">DASK poliçesi</p>
             </div>
             <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
-              <p className="text-2xl font-black text-white">Zorunlu</p>
-              <p className="text-xs text-gray-400">DASK</p>
+              <p className="text-2xl font-black text-white">6 Teminat</p>
+              <p className="text-xs text-gray-400">Temel kapsam türleri</p>
             </div>
             <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
-              <p className="text-2xl font-black text-amber-400">4 Adım</p>
-              <p className="text-xs text-gray-400">Hasar süreci</p>
+              <p className="text-2xl font-black text-amber-400">24 Saat</p>
+              <p className="text-xs text-gray-400">Hasar bildirim süresi</p>
             </div>
           </div>
         </div>
@@ -93,68 +98,65 @@ export default function KonutSigortasiRehberiPage() {
 
         {/* Sigorta Türleri */}
         <section>
-          <h2 className="text-xl font-black text-gray-900 mb-4">Konut Sigorta Türleri</h2>
-          <div className="space-y-4">
+          <h2 className="text-xl font-black text-gray-900 mb-4">Konut Sigortası Türleri</h2>
+          <div className="space-y-3">
             {SIGORTA_TURLERI.map((s, i) => (
-              <div key={i} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+              <div key={i} className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
                 <div className="flex items-start justify-between mb-2">
                   <p className="text-xs font-black text-gray-900">{s.tur}</p>
-                  {s.zorunlu && <span className="text-[10px] bg-rose-50 text-rose-600 font-black px-2 py-0.5 rounded shrink-0">Zorunlu</span>}
+                  <span className={`text-[10px] font-black px-2 py-0.5 rounded shrink-0 ${s.zorunlu ? 'bg-rose-50 text-rose-600' : 'bg-gray-100 text-gray-500'}`}>
+                    {s.zorunlu ? 'Zorunlu' : 'İhtiyari'}
+                  </span>
                 </div>
-                <p className="text-[10px] text-gray-600 leading-relaxed mb-1"><span className="font-bold">Kapsam:</span> {s.kapsam}</p>
-                <p className="text-[10px] text-gray-600 leading-relaxed mb-1"><span className="font-bold">Limit:</span> {s.sinir}</p>
-                <p className="text-[10px] text-gray-500"><span className="font-bold">Kim yaptırır:</span> {s.kimYaptirir}</p>
+                <p className="text-[10px] text-gray-600 leading-relaxed mb-2">{s.kapsam}</p>
+                <div className="flex items-center justify-between">
+                  <p className="text-[10px] text-gray-400">{s.sinir}</p>
+                  <span className="text-[10px] font-black text-[#00C49F]">{s.fiyat}</span>
+                </div>
               </div>
             ))}
           </div>
         </section>
 
-        {/* Teminatlar */}
+        {/* Teminat Türleri */}
         <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-          <h2 className="text-sm font-black text-gray-900 mb-4">Standart Teminatlar</h2>
-          <div className="space-y-2">
-            {TEMINATLAR.map((t, i) => (
-              <div key={i} className="flex items-start gap-3 py-2 border-b border-gray-50 last:border-0">
-                <CheckCircle size={12} className={`shrink-0 mt-0.5 ${t.dahil ? 'text-[#00C49F]' : 'text-gray-200'}`} />
-                <div className="flex-1">
-                  <p className="text-xs font-black text-gray-900">{t.teminat}</p>
-                  <p className="text-[10px] text-gray-500">{t.aciklama}</p>
-                </div>
-                <span className={`text-[10px] font-black shrink-0 ${t.dahil ? 'text-[#00C49F]' : 'text-gray-300'}`}>
-                  {t.dahil ? 'Genellikle dahil' : 'Ek teminat'}
-                </span>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Hasar Süreci */}
-        <section>
-          <h2 className="text-xl font-black text-gray-900 mb-4">Hasar Başvurusu Süreci</h2>
+          <h2 className="text-sm font-black text-gray-900 mb-4 flex items-center gap-2">
+            <CheckCircle size={14} className="text-[#00C49F]" /> Temel Teminat Türleri
+          </h2>
           <div className="space-y-3">
-            {HASAR_SURECI.map((a, i) => (
-              <div key={i} className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-full bg-[#00C49F] text-white text-[10px] font-black flex items-center justify-center shrink-0">{i + 1}</div>
-                    <p className="text-xs font-black text-gray-900">{a.adim}</p>
-                  </div>
-                  <span className="text-[10px] bg-amber-50 text-amber-600 font-black px-2 py-0.5 rounded">{a.sure}</span>
-                </div>
-                <p className="text-[10px] text-gray-600 leading-relaxed ml-8">{a.aciklama}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Pratik İpuçları */}
-        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-          <h2 className="text-sm font-black text-gray-900 mb-4">Pratik İpuçları</h2>
-          <div className="space-y-3">
-            {PRATIK_IPUCLARI.map((p, i) => (
+            {TEMINAT_TURLERI.map((t, i) => (
               <div key={i} className="grid grid-cols-3 gap-2 py-2 border-b border-gray-50 last:border-0">
-                <p className="text-xs font-black text-[#00C49F]">{p.ipucu}</p>
-                <p className="text-[10px] text-gray-600 leading-relaxed col-span-2">{p.aciklama}</p>
+                <p className="text-xs font-black text-[#00C49F]">{t.teminat}</p>
+                <p className="text-[10px] text-gray-600 leading-relaxed col-span-2">{t.aciklama}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Hasarda Yapılacaklar */}
+        <section>
+          <h2 className="text-xl font-black text-gray-900 mb-4">Hasar Durumunda Yapılacaklar</h2>
+          <div className="space-y-3">
+            {HASARDA_YAPILACAKLAR.map((a, i) => (
+              <div key={i} className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
+                <div className="flex items-start gap-2 mb-1">
+                  <div className="w-5 h-5 rounded-full bg-[#00C49F] text-white text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">{i + 1}</div>
+                  <p className="text-xs font-black text-gray-900">{a.adim}</p>
+                </div>
+                <p className="text-[10px] text-gray-600 leading-relaxed ml-7">{a.aciklama}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Seçim İpuçları */}
+        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+          <h2 className="text-sm font-black text-gray-900 mb-4">Sigorta Seçim İpuçları</h2>
+          <div className="space-y-3">
+            {SECIM_IPUCLARI.map((s, i) => (
+              <div key={i} className="grid grid-cols-3 gap-2 py-2 border-b border-gray-50 last:border-0">
+                <p className="text-xs font-black text-[#00C49F]">{s.ipucu}</p>
+                <p className="text-[10px] text-gray-600 leading-relaxed col-span-2">{s.aciklama}</p>
               </div>
             ))}
           </div>
@@ -164,7 +166,7 @@ export default function KonutSigortasiRehberiPage() {
         <section className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl p-4">
           <AlertTriangle size={14} className="text-amber-600 shrink-0 mt-0.5" />
           <p className="text-xs text-amber-800 leading-relaxed">
-            <span className="font-black">DASK Zorunluluğu:</span> DASK olmayan taşınmazlarda tapu devri, kredi kullanımı ve yapı ruhsatı işlemleri engellenebilir. Yenilemeyi ihmal etmeyin.
+            <span className="font-black">Önemli:</span> DASK olmadan tapu işlemi ve konut kredisi kullanılamaz. Poliçenizi her yıl yenileyin; geçersiz DASK poliçesiyle sigorta tazminatı alınamaz.
           </p>
         </section>
 
@@ -174,11 +176,11 @@ export default function KonutSigortasiRehberiPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {[
               { href: '/dask-hesaplayici', label: 'DASK Prim Hesaplayıcı' },
-              { href: '/deprem-sigorta-hesaplayici', label: 'Deprem Sigorta Hesaplayıcı' },
-              { href: '/kentsel-donusum-rehberi', label: 'Kentsel Dönüşüm Rehberi' },
-              { href: '/deprem-riski', label: 'Deprem Riski Rehberi' },
-              { href: '/aidat-hesaplayici', label: 'Aidat Hesaplayıcı' },
-              { href: '/tapu-masrafi', label: 'Tapu Masrafı Hesaplayıcı' },
+              { href: '/deprem-sigorta-hesaplayici', label: 'Deprem Sigortası Hesaplayıcı' },
+              { href: '/konut-kredisi-basvuru', label: 'Konut Kredisi Başvuru Rehberi' },
+              { href: '/tapu-devir-rehberi', label: 'Tapu Devir Rehberi' },
+              { href: '/net-kira-hesaplayici', label: 'Net Kira Hesaplayıcı' },
+              { href: '/rehber', label: 'Konut Rehberi' },
             ].map(l => (
               <Link key={l.href} href={l.href}
                 className="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-[#F0FDF8] border border-transparent hover:border-[#00C49F]/20 transition-all group"
