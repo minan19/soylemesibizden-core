@@ -38,6 +38,7 @@ const CATEGORIES: Category[] = [
       { href: '/emlak-vergisi', icon: Landmark, label: 'Emlak Vergisi Hesaplayıcı', desc: 'Konut/işyeri/arsa oranları' },
       { href: '/kira-artis-hesaplama', icon: TrendingUp, label: 'Kira Artış Hesaplayıcı', desc: 'TÜİK TÜFE + %25 tavan' },
       { href: '/banka-kredileri', icon: Building2, label: 'Banka Kredisi Karşılaştır', desc: '8 banka faiz karşılaştırması', badge: 'Yeni' },
+      { href: '/faiz-takip', icon: TrendingUp, label: 'Faiz Takip', desc: 'Güncel banka oranları ve trend', badge: 'Yeni' },
       { href: '/dask-hesaplayici', icon: ShieldCheck, label: 'DASK Prim Hesaplayıcı', desc: 'Deprem sigortası primi' },
       { href: '/odeme-plani', icon: Calculator, label: 'Ödeme Planı Simülatörü', desc: 'Ay ay anapara + faiz tablosu', badge: 'Yeni' },
       { href: '/kira-geliri-vergisi', icon: FileText, label: 'Kira Geliri Vergisi', desc: '2024 gelir vergisi hesabı', badge: 'Yeni' },
