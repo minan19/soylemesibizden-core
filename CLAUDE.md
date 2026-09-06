@@ -487,7 +487,21 @@ git push https://minan19:<GITHUB_TOKEN>@github.com/minan19/soylemesibizden-core.
 
 ---
 
-*Son güncelleme: 2026-09-06 — Oturum 10: FAZ 170-176 tamamlandı. Yabancı alıcı rehberi, konut sigortası, bütçe planlayıcı, kira getiri hesaplayıcı, enflasyon koruması, miras ve gayrimenkul, kira sözleşmesi rehberi. Toplam 55+ araç ve sayfa.*
+*Son güncelleme: 2026-09-06 — Oturum 11: FAZ 185-196 tamamlandı. Arsa yatırımı, pişmanlık hakkı, mortgage simülatörü, faiz geçmişi, ekspertiz raporu, EKB, kat mülkiyeti, NBD/NPV hesaplayıcı, kira haritası, taksitli satış, 3 şehir karşılaştırma, hisseli tapu. Toplam 70+ araç ve sayfa.*
+
+### Oturum 11 (FAZ 185-196) — Tamamlananlar
+- [x] **FAZ-185:** Arsa yatırımı rehberi — imar türleri, kontrol listesi, hisseli arsa (/arsa-yatirimi)
+- [x] **FAZ-186:** Pişmanlık hakkı ve cayma rehberi — kapora, BK md.177, hukuki süreç (/pismanlik-hakki)
+- [x] **FAZ-187:** Gelişmiş mortgage simülatörü — erken ödeme, refinansman, tam plan (/mortgage-simulatoru)
+- [x] **FAZ-188:** Konut kredisi faiz geçmişi — 2015-2024 tarihsel veriler, yıllık bant (/faiz-gecmisi)
+- [x] **FAZ-189:** Ekspertiz raporu rehberi — SPK lisanslı değerleme, 4 tür, maliyet (/ekspertiz-raporu)
+- [x] **FAZ-190:** Enerji Kimlik Belgesi (EKB) — A-G sınıfları, zorunluluk, yükseltme (/enerji-kimlik-belgesi)
+- [x] **FAZ-191:** Kat mülkiyeti ve kat irtifakı rehberi — karşılaştırma, dönüşüm, haklar (/kat-mulkiyeti)
+- [x] **FAZ-192:** NBD/NPV gayrimenkul hesaplayıcı — IRR, nakit akışı, çıkış değeri (/yatirim-npv)
+- [x] **FAZ-193:** Kira fiyat rehberi — 12 şehir oda bazlı, YoY artış, kira getirisi (/kira-haritasi)
+- [x] **FAZ-194:** Taksitli gayrimenkul satışı rehberi — haklar, riskler, kontrol listesi (/taksitli-satis)
+- [x] **FAZ-195:** 3 şehir bölge karşılaştırma aracı — fiyat, getiri, skor (/bolge-karsilastir)
+- [x] **FAZ-196:** Hisseli tapu rehberi — şufa hakkı, ortaklığın giderilmesi davası (/hisseli-tapu)
 
 **Oturum 10 (FAZ 170-176) — Tamamlananlar:**
 - FAZ-170: Yabancı alıcı rehberi (/yabanci-gayrimenkul) — DAB, vatandaşlık yolu, oturma izni, vergi, ülkeler
