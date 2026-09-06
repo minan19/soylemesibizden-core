@@ -47,6 +47,7 @@ const CATEGORIES: Category[] = [
       { href: '/pesinat-plani', icon: TrendingUp, label: 'Peşinat Birikim Planı', desc: 'Ne zaman ev alabilirim?', badge: 'Yeni' },
       { href: '/butce-planlayici', icon: Calculator, label: 'Bütçe Planlayıcı', desc: 'Ne kadar ev alabilirim?', badge: 'Yeni' },
       { href: '/aidat-hesaplayici', icon: Calculator, label: 'Aidat Hesaplayıcı', desc: 'Bina ortak gider paylaşımı', badge: 'Yeni' },
+      { href: '/emlak-komisyonu', icon: Calculator, label: 'Emlak Komisyonu Hesapla', desc: 'Satıcı/alıcı komisyon + KDV', badge: 'Yeni' },
     ],
   },
   {
