@@ -114,6 +114,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/net-gelir-hesaplayici`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.78 },
     { url: `${baseUrl}/gayrimenkul-yatirim-fonu`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.72 },
     { url: `${baseUrl}/sehir-planlama`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.68 },
+    { url: `${baseUrl}/yatirim-getiri-simulatoru`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.80 },
   ];
 
   const listingPages: MetadataRoute.Sitemap = listings.map(l => ({
