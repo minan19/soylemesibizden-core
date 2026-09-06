@@ -154,6 +154,7 @@ const CATEGORIES: Category[] = [
       { href: '/yabanci-gayrimenkul', icon: Globe, label: 'Yabancı Alım Rehberi', desc: 'İzin, yasak bölge, vergi, vatandaşlık', badge: 'Yeni' },
       { href: '/konut-sigortasi', icon: ShieldCheck, label: 'Konut Sigortası Rehberi', desc: 'DASK, teminatlar, hasar süreci', badge: 'Yeni' },
       { href: '/imar-durumu', icon: MapPin, label: 'İmar Durumu Rehberi', desc: 'TAKS/KAKS, ruhsat süreci, riskler', badge: 'Yeni' },
+      { href: '/piyasa-raporu-2024', icon: BarChart2, label: 'Piyasa Raporu 2024', desc: 'Yıllık satış, fiyat, getiri verileri', badge: 'Yeni' },
     ],
   },
   {
