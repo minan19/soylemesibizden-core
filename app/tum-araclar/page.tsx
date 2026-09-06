@@ -136,6 +136,7 @@ const CATEGORIES: Category[] = [
       { href: '/kat-mulkiyeti', icon: Building2, label: 'Kat Mülkiyeti Rehberi', desc: 'İrtifak vs mülkiyet, dönüşüm, yönetim', badge: 'Yeni' },
       { href: '/deprem-riski', icon: ShieldCheck, label: 'Deprem Riski Rehberi', desc: 'Risk bölgeleri, DASK, yapı güvenliği', badge: 'Yeni' },
       { href: '/gayrimenkul-komisyoncusu', icon: Users, label: 'Komisyoncu Rehberi', desc: 'Seçim, komisyon, haklar, sözleşme', badge: 'Yeni' },
+      { href: '/kat-karsiligi', icon: Building2, label: 'Kat Karşılığı Rehberi', desc: 'Pay oranları, sözleşme, riskler', badge: 'Yeni' },
     ],
   },
   {
