@@ -1,114 +1,73 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import {
-  FileText, Users, Shield, AlertTriangle, CheckCircle,
-  ArrowRight, Home, Scale,
+  Scale, CheckCircle, AlertTriangle, ArrowRight, FileText, Users,
 } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Miras ve Gayrimenkul | Veraset, İntikal, Tapu | Söylemesi Bizden',
+  title: 'Miras ve Gayrimenkul | Veraset, İntikal, Vergi | Söylemesi Bizden',
   description:
-    'Gayrimenkul mirasında yasal süreç: veraset ilamı, tapu intikali, mirasçı hakları, saklı pay, miras paylaşımı ve veraset vergisi. Türk miras hukuku rehberi.',
+    'Gayrimenkul mirası: yasal mirasçı sıralaması, veraset ilamı, tapu intikali, miras vergisi ve mirasçı hakları.',
 };
 
-const HEIR_SHARES = [
+const MIRASCI_SIRASI = [
+  { sira: 1, grup: 'Altsoy', aciklama: 'Çocuklar eşit payda miras alır. Vefat etmiş çocuğun payı onun çocuklarına geçer (halefiyet).' },
+  { sira: 2, grup: 'Anne-Baba', aciklama: '1. zümre yoksa; hayatta olan ebeveyn tüm mirası alır. Her ikisi de hayattaysa yarı yarıya.' },
+  { sira: 3, grup: 'Büyükanne/Büyükbaba', aciklama: '1. ve 2. zümre yoksa; büyükbaba ve büyükannenin payları.' },
+  { sira: 4, grup: 'Devlet', aciklama: 'Hiç mirasçı yoksa miras devlete kalır.' },
+  { sira: null, grup: 'Eş', aciklama: 'Eş her zümreden önce pay alır: 1. zümreden 1/4, 2. zümreden 1/2, 3. zümreden 3/4.' },
+];
+
+const INTIKAL_SURECI = [
+  { adim: 'Ölüm Belgesi', detay: 'Nüfus müdürlüğünden veya hastaneden ölüm belgesi alınır.' },
+  { adim: 'Veraset İlamı', detay: 'Sulh Hukuk Mahkemesi veya noter aracılığıyla mirasçılık belgesi düzenlenir. 1–4 hafta.' },
+  { adim: 'Veraset Vergisi Beyannamesi', detay: 'Ölüm tarihinden itibaren 4 ay (yurt dışı 8 ay) içinde vergi dairesine beyan.' },
+  { adim: 'Vergi Ödeme veya Taksit', detay: 'Hesaplanan vergi 3 yılda, yılda 2 taksit olmak üzere 6 taksitte ödenebilir.' },
+  { adim: 'Tapu İntikali Başvurusu', detay: 'Veraset ilamı, ödeme belgesi ve tüm mirasçıların imzası ile tapu müdürlüğüne başvuru.' },
+  { adim: 'İntikalin Tescili', detay: 'Tapu sicilinde hisselere göre tüm mirasçılar adına tescil yapılır.' },
+];
+
+const VERASET_VERGISI_2024 = [
+  { matrah: '1.000.000 ₺\'ya kadar', oran: '%1', ornekMatrah: '500.000 ₺', ornekVergi: '5.000 ₺' },
+  { matrah: '1.000.000 – 3.000.000 ₺', oran: '%3', ornekMatrah: '2.000.000 ₺', ornekVergi: '30.000 + 10.000 = 40.000 ₺' },
+  { matrah: '3.000.000 – 7.000.000 ₺', oran: '%5', ornekMatrah: '5.000.000 ₺', ornekVergi: '100.000 + 60.000 = 160.000 ₺' },
+  { matrah: '7.000.000 – 30.000.000 ₺', oran: '%7', ornekMatrah: '15.000.000 ₺', ornekVergi: '560.000 + 280.000 = 840.000 ₺' },
+  { matrah: '30.000.000 ₺\'yı aşan', oran: '%10', ornekMatrah: '50.000.000 ₺', ornekVergi: 'Kademeli hesap' },
+];
+
+const VASIYETNAME_TURLERI = [
   {
-    situation: 'Eş + Çocuk(lar)',
-    spouse: '1/4',
-    children: '3/4 (eşit paylaşım)',
-    note: 'Eşin en az 1/4 hakkı vardır; çocuk sayısı arttıkça eşin payı değişmez.',
+    tur: 'Resmi Vasiyetname',
+    aciklama: 'Noterden veya iki tanık huzurunda düzenlenir. En güvenli yöntem.',
+    gecerlilik: 'İmzalı, imzasız, son hali geçerli.',
   },
   {
-    situation: 'Eş (çocuksuz) + Ebeveynler',
-    spouse: '1/2',
-    children: '1/2 (ebeveynlere)',
-    note: 'Çocuk yoksa ebeveynler ikinci zümre mirasçısıdır.',
+    tur: 'El Yazılı Vasiyetname',
+    aciklama: 'Baştan sona el yazısı ile yazılı ve imzalı. Tarih belirtilmeli.',
+    gecerlilik: 'Mahkeme veya noter onayı ile geçerli hale gelir.',
   },
   {
-    situation: 'Eş + Kardeşler (ebeveyn yok)',
-    spouse: '3/4',
-    children: '1/4 (kardeşlere)',
-    note: 'Ebeveyn ve çocuk yoksa kardeşler üçüncü zümre olarak girer.',
-  },
-  {
-    situation: 'Yalnızca Çocuklar',
-    spouse: '—',
-    children: 'Tamamı (eşit paylaşım)',
-    note: 'Eş yoksa mülkün tamamı çocuklara eşit pay ile geçer.',
+    tur: 'Sözlü Vasiyetname',
+    aciklama: 'Yakın ölüm tehlikesinde, iki tanık önünde yapılır. Tehlike geçince geçersiz.',
+    gecerlilik: '1 ay içinde mahkemeye bildirilmezse geçersiz.',
   },
 ];
 
-const PROCESS_STEPS = [
-  {
-    step: 1,
-    title: 'Veraset İlamı Al',
-    desc: 'Sulh hukuk mahkemesine veya notere başvurun. Nüfus kayıtları esas alınarak mirasçılar ve payları belirlenir.',
-    duration: '1–4 hafta',
-    icon: FileText,
-    color: 'text-[#00C49F]',
-    bg: 'bg-[#F0FDF8]',
-  },
-  {
-    step: 2,
-    title: 'İntikal Talebi',
-    desc: 'Veraset ilamı + ölüm belgesi + mirasçı kimlik bilgileriyle tapu müdürlüğüne başvuru yapılır.',
-    duration: '1–2 hafta',
-    icon: Home,
-    color: 'text-blue-600',
-    bg: 'bg-blue-50',
-  },
-  {
-    step: 3,
-    title: 'Veraset Vergisi Beyanı',
-    desc: 'Ölüm tarihinden itibaren 4 ay içinde vergi dairesine veraset ve intikal vergisi beyannamesi verilmeli.',
-    duration: '4 aylık süre',
-    icon: Scale,
-    color: 'text-amber-600',
-    bg: 'bg-amber-50',
-  },
-  {
-    step: 4,
-    title: 'Tapu Tescili',
-    desc: 'Vergi borcu olmadığına dair ilişiksizlik belgesi alındıktan sonra tapu müdürlüğü intikali tescil eder.',
-    duration: '3–5 iş günü',
-    icon: Shield,
-    color: 'text-violet-600',
-    bg: 'bg-violet-50',
-  },
-  {
-    step: 5,
-    title: 'Miras Paylaşımı (İsteğe Bağlı)',
-    desc: 'Mirasçılar anlaşarak paylaşma (taksim) yapabilir. Anlaşmazlıkta sulh hukuk mahkemesi devreye girer.',
-    duration: 'Değişken',
-    icon: Users,
-    color: 'text-rose-600',
-    bg: 'bg-rose-50',
-  },
+const SAKLANAN_PAY = [
+  { mirasci: 'Çocuk (her biri)', sakliPay: 'Yasal payının 1/2\'si' },
+  { mirasci: 'Anne veya Baba', sakliPay: 'Yasal payının 1/4\'ü' },
+  { mirasci: 'Eş', sakliPay: 'Yasal payının tamamı (eş aleyhine kısıtlama yapılamaz)' },
 ];
 
-const SAKLI_PAY = [
-  { heir: 'Her çocuk', share: 'Yasal payın 1/2\'si' },
-  { heir: 'Ebeveynler (çocuk yoksa)', share: 'Yasal payın 1/4\'ü' },
-  { heir: 'Eş', share: 'Yasal payın tamamı (kısıtlanamaz)' },
+const HATALI_UYGULAMALAR = [
+  'Mirasçıların tamamının muvafakati olmadan gayrimenkul satışı yapılamaz.',
+  'Bir mirasçının noterde vekâlet vermeden tapu intikalini "kolaylaştırması" hukuki sorumluluk doğurur.',
+  'Miras ortaklığından çıkış için payın diğer mirasçılara veya üçüncü kişilere devri şarttır.',
+  'Veraset vergisi beyan süresine uyulmazsa ceza ve gecikme faizi işler.',
+  'Gayrımenkul değerinin düşük gösterilmesi vergi kaçakçılığı kapsamında değerlendirilebilir.',
 ];
 
-const TAX_BRACKETS = [
-  { bracket: 'İlk ₺1.183.000', rate: '%1' },
-  { bracket: '₺1.183.001 – ₺2.506.000', rate: '%3' },
-  { bracket: '₺2.506.001 – ₺5.012.000', rate: '%5' },
-  { bracket: '₺5.012.001 – ₺10.024.000', rate: '%7' },
-  { bracket: '₺10.024.001 ve üzeri', rate: '%10' },
-];
-
-const WARNINGS = [
-  'Mirasçılar arasında anlaşma olmadan mülk satılamaz (iştirak hâlinde mülkiyet).',
-  'Vasiyetname noterden onaylı olmalı; el yazılı vasiyetname geçerli ama risklidir.',
-  'Yurt dışında yaşayan mirasçılar apostilli belgeler ve yetkili tercüman gerektirir.',
-  'Tapu intikali için vergi borcunun sıfırlanması (ilişiksizlik belgesi) zorunludur.',
-  'Birden fazla mülk varsa her biri için ayrı tapu intikali işlemi yapılmalıdır.',
-];
-
-export default function MirasVeGayrimenkulPage() {
+export default function MirasveGayrimenkulPage() {
   return (
     <main className="min-h-screen bg-[#F8FAFC]">
 
@@ -116,27 +75,26 @@ export default function MirasVeGayrimenkulPage() {
       <section className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
         <div className="max-w-4xl mx-auto px-6 py-16">
           <div className="inline-flex items-center gap-2 bg-[#00C49F]/20 border border-[#00C49F]/30 text-[#00C49F] text-xs font-bold px-4 py-1.5 rounded-full mb-5">
-            <FileText size={13} /> Hukuki Rehber
+            <Scale size={13} /> Miras ve Gayrimenkul
           </div>
           <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-4">
             Miras ve Gayrimenkul
           </h1>
           <p className="text-gray-300 text-sm max-w-xl leading-relaxed mb-8">
-            Türk miras hukukunda veraset ilamı, tapu intikali, mirasçı hakları, saklı pay
-            ve veraset vergisi süreçlerinin kapsamlı rehberi.
+            Yasal mirasçı sıralaması, veraset vergisi, tapu intikali adımları, vasiyetname türleri ve saklı pay hakları.
           </p>
           <div className="flex flex-wrap gap-4">
             <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
-              <p className="text-2xl font-black text-[#00C49F]">4 ay</p>
-              <p className="text-xs text-gray-400">Vergi beyanname süresi</p>
+              <p className="text-2xl font-black text-[#00C49F]">4 Ay</p>
+              <p className="text-xs text-gray-400">Vergi beyan süresi</p>
             </div>
             <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
               <p className="text-2xl font-black text-white">%1–10</p>
-              <p className="text-xs text-gray-400">Veraset vergisi oranı</p>
+              <p className="text-xs text-gray-400">Veraset vergisi</p>
             </div>
             <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
-              <p className="text-2xl font-black text-amber-400">1/2</p>
-              <p className="text-xs text-gray-400">Çocuk saklı payı</p>
+              <p className="text-2xl font-black text-amber-400">6 Taksit</p>
+              <p className="text-xs text-gray-400">Vergi ödeme seçeneği</p>
             </div>
           </div>
         </div>
@@ -144,147 +102,120 @@ export default function MirasVeGayrimenkulPage() {
 
       <div className="max-w-4xl mx-auto px-6 py-12 space-y-12">
 
-        {/* Heir shares */}
+        {/* Mirasçı Sıralaması */}
         <section>
-          <h2 className="text-xl font-black text-gray-900 mb-2">Yasal Miras Payları</h2>
-          <p className="text-sm text-gray-500 mb-5">
-            Türk Medeni Kanunu&apos;na göre mirasçı zümreleri ve mülk paylaşımı:
-          </p>
+          <h2 className="text-xl font-black text-gray-900 mb-4">Yasal Mirasçı Sıralaması</h2>
           <div className="space-y-3">
-            {HEIR_SHARES.map(h => (
-              <div key={h.situation} className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
-                <p className="text-xs font-black text-gray-900 mb-2">{h.situation}</p>
-                <div className="flex gap-4 mb-2">
-                  <div className="flex-1">
-                    <p className="text-[10px] text-gray-400 mb-0.5">Eş</p>
-                    <p className="text-sm font-black text-[#00C49F]">{h.spouse}</p>
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-[10px] text-gray-400 mb-0.5">Diğer mirasçılar</p>
-                    <p className="text-sm font-black text-blue-600">{h.children}</p>
-                  </div>
+            {MIRASCI_SIRASI.map((m, i) => (
+              <div key={i} className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm flex items-start gap-3">
+                <div className={`text-[10px] font-black px-2 py-1 rounded-lg shrink-0 ${m.sira ? 'bg-[#F0FDF8] text-[#00C49F]' : 'bg-blue-50 text-blue-600'}`}>
+                  {m.sira ? `${m.sira}. Zümre` : 'Eş'}
                 </div>
-                <p className="text-[10px] text-gray-400 italic">{h.note}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Process */}
-        <section>
-          <h2 className="text-xl font-black text-gray-900 mb-2">Tapu İntikal Süreci</h2>
-          <p className="text-sm text-gray-500 mb-6">Vefat sonrası gayrimenkulün mirasçılara devri için izlenecek adımlar</p>
-          <div className="space-y-4">
-            {PROCESS_STEPS.map(s => (
-              <div key={s.step} className={`rounded-2xl border p-5 ${s.bg} border-opacity-40`}
-                style={{ borderColor: 'rgba(0,0,0,0.08)' }}>
-                <div className="flex items-start gap-4">
-                  <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center shrink-0 shadow-sm">
-                    <span className={`text-sm font-black ${s.color}`}>{s.step}</span>
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between gap-3 mb-1">
-                      <h3 className="text-sm font-bold text-gray-900">{s.title}</h3>
-                      <span className="text-[10px] bg-white/80 text-gray-500 px-2 py-0.5 rounded-full border shrink-0">
-                        {s.duration}
-                      </span>
-                    </div>
-                    <p className="text-xs text-gray-600 leading-relaxed">{s.desc}</p>
-                  </div>
+                <div>
+                  <p className="text-xs font-black text-gray-900 mb-0.5">{m.grup}</p>
+                  <p className="text-[10px] text-gray-600 leading-relaxed">{m.aciklama}</p>
                 </div>
               </div>
             ))}
           </div>
         </section>
 
-        {/* Saklı pay */}
-        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-          <h2 className="text-lg font-black text-gray-900 mb-2">Saklı Pay (Mahfuz Hisse)</h2>
-          <p className="text-sm text-gray-500 mb-4">
-            Vasiyetname ile dahi bu paylar elinden alınamaz. Saklı pay ihlali hâlinde
-            mirasçılar <strong>tenkis davası</strong> açabilir.
-          </p>
-          <div className="space-y-2">
-            {SAKLI_PAY.map(s => (
-              <div key={s.heir} className="flex items-center justify-between p-3 rounded-xl bg-[#F0FDF8] border border-[#00C49F]/20">
-                <span className="text-xs font-semibold text-gray-700">{s.heir}</span>
-                <span className="text-xs font-black text-[#00C49F]">{s.share}</span>
+        {/* İntikal Süreci */}
+        <section>
+          <h2 className="text-xl font-black text-gray-900 mb-4">Tapu İntikal Süreci</h2>
+          <div className="space-y-3">
+            {INTIKAL_SURECI.map((s, i) => (
+              <div key={i} className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm flex items-start gap-3">
+                <div className="bg-[#F0FDF8] text-[#00C49F] text-[10px] font-black px-2 py-1 rounded-lg shrink-0">{i + 1}</div>
+                <div>
+                  <p className="text-xs font-black text-gray-900 mb-0.5">{s.adim}</p>
+                  <p className="text-[10px] text-gray-600 leading-relaxed">{s.detay}</p>
+                </div>
               </div>
             ))}
           </div>
-          <div className="mt-4 flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-xl p-3">
-            <AlertTriangle size={13} className="text-amber-600 shrink-0 mt-0.5" />
-            <p className="text-xs text-amber-800">
-              Eşin saklı payı Türk hukukunda özel koruma altındadır — yasal mirasının tamamı kısıtlanamaz.
-            </p>
-          </div>
         </section>
 
-        {/* Tax */}
+        {/* Veraset Vergisi */}
         <section>
-          <h2 className="text-xl font-black text-gray-900 mb-2">Veraset ve İntikal Vergisi</h2>
-          <p className="text-sm text-gray-500 mb-5">
-            2024 yılı için artan oranlı vergi dilimleri (her mirasçının aldığı pay üzerinden hesaplanır):
-          </p>
+          <h2 className="text-xl font-black text-gray-900 mb-4">Veraset ve İntikal Vergisi 2024</h2>
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
             <table className="w-full text-xs">
-              <thead>
-                <tr className="bg-gray-50 border-b border-gray-100">
-                  <th className="text-left p-3 font-bold text-gray-600">Miras Payı Dilimi</th>
-                  <th className="text-right p-3 pr-4 font-bold text-gray-600">Vergi Oranı</th>
+              <thead className="bg-gray-50 border-b border-gray-100">
+                <tr>
+                  <th className="text-left px-4 py-3 font-black text-gray-700">Matrah Dilimi</th>
+                  <th className="text-left px-4 py-3 font-black text-gray-700">Oran</th>
+                  <th className="text-left px-4 py-3 font-black text-gray-400">Örnek</th>
                 </tr>
               </thead>
               <tbody>
-                {TAX_BRACKETS.map((b, i) => (
-                  <tr key={b.bracket} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                    <td className="p-3 text-gray-600">{b.bracket}</td>
-                    <td className={`p-3 pr-4 text-right font-black ${i === 0 ? 'text-[#00C49F]' : i < 3 ? 'text-blue-600' : 'text-rose-600'}`}>
-                      {b.rate}
-                    </td>
+                {VERASET_VERGISI_2024.map((v, i) => (
+                  <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                    <td className="px-4 py-3 text-gray-700">{v.matrah}</td>
+                    <td className="px-4 py-3 font-black text-[#00C49F]">{v.oran}</td>
+                    <td className="px-4 py-3 text-gray-400">{v.ornekMatrah}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-          <div className="mt-3 bg-[#F0FDF8] border border-[#00C49F]/20 rounded-xl p-3">
-            <p className="text-xs text-gray-600">
-              <span className="font-bold text-[#00C49F]">İndirim:</span> Eşe ve alt soya (çocuk, torun) yapılan intikallerde vergi 1/2 oranında uygulanır.
-              Ana-babaya intikallerde de aynı indirim geçerlidir.
-            </p>
-          </div>
-        </section>
-
-        {/* Warnings */}
-        <section>
-          <h2 className="text-xl font-black text-gray-900 mb-4">Dikkat Edilmesi Gerekenler</h2>
-          <div className="space-y-2">
-            {WARNINGS.map((w, i) => (
-              <div key={i} className="flex items-start gap-3 bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
-                <AlertTriangle size={14} className="text-amber-500 shrink-0 mt-0.5" />
-                <p className="text-xs text-gray-600 leading-relaxed">{w}</p>
-              </div>
-            ))}
-          </div>
+          <p className="text-[10px] text-gray-400 mt-2">* İvazsız (karşılıksız) intikallerde oran 2 katı uygulanabilir. Eşten kalan miras farklı tarifeye tabidir.</p>
         </section>
 
         {/* Vasiyetname */}
-        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-          <h2 className="text-lg font-black text-gray-900 mb-3">Vasiyetname ile Planlama</h2>
-          <div className="space-y-3">
-            {[
-              { title: 'Resmi Vasiyetname', desc: 'Noterde düzenlenir. İki tanık, noter onayı gerekir. En güvenli yöntem.', icon: CheckCircle, color: 'text-[#00C49F]' },
-              { title: 'El Yazılı Vasiyetname', desc: 'Tamamen kişinin el yazısıyla; tarih, yer ve imza şart. Bilgisayarda yazılamaz. Kaybolma/tahrif riski yüksek.', icon: AlertTriangle, color: 'text-amber-500' },
-              { title: 'Sözlü Vasiyetname', desc: 'Yalnızca ölüm tehlikesi veya ulaşım engeli gibi olağanüstü hâllerde geçerli. 30 gün içinde resmî şekle dönüştürülmeli.', icon: AlertTriangle, color: 'text-rose-500' },
-            ].map(v => (
-              <div key={v.title} className="flex items-start gap-3 p-3 rounded-xl bg-gray-50">
-                <v.icon size={14} className={`${v.color} shrink-0 mt-0.5`} />
-                <div>
-                  <p className="text-xs font-bold text-gray-900 mb-0.5">{v.title}</p>
-                  <p className="text-xs text-gray-500 leading-relaxed">{v.desc}</p>
+        <section>
+          <h2 className="text-xl font-black text-gray-900 mb-4">Vasiyetname Türleri</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {VASIYETNAME_TURLERI.map((v, i) => (
+              <div key={i} className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
+                <p className="text-xs font-black text-gray-900 mb-1">{v.tur}</p>
+                <p className="text-[10px] text-gray-600 mb-2 leading-relaxed">{v.aciklama}</p>
+                <div className="bg-[#F0FDF8] rounded-lg p-2">
+                  <p className="text-[10px] text-[#00C49F] font-bold mb-0.5">Geçerlilik</p>
+                  <p className="text-[10px] text-gray-600">{v.gecerlilik}</p>
                 </div>
               </div>
             ))}
           </div>
+        </section>
+
+        {/* Saklı Pay */}
+        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+          <h2 className="text-sm font-black text-gray-900 mb-4 flex items-center gap-2">
+            <Users size={14} className="text-[#00C49F]" /> Saklı Pay Hakları
+          </h2>
+          <div className="space-y-3">
+            {SAKLANAN_PAY.map((s, i) => (
+              <div key={i} className="flex items-center justify-between bg-[#F0FDF8] rounded-xl p-3">
+                <p className="text-xs font-black text-gray-900">{s.mirasci}</p>
+                <p className="text-xs text-[#00C49F] font-bold">{s.sakliPay}</p>
+              </div>
+            ))}
+          </div>
+          <p className="text-[10px] text-gray-400 mt-3">Saklı pay oranının altında bırakılan mirasçı, tenkis davası açabilir.</p>
+        </section>
+
+        {/* Hatalar */}
+        <section className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+          <h2 className="text-sm font-black text-gray-900 mb-4 flex items-center gap-2">
+            <AlertTriangle size={14} className="text-amber-500" /> Sık Yapılan Hatalar
+          </h2>
+          <div className="space-y-2">
+            {HATALI_UYGULAMALAR.map((h, i) => (
+              <div key={i} className="flex items-start gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0 mt-1.5" />
+                <p className="text-xs text-gray-700 leading-relaxed">{h}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Warning */}
+        <section className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl p-4">
+          <AlertTriangle size={14} className="text-amber-600 shrink-0 mt-0.5" />
+          <p className="text-xs text-amber-800 leading-relaxed">
+            <span className="font-black">Önemli:</span> Miras hukuku karmaşık ve bireysel durumlara özeldir. Özellikle yabancı uyruklu mirasçı, yurt dışı mal varlığı veya birden fazla evlilik gibi özel durumlarda mutlaka gayrimenkul avukatı ile çalışın.
+          </p>
         </section>
 
         {/* Related */}
@@ -292,12 +223,12 @@ export default function MirasVeGayrimenkulPage() {
           <h3 className="text-sm font-bold text-gray-900 mb-4">İlgili Rehberler</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {[
-              { href: '/rehber/ev-satin-alma', label: 'Ev Satın Alma Rehberi' },
-              { href: '/rehber/satici-rehberi', label: 'Satıcı Rehberi' },
-              { href: '/tapu-masrafi', label: 'Tapu Masrafı Hesaplayıcı' },
-              { href: '/emlak-vergisi', label: 'Emlak Vergisi Hesaplayıcı' },
-              { href: '/imar-durumu', label: 'İmar Durumu Rehberi' },
-              { href: '/yabanci-gayrimenkul', label: 'Yabancı Alıcı Rehberi' },
+              { href: '/hisseli-tapu', label: 'Hisseli Tapu Rehberi' },
+              { href: '/ortak-mulkiyet', label: 'Ortak Mülkiyet Rehberi' },
+              { href: '/tapu-devir-sureci', label: 'Tapu Devir Süreci' },
+              { href: '/deger-artis-vergisi', label: 'Değer Artış Vergisi' },
+              { href: '/yabanci-gayrimenkul', label: 'Yabancı Gayrimenkul' },
+              { href: '/sozlesme-iptal', label: 'Sözleşme İptal ve Fesih' },
             ].map(l => (
               <Link key={l.href} href={l.href}
                 className="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-[#F0FDF8] border border-transparent hover:border-[#00C49F]/20 transition-all group"
