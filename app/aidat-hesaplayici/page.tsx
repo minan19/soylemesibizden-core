@@ -1,12 +1,12 @@
 import { Metadata } from 'next';
-import AidatClient from './AidatClient';
+import AidatHesaplayiciClient from './AidatHesaplayiciClient';
 
 export const metadata: Metadata = {
-  title: 'Aidat Hesaplayıcı | Bina Gider Paylaşımı | Söylemesi Bizden',
+  title: 'Aidat Hesaplayıcı | Bina/Site Aylık Aidat Maliyeti | Söylemesi Bizden',
   description:
-    'Apartman veya site aidatınızı hesaplayın. Ortak giderler, asansör bakımı, güvenlik, temizlik ve bağımsız bölüm payına göre aylık aidat tahmini.',
+    'Bina veya site aidat tutarını hesaplayın: kapıcı, asansör, temizlik, güvenlik ve diğer ortak giderleri daire sayısına bölerek aylık aidat bulun.',
 };
 
 export default function AidatHesaplayiciPage() {
-  return <AidatClient />;
+  return <AidatHesaplayiciClient />;
 }

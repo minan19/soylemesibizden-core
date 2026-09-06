@@ -192,6 +192,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/ev-satisa-hazirlama`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
     { url: `${baseUrl}/kredi-notu-rehberi`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.78 },
     { url: `${baseUrl}/ilk-ev-alma-rehberi`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.80 },
+    { url: `${baseUrl}/aidat-hesaplayici`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.75 },
+    { url: `${baseUrl}/kira-zam-tablosu`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.80 },
   ];
 
   const listingPages: MetadataRoute.Sitemap = listings.map(l => ({
