@@ -5,27 +5,27 @@ import Link from 'next/link';
 export const metadata: Metadata = {
   title: 'İzmir Karşıyaka Gayrimenkul | Satılık ve Kiralık | Söylemesi Bizden',
   description:
-    'İzmir Karşıyaka gayrimenkul piyasası: Mavişehir, Atakent, Bostanlı, Ege mahallelerinde satılık ve kiralık daire fiyatları.',
+    'İzmir Karşıyaka gayrimenkul piyasası: Bostanlı, Mavişehir, Yalı mahallelerinde satılık ve kiralık daire fiyatları ve İZBAN avantajı.',
 };
 
 const MAHALLELER = [
-  { mahalle: 'Mavişehir', satilikM2: 75000, kiralik2plus1: 32000, profil: 'Deniz manzarası, rezidans' },
-  { mahalle: 'Bostanlı', satilikM2: 60000, kiralik2plus1: 26000, profil: 'İskele, sahil şeridi' },
-  { mahalle: 'Atakent', satilikM2: 55000, kiralik2plus1: 23000, profil: 'AVM, ulaşım' },
-  { mahalle: 'Yalı', satilikM2: 65000, kiralik2plus1: 28000, profil: 'Sahil, köklü mahalle' },
-  { mahalle: 'Ege', satilikM2: 45000, kiralik2plus1: 19000, profil: 'Orta segment, merkezi' },
-  { mahalle: 'Girne', satilikM2: 50000, kiralik2plus1: 21000, profil: 'Yeni konutlar, metro' },
-  { mahalle: 'Tersane', satilikM2: 40000, kiralik2plus1: 17000, profil: 'Gelişen, yatırım' },
-  { mahalle: 'Naldöken', satilikM2: 38000, kiralik2plus1: 16000, profil: 'Uygun fiyat, metro' },
+  { mahalle: 'Mavişehir', satilikM2: 82000, kiralik2plus1: 34000, profil: 'Deniz manzarası, lüks' },
+  { mahalle: 'Bostanlı', satilikM2: 72000, kiralik2plus1: 30000, profil: 'Sahil, prestij, kafe' },
+  { mahalle: 'Yalı', satilikM2: 68000, kiralik2plus1: 28000, profil: 'Kıyı, tarihi köy' },
+  { mahalle: 'Karşıyaka Merkez', satilikM2: 65000, kiralik2plus1: 27000, profil: 'Alışveriş, merkezi' },
+  { mahalle: 'Tersane', satilikM2: 58000, kiralik2plus1: 24000, profil: 'Sanayi dönüşümü' },
+  { mahalle: 'Donanmacı', satilikM2: 62000, kiralik2plus1: 26000, profil: 'Köklü, aile' },
+  { mahalle: 'Küçükçiğli', satilikM2: 55000, kiralik2plus1: 23000, profil: 'Sakin, yeşil' },
+  { mahalle: 'Naldöken', satilikM2: 50000, kiralik2plus1: 21000, profil: 'Bütçe dostu, gelişen' },
 ];
 
 const PIYASA_OZETI = [
-  { metrik: 'Ort. ₺/m² (Karşıyaka)', deger: '55.000 ₺' },
-  { metrik: 'Mavişehir Zirvesi', deger: '75.000+ ₺/m²' },
-  { metrik: 'Yıllık Fiyat Artışı', deger: '%45–75 (2024)' },
-  { metrik: 'Brüt Kira Getirisi', deger: '%3.5–5.0' },
-  { metrik: 'Metro Erişimi', deger: 'M3 Hattı' },
-  { metrik: 'Kira Çarpanı', deger: '~155 ay' },
+  { metrik: 'Ort. ₺/m² (Karşıyaka)', deger: '64.000 ₺' },
+  { metrik: 'Mavişehir Zirvesi', deger: '82.000+ ₺/m²' },
+  { metrik: 'Yıllık Fiyat Artışı', deger: '%42–57 (2024)' },
+  { metrik: 'Brüt Kira Getirisi', deger: '%4.3–5.5' },
+  { metrik: 'İZBAN', deger: 'Alsancak–Mavişehir' },
+  { metrik: 'İzmir Körfezi', deger: 'Kuzey sahil şeridi' },
 ];
 
 async function getKarsiyakaListings() {
@@ -55,7 +55,7 @@ export default async function IzmirKarsiyakaPage() {
           <p className="text-[#00C49F] text-xs font-bold mb-3 uppercase tracking-widest">İzmir Karşıyaka</p>
           <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-3">İzmir Karşıyaka Gayrimenkul</h1>
           <p className="text-gray-300 text-sm max-w-xl leading-relaxed">
-            İzmir&apos;in en prestijli kıyı ilçesi Karşıyaka&apos;da mahalle bazlı fiyatlar ve güncel ilanlar.
+            İzmir Körfezi&apos;nin kuzey sahilinde Karşıyaka&apos;da Mavişehir&apos;den Bostanlı&apos;ya mahalle bazlı fiyatlar.
           </p>
           <div className="flex gap-3 mt-6">
             <Link href="/listings?city=İzmir&district=Karşıyaka&listingType=SATILIK" className="bg-[#00C49F] text-white text-xs font-black px-5 py-2.5 rounded-full hover:bg-[#00a882] transition-colors">
@@ -129,7 +129,7 @@ export default async function IzmirKarsiyakaPage() {
         <div className="bg-blue-50 border border-blue-100 rounded-2xl p-5">
           <p className="text-xs font-black text-blue-700 mb-2">Karşıyaka Yatırım Notu</p>
           <p className="text-[11px] text-blue-600 leading-relaxed">
-            Karşıyaka, İzmir&apos;in en yüksek yaşam kalitesi endeksine sahip ilçesidir. Mavişehir ve Bostanlı sahil şeridi yüksek kira talebi sayesinde güçlü bir getiri profili sunar. M3 metro hattının tüm mahalleleri kapsıyor olması ulaşım avantajını sürdürülebilir kılmaktadır. Konut stoku sınırlı ve talep güçlüdür.
+            Karşıyaka, İzmir&apos;in en köklü ve yaşanabilir ilçelerinden biri olarak üst-orta gelir grubu ve emekli nüfusa hitap eden güçlü bir kira talebine sahiptir. Mavişehir sahil bandındaki yüksek katlı rezidans projeleri İzmir&apos;in en pahalı konutlarını barındırırken Bostanlı&apos;nın canlı sosyal ortamı kiralık piyasada yüksek doluluk sağlamaktadır. İZBAN hattının Alsancak&apos;a direkt bağlantısı ulaşım avantajını sürdürmektedir.
           </p>
         </div>
 
