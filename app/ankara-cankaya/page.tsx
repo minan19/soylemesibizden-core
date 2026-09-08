@@ -5,30 +5,30 @@ import Link from 'next/link';
 export const metadata: Metadata = {
   title: 'Ankara Çankaya Gayrimenkul | Satılık ve Kiralık | Söylemesi Bizden',
   description:
-    'Ankara Çankaya gayrimenkul piyasası: Kızılay, Çukurambar, Gaziosmanpaşa, Oran bölgelerinde satılık ve kiralık daire fiyatları.',
+    'Ankara Çankaya gayrimenkul piyasası: Kızılay, Tunalı, Çukurambar mahallelerinde satılık ve kiralık daire fiyatları ve diplomatik bölge avantajı.',
 };
 
 const MAHALLELER = [
-  { mahalle: 'Çukurambar', satilikM2: 45000, kiralik2plus1: 22000, profil: 'Finans merkezi, ofis' },
-  { mahalle: 'Oran', satilikM2: 40000, kiralik2plus1: 18000, profil: 'Prestijli, diplomatlar' },
-  { mahalle: 'Gaziosmanpaşa', satilikM2: 38000, kiralik2plus1: 17000, profil: 'Büyükelçilikler, sakin' },
-  { mahalle: 'Kızılay', satilikM2: 35000, kiralik2plus1: 15000, profil: 'Ulaşım merkezi, metro' },
-  { mahalle: 'Bahçelievler', satilikM2: 30000, kiralik2plus1: 13000, profil: 'Köklü, yeşil' },
-  { mahalle: 'Emek', satilikM2: 28000, kiralik2plus1: 12000, profil: 'Memur aileler, sakin' },
-  { mahalle: 'Çankaya Merkez', satilikM2: 32000, kiralik2plus1: 14000, profil: 'Genel, karma yapı' },
-  { mahalle: 'Birlik / Çayyolu', satilikM2: 25000, kiralik2plus1: 11000, profil: 'Yeni konutlar, ulaşım' },
+  { mahalle: 'Çukurambar', satilikM2: 65000, kiralik2plus1: 28000, profil: 'Rezidans, üst segment' },
+  { mahalle: 'Kızılay', satilikM2: 58000, kiralik2plus1: 25000, profil: 'Merkez, kamu, ticaret' },
+  { mahalle: 'Tunalı Hilmi', satilikM2: 62000, kiralik2plus1: 27000, profil: 'Prestij, diplomatik' },
+  { mahalle: 'Bahçelievler', satilikM2: 48000, kiralik2plus1: 21000, profil: 'Köklü, aile, yeşil' },
+  { mahalle: 'Gaziosmanpaşa', satilikM2: 70000, kiralik2plus1: 30000, profil: 'Elçilik, lüks villa' },
+  { mahalle: 'Birlik Mahallesi', satilikM2: 52000, kiralik2plus1: 22000, profil: 'Üniversite, gençler' },
+  { mahalle: 'Kavaklıdere', satilikM2: 68000, kiralik2plus1: 29000, profil: 'Büyükelçi, üst sınıf' },
+  { mahalle: 'Yıldız', satilikM2: 44000, kiralik2plus1: 19000, profil: 'Sakin, orta segment' },
 ];
 
 const PIYASA_OZETI = [
-  { metrik: 'Ort. ₺/m² (Çankaya)', deger: '33.000 ₺' },
-  { metrik: 'Çukurambar Zirvesi', deger: '45.000+ ₺/m²' },
-  { metrik: 'Yıllık Fiyat Artışı', deger: '%40–65 (2024)' },
-  { metrik: 'Brüt Kira Getirisi', deger: '%3.5–5.5' },
-  { metrik: 'Kira Çarpanı', deger: '~155 ay' },
-  { metrik: 'Metro Erişimi', deger: 'Kızılay–Çayyolu' },
+  { metrik: 'Ort. ₺/m² (Çankaya)', deger: '58.375 ₺' },
+  { metrik: 'GOP/Kavaklıdere Zirvesi', deger: '70.000+ ₺/m²' },
+  { metrik: 'Yıllık Fiyat Artışı', deger: '%42–56 (2024)' },
+  { metrik: 'Brüt Kira Getirisi', deger: '%4.2–5.5' },
+  { metrik: 'Diplomatik Bölge', deger: 'GOP, Kavaklıdere' },
+  { metrik: 'Metro (M1)', deger: 'Kızılay – Batıkent' },
 ];
 
-async function getAnkaraCankayaListings() {
+async function getCankayaListings() {
   try {
     return await prisma.listing.findMany({
       where: {
@@ -46,7 +46,7 @@ async function getAnkaraCankayaListings() {
 }
 
 export default async function AnkaraCankayaPage() {
-  const ilanlar = await getAnkaraCankayaListings();
+  const ilanlar = await getCankayaListings();
 
   return (
     <main className="min-h-screen bg-[#F8FAFC]">
@@ -55,7 +55,7 @@ export default async function AnkaraCankayaPage() {
           <p className="text-[#00C49F] text-xs font-bold mb-3 uppercase tracking-widest">Ankara Çankaya</p>
           <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-3">Ankara Çankaya Gayrimenkul</h1>
           <p className="text-gray-300 text-sm max-w-xl leading-relaxed">
-            Ankara&apos;nın en prestijli ilçesi Çankaya&apos;da mahalle bazlı fiyatlar, güncel ilanlar ve yatırım analizi.
+            Ankara&apos;nın prestij ilçesi Çankaya&apos;da Gaziosmanpaşa&apos;dan Bahçelievler&apos;e mahalle bazlı fiyatlar.
           </p>
           <div className="flex gap-3 mt-6">
             <Link href="/listings?city=Ankara&district=Çankaya&listingType=SATILIK" className="bg-[#00C49F] text-white text-xs font-black px-5 py-2.5 rounded-full hover:bg-[#00a882] transition-colors">
@@ -97,11 +97,7 @@ export default async function AnkaraCankayaPage() {
             <tbody>
               {MAHALLELER.map((m, i) => (
                 <tr key={i} className="border-b border-gray-50 last:border-0">
-                  <td className="py-2 font-black text-gray-900">
-                    <Link href={`/listings?city=Ankara&district=Çankaya&neighborhood=${m.mahalle}`} className="hover:text-[#00C49F] transition-colors">
-                      {m.mahalle}
-                    </Link>
-                  </td>
+                  <td className="py-2 font-black text-gray-900">{m.mahalle}</td>
                   <td className="py-2 text-center font-bold text-gray-600">{m.satilikM2.toLocaleString('tr-TR')} ₺</td>
                   <td className="py-2 text-center font-bold text-gray-600">{m.kiralik2plus1.toLocaleString('tr-TR')} ₺/ay</td>
                   <td className="py-2 text-right font-bold text-gray-400">{m.profil}</td>
@@ -133,7 +129,7 @@ export default async function AnkaraCankayaPage() {
         <div className="bg-blue-50 border border-blue-100 rounded-2xl p-5">
           <p className="text-xs font-black text-blue-700 mb-2">Çankaya Yatırım Notu</p>
           <p className="text-[11px] text-blue-600 leading-relaxed">
-            Çankaya, Ankara&apos;nın en değerli ve en düzenli konut stoğuna sahip ilçesidir. Çukurambar ve Oran, büyükelçilikler ve üst gelir grubu yöneticilere ev sahipliği yapar. Metro (Kızılay–Çayyolu) hattının tüm mahalleler üzerindeki ulaşım etkisi kira talebini canlı tutmaktadır. Yatırım getirisi istikrarlı, sermaye kaybı riski düşüktür.
+            Çankaya, Ankara&apos;nın en köklü ve prestijli ilçesi olarak diplomatik misyonlar, kamu kurumları ve üniversite yoğunluğuyla güçlü kira talebini korumaktadır. Gaziosmanpaşa ve Kavaklıdere&apos;de yabancı uyruklu kiracı profili stabil ve yüksek kira geliri sağlarken Çukurambar&apos;da yükselen rezidans stoğu üst gelir grubuna hitap etmektedir. Bahçelievler ve Yıldız gibi köklü mahallelerde eski yapı stoğu kentsel dönüşüm potansiyeli taşımaktadır.
           </p>
         </div>
 
